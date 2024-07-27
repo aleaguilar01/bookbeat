@@ -11,7 +11,8 @@ interface BookResponse {
   publisher: Array <string>,
   isbn: Array <string>,
   language: Array <string>,
-  number_of_pages: number
+  number_of_pages: number,
+  cover_url?: string
 }
 export const getBooksByTitle: (title: string)=> Promise <Array <BookResponse>>  = async (title: string) => {
   try {
@@ -19,17 +20,20 @@ export const getBooksByTitle: (title: string)=> Promise <Array <BookResponse>>  
     const { data } = await openLibraryApi.get(`/`, {params: {title, limit: 15}});
     return data.docs.map((book: any) => { console.log(Object.keys(book)) 
       return {
+        //coverId: book.cover_i,
         title: book.title, 
         author: book.author_name,
         published_year: book.first_publish_year,
         publisher: book.publisher,
         isbn: book.isbn,
         language: book.language,
-        number_of_pages: book.number_of_pages_median
+        number_of_pages: book.number_of_pages_median,
+        ...(book.cover_i ? {cover_url: `https://covers.openlibrary.org/b/ID/${book.cover_i}-M.jpg`} : { })
       } as BookResponse})
   } catch (error) {
     console.error(`Error: ${error}`)
   }
 }
+
 
 
