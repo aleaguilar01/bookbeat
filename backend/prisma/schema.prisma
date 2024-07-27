@@ -1,0 +1,47 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DB_URL")
+}
+
+model User {
+  id String @id @default(uuid())
+  provider Provider?
+  providerId String?
+  email String @unique
+  profilePicture String?
+  password String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  userbook UserBook[]
+}
+enum Provider {
+  GOOGLE
+}
+
+model UserBook {
+  isbn String @id
+  user User @relation(fields: [userId], references: [id])
+  userId String
+  readingStatus ReadingStatus @default(WANT_TO_READ)
+  playlist Playlist @relation(fields: [playlistId], references: [id])
+  playlistId String
+}
+enum ReadingStatus {
+  WANT_TO_READ
+  READING
+  READ
+  RE_READING
+  DID_NOT_FINISH
+}
+
+model Playlist {
+  id String @id @default(uuid())
+  name String
+  picture String?
+  description Text?
+  userbook UserBook
+}
