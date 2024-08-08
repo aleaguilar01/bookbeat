@@ -14,7 +14,7 @@ interface BookResponse {
   number_of_pages: number,
   cover_url?: string
 }
-export const getBooksByTitle: (title: string)=> Promise <Array <BookResponse>>  = async (title: string) => {
+export const getBooksByTitle  = async (title: string): Promise <Array <BookResponse> | undefined > => {
   try {
     console.log(title)
     const { data } = await openLibraryApi.get(`/`, {params: {title, limit: 15}});
