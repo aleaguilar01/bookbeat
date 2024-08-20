@@ -21,13 +21,15 @@ const AuthProvider = ({children}) => {
   const login = async (userData) => {
     await axios.post('user-auth', userData, {baseURL: 'http://localhost:3000/',})
       .then(res => {
-        console.log(res);
         setUser(userData);
+        setToken(res.data.token);
+        localStorage.setItem("token", res.data.token)
       })
     
   }
   const logout = () => {
     setUser(undefined);
+    setToken(undefined);
   }
   return <AuthContext.Provider value={{user, login, logout}}>{children}</AuthContext.Provider>
 }
