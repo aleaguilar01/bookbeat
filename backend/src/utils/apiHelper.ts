@@ -12,7 +12,8 @@ interface BookResponse {
   isbn: Array <string>,
   language: Array <string>,
   number_of_pages: number,
-  cover_url?: string
+  cover_url?: string,
+  ratings_count?: any
 }
 export const getBooksByTitle  = async (title: string): Promise <Array <BookResponse> | undefined > => {
   try {
@@ -28,7 +29,8 @@ export const getBooksByTitle  = async (title: string): Promise <Array <BookRespo
         isbn: book.isbn,
         language: book.language,
         number_of_pages: book.number_of_pages_median,
-        ...(book.cover_i ? {cover_url: `https://covers.openlibrary.org/b/ID/${book.cover_i}-M.jpg`} : { })
+        ...(book.cover_i ? {cover_url: `https://covers.openlibrary.org/b/ID/${book.cover_i}-M.jpg`} : { }),
+        ratings_count: book.ratings_count
       } as BookResponse})
   } catch (error) {
     console.error(`Error: ${error}`)

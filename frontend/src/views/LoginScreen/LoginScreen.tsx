@@ -9,7 +9,8 @@ const LoginScreen = () => {
   const navigate = useNavigate();
 
   const responseGoogle = (response) => {
-    console.log(response.profileObj);
+    setUser(response);
+    navigate("/")
   };
 
   const onFinish = (values) => {
