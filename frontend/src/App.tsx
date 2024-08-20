@@ -8,6 +8,8 @@ import LoginScreen from './views/LoginScreen/LoginScreen';
 
 
 function App() {
+  //@ts-ignore
+  console.log(import.meta.env.VITE_GOOGLE_CLIENT_ID)
   return (
     <AuthProvider>
       <GoogleOAuthProvider 
