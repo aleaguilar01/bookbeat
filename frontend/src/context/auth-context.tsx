@@ -30,6 +30,7 @@ const AuthProvider = ({children}) => {
   const logout = () => {
     setUser(undefined);
     setToken(undefined);
+    localStorage.clear()
   }
   return <AuthContext.Provider value={{user, login, logout}}>{children}</AuthContext.Provider>
 }
