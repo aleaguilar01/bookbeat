@@ -12,6 +12,7 @@ interface IAuthRequest {
 
 export const userAuth = async (req: Request, res: Response) => {
   const data: IAuthRequest = req.body;
+  console.log('incoming request for auth')
 
   // validate the inputs
   if (!data.email) {
