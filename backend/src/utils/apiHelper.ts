@@ -1,4 +1,6 @@
 import axios, {AxiosInstance} from "axios";
+import dotenv from "dotenv";
+
 
 const openLibraryApi: AxiosInstance = axios.create({
   baseURL: 'https://openlibrary.org/search.json'
@@ -36,6 +38,18 @@ export const getBooksByTitle  = async (title: string): Promise <Array <BookRespo
     console.error(`Error: ${error}`)
   }
 }
+
+
+////// SPOTIFY API
+
+const SPOTIFY_CLIENT_ID = process.env.SPOTIFY_CLIENT_ID;
+const SPOTIFY_CLIENT_SECRET = process.env.SPOTIFY_CLIENT_SECRET;
+const REDIRECT_URI = 'http://localhost3000/callback';
+
+const AUTH_URL = 'https://accounts.spotify.com/authorize';
+const TOKEN_URL = 'https://accounts.spotify.com/api/token';
+const API_BASE_URL = 'https://api.spotify.com/v1/';
+
 
 
 
