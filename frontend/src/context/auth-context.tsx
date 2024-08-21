@@ -5,7 +5,8 @@ interface IUser {
   name?: string,
   email: string,
   profile_picture?: string,
-  provider_id?: string
+  provider_id?: string,
+  token?: string
 }
 interface IAuth {
   user?: IUser,
@@ -17,19 +18,19 @@ const AuthContext = createContext<IAuth>({user: undefined, login: ()=>{}, logout
 
 const AuthProvider = ({children}) => {
   const [user, setUser] = useState <IUser | undefined>()
-  const [token, setToken] = useState <string | undefined>()
   const login = async (userData) => {
     await axios.post('user-auth', userData, {baseURL: 'http://localhost:3000/',})
       .then(res => {
-        setUser(userData);
-        setToken(res.data.token);
-        localStorage.setItem("token", res.data.token)
+        console.log(res)
+        Promise.all([
+          setUser({...userData, token: res.data.token}),
+          localStorage.setItem("token", res.data.token)
+        ])
       })
     
   }
   const logout = () => {
     setUser(undefined);
-    setToken(undefined);
     localStorage.clear()
   }
   return <AuthContext.Provider value={{user, login, logout}}>{children}</AuthContext.Provider>
