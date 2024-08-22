@@ -61,7 +61,6 @@ const LoginScreen = () => {
           console.log("Login Failed");
         }}
       />
-      ;
     </div>
   );
 };
