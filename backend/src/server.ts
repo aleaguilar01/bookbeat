@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import bookRoutes from "./routes/booksRoutes";
 import userRoutes from "./routes/userRoutes";
 import cors from 'cors';
+import { redisClient } from "./lib/redisClient";
 
 dotenv.config();
 
@@ -11,6 +12,8 @@ const port = process.env.PORT || 3000;
 
 app.use(cors())
 app.use(json())
+
+redisClient.connect();
 
 app.use(userRoutes)
 /// after the middleware is authenticated

@@ -22,6 +22,7 @@ const fetch = (
     axios(url).then((result: any) => {
       if (currentValue === value) {
         const { data } = result;
+        console.log(data)
         const mapdata = data
           .filter((item) => !!item.author && item.isbn && item.isbn.length > 0)
           .map((item: any) => ({
@@ -32,7 +33,8 @@ const fetch = (
             published_year: item.published_year,
             publisher: item.publisher,
             number_of_pages: item.number_of_pages,
-            first_sentence: item.first_sentence
+            first_sentence: item.first_sentence,
+            ratings: item.ratings
           }));
         callback(mapdata);
       }

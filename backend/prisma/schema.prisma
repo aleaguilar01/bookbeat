@@ -8,7 +8,7 @@ datasource db {
 }
 
 model User {
-  id String @id @default(uuid(
+  id String @id @default(uuid())
   provider Provider?
   providerId String?
   email String @unique
@@ -37,6 +37,7 @@ model UserBook {
   readingStatus ReadingStatus @default(WANT_TO_READ)
   playlist Playlist? 
   playlistId String?
+  rating Int?
 }
 enum ReadingStatus {
   WANT_TO_READ
