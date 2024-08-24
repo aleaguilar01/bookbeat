@@ -110,7 +110,9 @@ export const handleSpotifyCallback = async (req: Request, res: Response) => {
       req.session.expires_at = Date.now() + (tokenInfo.expires_in * 1000); // Convert seconds to milliseconds
 
       // Redirect the user to the playlists page to display their Spotify playlists
-      return res.redirect('/music/playlists');
+      return res.redirect('http://localhost:5173/music-dashboard');
+      // return res.redirect('http://localhost:3000/music/playlists');
+
 
     } catch (error) {
       return res.status(500).json({ error: 'Failed to retrieve access token'});
@@ -119,6 +121,24 @@ export const handleSpotifyCallback = async (req: Request, res: Response) => {
 
   return res.status(400).json({ error: "No code provided" })
 }
+
+
+export const getMusicRouteIndexPage = (req: Request, res: Response) => {
+  console.log('Accessing /music/index-page route');  
+
+  res.send(
+    `BookBeat's Available Spotify Routes <br>
+    <a href='http://localhost:3000/music/playlists'>Get User's Playlists</a> <br>
+    <a href=''>Music Player N/A</a> <br>
+    <a href=''>Reccomended Playlist N/A</a> <br>
+    <a href=''>Your Playlists (for book) N/A</a> <br>
+    <a href=''>Create Playlist N/A</a> <br>
+    <a href=''>Adding Tracks to Playlist N/A</a>
+    `
+    );
+};
+
+
 
 
 // Handle request for Spotify Playlists

@@ -5,6 +5,7 @@ import { BrowserRouter as Router, Route, Routes, useParams, useNavigate, Outlet,
 import PrivateRoute from './views/AuthViews/PrivateRoute';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import LoginScreen from './views/LoginScreen/LoginScreen';
+import MusicDashboard from './views/MusicViews/MusicDashboard';
 
 
 function App() {
@@ -15,6 +16,7 @@ function App() {
       clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
         <Router>
         <Routes>
+           <Route path='/music-dashboard' element={<MusicDashboard /> } />
             <Route path='login' element={<LoginScreen /> } />
             <Route element={<PrivateRoute />}>
               <Route path='/' element={<HomeScreen /> } />
@@ -32,7 +34,13 @@ export default App
 
 
 const HomeScreen = () => {
-  return <>This is Home </>
+  return <>
+  This is Home 
+  <a href='/music-dashboard'>Go to Music-Dashboard</a>
+  
+  </>
 }
+
+
 
 

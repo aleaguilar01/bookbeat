@@ -1,7 +1,7 @@
 import express from "express";
 
 
-import { getMusicHome, loginWithSpotify, handleSpotifyCallback, handleSpotifyPlaylists, handleSpotifyRefreshToken } from '../controllers/musicController';  // Import the controller
+import { getMusicHome, loginWithSpotify, handleSpotifyCallback, handleSpotifyPlaylists, handleSpotifyRefreshToken, getMusicRouteIndexPage } from '../controllers/musicController';  // Import the controller
 
 
 const router = express.Router();
@@ -9,8 +9,11 @@ const router = express.Router();
 router.get('/', getMusicHome);
 router.get('/login', loginWithSpotify);
 router.get('/callback', handleSpotifyCallback);
-router.get('/playlists', handleSpotifyPlaylists)
-router.get('/refresh-token', handleSpotifyRefreshToken)
+router.get('/refresh-token', handleSpotifyRefreshToken);
+router.get('/index-page', getMusicRouteIndexPage);
+
+router.get('/playlists', handleSpotifyPlaylists);
+
 
 
 export default router;
