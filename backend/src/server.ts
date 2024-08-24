@@ -1,8 +1,9 @@
 import express, { Express, Request, Response } from "express";
+import session from 'express-session';
 import dotenv from "dotenv";
 import { getBooksByTitle } from "./utils/apiHelper";
 import bookRoutes from "./routes/booksRoutes"
-import musicRoutes from "./routes/musicRoutes"  // Assuming your routes are defined in a separate file
+import musicRoutes from "./routes/musicRoutes"  
 
 
 dotenv.config();
@@ -11,11 +12,22 @@ dotenv.config();
 const app: Express = express();
 const port = process.env.PORT || 3000;
 
-app.use(express.json()); // Add this if you need to handle JSON requests
+// handle JSON requests
+app.use(express.json()); 
+
+// Retrieve the session secret from environment variables or use an empty string if not available
+const SESSION_SECRET: any = process.env.SESSION_SECRET || '';
+
+// Initialize session middleware with the specified configuration
+app.use(session({
+  secret: SESSION_SECRET,
+  resave: false,
+  saveUninitialized: true,
+}));
 
 
-app.use("/book", bookRoutes)
-app.use('/music', musicRoutes);
+app.use("/book", bookRoutes);
+app.use("/music", musicRoutes);
 
 
 
