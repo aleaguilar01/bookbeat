@@ -26,6 +26,7 @@ const fetch = (
         const mapdata = data
           .filter((item) => !!item.author && item.isbn && item.isbn.length > 0)
           .map((item: any) => ({
+            isbn: item.isbn,
             author: item.author.join(", "),
             cover: item.cover_url,
             value: item.isbn,

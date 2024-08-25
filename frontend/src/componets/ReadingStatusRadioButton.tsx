@@ -1,23 +1,49 @@
+import { ChangeEventHandler, FC, Fragment } from "react";
 import "./ReadingStatusRadioButton.styles.css";
 
-const ReadingStatusRadioButton = () => {
+interface ReadingStatusRadioButtonProps {
+  readingStatus: string;
+  setReadingStatus: (val: string) => void;
+}
+
+
+const READING_STATUS: Record<string, string> = {
+  wtr:  "Want To Read",
+  reading: "Reading",
+  read: "Read",
+  rr: "Re Reading",
+  dnf: "DNF",
+};
+const ReadingStatusRadioButton: FC<ReadingStatusRadioButtonProps> = ({
+  readingStatus,
+  setReadingStatus,
+}) => {
+  const handleChange: ChangeEventHandler<HTMLInputElement> = (event) => {
+    setReadingStatus(event.currentTarget.value);
+  };
   return (
-    <div id="form-wrapper">
-      <form action="/p/quote.php" method="GET">
+    <div id="container-wrapper">
+      <div id="container">
         <div id="reading-status-slider">
-          <input type="radio" name="debt-amount" id="1" value="1" required />
-          <label htmlFor="1" data-debt-amount="Want to Read"></label>
-          <input type="radio" name="debt-amount" id="2" value="2" required />
-          <label htmlFor="2" data-debt-amount="Reading"></label>
-          <input type="radio" name="debt-amount" id="3" value="3" required />
-          <label htmlFor="3" data-debt-amount="Read"></label>
-          <input type="radio" name="debt-amount" id="4" value="4" required />
-          <label htmlFor="4" data-debt-amount="Re Reading"></label>
-          <input type="radio" name="debt-amount" id="5" value="5" required />
-          <label htmlFor="5" data-debt-amount="DNF"></label>
-          <div id="debt-amount-pos"></div>
+          {Object.keys(READING_STATUS).map((key) => {
+            return (
+              <Fragment key={key}>
+                <input
+                  type="radio"
+                  name="reading-status"
+                  id={key}
+                  value={key}
+                  checked={readingStatus === key}
+                  onChange={handleChange}
+                  required
+                />
+                <label htmlFor={key} data-reading-status={READING_STATUS[key]}></label>
+              </Fragment>
+            );
+          })}
+          <div id="reading-status-pos"></div>
         </div>
-      </form>
+      </div>
     </div>
   );
 };

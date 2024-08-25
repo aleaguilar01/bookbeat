@@ -1,22 +1,18 @@
 @charset "UTF-8";
 
-#form-wrapper {
+#container-wrapper {
   width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-form {
+#container {
   width: 90%;
   max-width: 500px;
 }
-form #form-title {
-  margin-top: 0;
-  font-weight: 400;
-  text-align: center;
-}
-form #reading-status-slider {
+
+#reading-status-slider {
   display: flex;
   flex-direction: row;
   align-content: stretch;
@@ -28,7 +24,7 @@ form #reading-status-slider {
       -ms-user-select: none;
           user-select: none;
 }
-form #reading-status-slider::before {
+#reading-status-slider::before {
   content: " ";
   position: absolute;
   height: 2px;
@@ -39,7 +35,7 @@ form #reading-status-slider::before {
   transform: translate(-50%, -50%);
   background: #000;
 }
-form #reading-status-slider input, form #reading-status-slider label {
+#reading-status-slider input, #reading-status-slider label {
   box-sizing: border-box;
   flex: 1;
   -webkit-user-select: none;
@@ -48,7 +44,7 @@ form #reading-status-slider input, form #reading-status-slider label {
           user-select: none;
   cursor: pointer;
 }
-form #reading-status-slider label {
+#reading-status-slider label {
   display: inline-block;
   position: relative;
   width: 20%;
@@ -58,8 +54,8 @@ form #reading-status-slider label {
       -ms-user-select: none;
           user-select: none;
 }
-form #reading-status-slider label::before {
-  content: attr(data-debt-amount);
+#reading-status-slider label::before {
+  content: attr(data-reading-status);
   position: absolute;
   left: 50%;
   padding-top: 10px;
@@ -71,7 +67,7 @@ form #reading-status-slider label::before {
   opacity: 0.85;
   transition: all 0.15s ease-in-out;
 }
-form #reading-status-slider label::after {
+#reading-status-slider label::after {
   content: " ";
   position: absolute;
   left: 50%;
@@ -91,39 +87,39 @@ form #reading-status-slider label::after {
   cursor: pointer;
   transition: all 0.15s ease-in-out;
 }
-form #reading-status-slider label:hover::after {
+#reading-status-slider label:hover::after {
   transform: translate(-50%, -50%) scale(1.25);
 }
-form #reading-status-slider input {
+#reading-status-slider input {
   display: none;
 }
-form #reading-status-slider input:checked + label::before {
+#reading-status-slider input:checked + label::before {
   font-weight: 800;
   opacity: 1;
 }
-form #reading-status-slider input:checked + label::after {
+#reading-status-slider input:checked + label::after {
   border-width: 4px;
   transform: translate(-50%, -50%) scale(0.75);
 }
-form #reading-status-slider input:checked ~ #debt-amount-pos {
+#reading-status-slider input:checked ~ #reading-status-pos {
   opacity: 1;
 }
-form #reading-status-slider input:checked:nth-child(1) ~ #debt-amount-pos {
+#reading-status-slider input:checked:nth-child(1) ~ #reading-status-pos {
   left: 10%;
 }
-form #reading-status-slider input:checked:nth-child(3) ~ #debt-amount-pos {
+#reading-status-slider input:checked:nth-child(3) ~ #reading-status-pos {
   left: 30%;
 }
-form #reading-status-slider input:checked:nth-child(5) ~ #debt-amount-pos {
+#reading-status-slider input:checked:nth-child(5) ~ #reading-status-pos {
   left: 50%;
 }
-form #reading-status-slider input:checked:nth-child(7) ~ #debt-amount-pos {
+#reading-status-slider input:checked:nth-child(7) ~ #reading-status-pos {
   left: 70%;
 }
-form #reading-status-slider input:checked:nth-child(9) ~ #debt-amount-pos {
+#reading-status-slider input:checked:nth-child(9) ~ #reading-status-pos {
   left: 90%;
 }
-form #reading-status-slider #debt-amount-pos {
+#reading-status-slider #reading-status-pos {
   display: block;
   position: absolute;
   top: 50%;
@@ -137,11 +133,11 @@ form #reading-status-slider #debt-amount-pos {
   opacity: 0;
   z-index: 2;
 }
-form:valid #reading-status-slider input + label::before {
+#reading-status-slider input + label::before {
   transform: translate(-50%, 45px) scale(0.9);
   transition: all 0.15s linear;
 }
-form:valid #reading-status-slider input:checked + label::before {
+#reading-status-slider input:checked + label::before {
   transform: translate(-50%, 45px) scale(1.1);
   transition: all 0.15s linear;
 }

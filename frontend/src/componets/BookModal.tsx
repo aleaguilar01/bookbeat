@@ -1,22 +1,28 @@
 import Rating from "./Rating";
-import { Modal, Button, Image, Flex, Typography } from "antd";
+import { Modal, Image, Flex, Typography } from "antd";
 import ReadingStatusRadioButton from "./ReadingStatusRadioButton";
+import { useState } from "react";
+import { useCreateBook } from "../hooks/useCreateBook";
 
 const noImage = new URL("../../no-image.png", import.meta.url).href;
 const alternativeText = "NO DESCRIPTION AVAILABLE FOR THIS BOOK. SORRY!";
 const { Text, Title } = Typography;
 
 const BookModal = (props) => {
+  const [readingStatus, setReadingStatus] = useState<null | string>(null);
+
+  const { createBook } = useCreateBook();
   const handleOk = () => {
-    console.log("Adding book");
-    props.setValue(undefined);
+    console.log("here")
+    createBook({readingStatus, isbn: props.value.isbn, title: props.value.title, author: props.value.author, rating: props.value.rating, publishedYear: props.value.published_year, numberOfPages: props.value.number_of_pages, firstSentence: props.value.first_sentence}).then(() => {
+      props.setValue(undefined);
+    });
   };
 
   const handleCancel = () => {
     props.setValue(undefined);
   };
   if (!props.value) return null;
-  console.log(props.value);
   return (
     <>
       <Modal
@@ -45,7 +51,7 @@ const BookModal = (props) => {
             }}
             preview={false}
           />
-          <Flex vertical style={{width: 300}}>
+          <Flex vertical style={{ width: 300 }}>
             <Text italic>{props.value.author}</Text>
             <Rating rating={props.value.ratings || 0} isEditable={false} />
             <Text>First published: {props.value.published_year}</Text>
@@ -53,7 +59,10 @@ const BookModal = (props) => {
             <Text>{props.value.first_sentence || alternativeText}</Text>
           </Flex>
         </Flex>
-        <ReadingStatusRadioButton />
+        <ReadingStatusRadioButton
+          readingStatus={readingStatus}
+          setReadingStatus={setReadingStatus}
+        />
       </Modal>
     </>
   );
