@@ -6,41 +6,30 @@ import PrivateRoute from './views/AuthViews/PrivateRoute';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import LoginScreen from './views/LoginScreen/LoginScreen';
 import MusicDashboard from './views/MusicViews/MusicDashboard';
-
+import HomeScreen from "./views/AuthViews/HomeScreen";
 
 function App() {
+  //@ts-ignore
+  console.log(import.meta.env.VITE_GOOGLE_CLIENT_ID);
   return (
-    <AuthProvider>
-      <GoogleOAuthProvider 
-      //@ts-ignore
-      clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
-        <Router>
-        <Routes>
-           <Route path='/music-dashboard' element={<MusicDashboard /> } />
-            <Route path='login' element={<LoginScreen /> } />
+
+    <Router>
+      <AuthProvider>
+        <GoogleOAuthProvider
+          //@ts-ignore
+          clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}
+        >
+          <Routes>
+          <Route path='/music-dashboard' element={<MusicDashboard /> } />
+            <Route path="login" element={<LoginScreen />} />
             <Route element={<PrivateRoute />}>
-              <Route path='/' element={<HomeScreen /> } />
+              <Route path="/" element={<HomeScreen />} />
             </Route>
-        </Routes>
-      </Router>
-      </GoogleOAuthProvider>;
-      
+          </Routes>
+        </GoogleOAuthProvider>
       </AuthProvider>
-  )
+    </Router>
+  );
 }
 
-export default App
-
-
-
-const HomeScreen = () => {
-  return <>
-  This is Home 
-  <a href='/music-dashboard'>Go to Music-Dashboard</a>
-  
-  </>
-}
-
-
-
-
+export default App;

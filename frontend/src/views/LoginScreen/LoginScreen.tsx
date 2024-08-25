@@ -1,15 +1,23 @@
-import React, { useState } from "react";
-import { useAuth } from "../../context/auth-context";
+ import { useAuth } from "../../context/auth-context";
 import { useNavigate } from "react-router";
 import { GoogleLogin } from "@react-oauth/google";
-import { Form, Input, Button } from "antd";
+import { jwtDecode } from "jwt-decode";
 
 const LoginScreen = () => {
-  const { setUser } = useAuth();
+  const { login } = useAuth();
   const navigate = useNavigate();
 
   const responseGoogle = (response) => {
-    setUser(response);
+    const decoded = jwtDecode < {name: string, email: string, picture: string, sub: string} > (response.credential);
+    // decode the jwt token // npm i jwt-decode
+    // Create hook that sends this information to the backend
+    //  axios.post("/social-auth", {})
+    login({
+      name: decoded.name,
+      email: decoded.email,
+      profile_picture: decoded.picture,
+      provider_id: decoded.sub
+    });
     navigate("/")
   };
 
@@ -19,7 +27,7 @@ const LoginScreen = () => {
 
   return (
     <div>
-      <Form
+      {/* <Form
         name="normal_login"
         className="login-form"
         initialValues={{ remember: true }}
@@ -46,14 +54,13 @@ const LoginScreen = () => {
             Log in
           </Button>
         </Form.Item>
-      </Form>
+      </Form> */}
       <GoogleLogin
         onSuccess={responseGoogle}
         onError={() => {
           console.log("Login Failed");
         }}
       />
-      ;
     </div>
   );
 };

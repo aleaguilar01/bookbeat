@@ -5,9 +5,9 @@ import cors from 'cors';
 import { getBooksByTitle } from "./utils/apiHelper";
 import bookRoutes from "./routes/booksRoutes"
 import musicRoutes from "./routes/musicRoutes" 
+import userRoutes from "./routes/userRoutes";
+
  
-
-
 dotenv.config();
 
 
