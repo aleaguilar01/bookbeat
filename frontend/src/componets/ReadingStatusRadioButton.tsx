@@ -8,11 +8,11 @@ interface ReadingStatusRadioButtonProps {
 
 
 const READING_STATUS: Record<string, string> = {
-  wtr:  "Want To Read",
-  reading: "Reading",
-  read: "Read",
-  rr: "Re Reading",
-  dnf: "DNF",
+  WANT_TO_READ:  "Want To Read",
+  READING: "Reading",
+  READ: "Read",
+  RE_READING: "Re Reading",
+  DID_NOT_FINISH: "DNF",
 };
 const ReadingStatusRadioButton: FC<ReadingStatusRadioButtonProps> = ({
   readingStatus,

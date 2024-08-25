@@ -1,4 +1,4 @@
-import axios from "axios";
+import { useApi } from "./useApi";
 
 interface CreateBookArgs {
   readingStatus: string
@@ -11,8 +11,9 @@ interface CreateBookArgs {
   firstSentence?: string
 }
 export const useCreateBook = () => {
+  const api = useApi();
   const createBook = async (args: CreateBookArgs) => {
-    return axios.post("book", args, { baseURL: "http://localhost:3000" });
+    return api.post("book", args);
   };
 
   return { createBook };

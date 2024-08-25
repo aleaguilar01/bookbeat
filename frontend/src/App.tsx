@@ -6,13 +6,10 @@ import LoginScreen from "./views/LoginScreen/LoginScreen";
 import HomeScreen from "./views/AuthViews/HomeScreen";
 
 function App() {
-  //@ts-ignore
-  console.log(import.meta.env.VITE_GOOGLE_CLIENT_ID);
   return (
     <Router>
       <AuthProvider>
         <GoogleOAuthProvider
-          //@ts-ignore
           clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}
         >
           <Routes>
