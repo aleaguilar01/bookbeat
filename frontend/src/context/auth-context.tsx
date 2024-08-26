@@ -8,10 +8,11 @@ interface IUser {
   profile_picture?: string,
   provider_id?: string,
   token?: string
+  spotifyToken: any
 }
 interface IAuth {
   user?: IUser,
-  login: (user?:IUser) => void,
+  login: (code?: string) => void,
   logout: () => void,
   loading: boolean
 }
@@ -35,13 +36,13 @@ const AuthProvider = ({children}) => {
       setLoading(false)
     })
   },[])
-  const login = async (userData) => {
+  const login = async (code) => {
     setLoading(true)
     try {
-      const response = await axios.post('user-auth', userData, { baseURL: 'http://localhost:3000/' });
-      const userComplete = { ...userData, token: response.data.token };
-      setUser(userComplete);
-      localStorage.setItem("user", JSON.stringify(userComplete));
+      const response = await axios.get('/user-auth', { baseURL: 'http://localhost:3000/', params: {code} });
+      
+      setUser(response.data.user);
+      localStorage.setItem("user", JSON.stringify(response.data.user));
       navigate('/'); // Redirect to homepage or desired route after login
     } catch (error) {
       console.error("Login failed:", error);

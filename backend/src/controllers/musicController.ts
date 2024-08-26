@@ -50,77 +50,6 @@ export const getMusicHome = (req: Request, res: Response) => {
 };
 
 
-// Handle the login route. 
-// Redirects the user to Spotify's authorization page with required scopes.
-export const loginWithSpotify = (req: Request, res: Response) => {
-  console.log('Accessing /music/login route');  // Log when the route is accessed
-
-  const scope: string = "user-read-private user-read-email playlist-read-private playlist-modify-public playlist-modify-private";
-
-  const params = {
-    client_id: SPOTIFY_CLIENT_ID,
-    response_type: 'code',
-    scope: scope,
-    redirect_uri: REDIRECT_URI,
-    show_dialog: true // set to true for testing
-  };
-
-  const urlParams = new URLSearchParams(params as any);
-  
-  const auth_url: string = `${AUTH_URL}?${urlParams.toString()}`;
-
-  // Redirect the user to Spotify's authentication page
-  res.redirect(auth_url);
-};
-
-
-// Handle Callback route
-// Exchanges the authorization code for tokens, and saves them in the session.
-
-export const handleSpotifyCallback = async (req: Request, res: Response) => {
-  const { error, code } = req.query;
-
-  if (error) {
-    return res.json({ error });
-  }
-
-  if (code) {
-    const reqBody = {
-      code: code as string,
-      grant_type: 'authorization_code',
-      redirect_uri: REDIRECT_URI,
-      client_id: SPOTIFY_CLIENT_ID,
-      client_secret: SPOTIFY_CLIENT_SECRET
-    };
-
-    try {
-      // Make a POST request to the Spotify token endpoint to exchange the authorization code for an access token
-      const response = await axios.post(TOKEN_URL, new URLSearchParams(reqBody).toString(), {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
-        }
-      });
-      // Extract token information from the response
-      const tokenInfo = response.data;
-      
-
-      // Save token info to session
-      req.session.access_token = tokenInfo.access_token;
-      req.session.refresh_token = tokenInfo.refresh_token;
-      req.session.expires_at = Date.now() + (tokenInfo.expires_in * 1000); // Convert seconds to milliseconds
-
-      // Redirect the user to the playlists page to display their Spotify playlists
-      return res.redirect('http://localhost:5173/music-dashboard');
-      // return res.redirect('http://localhost:3000/music/playlists');
-
-
-    } catch (error) {
-      return res.status(500).json({ error: 'Failed to retrieve access token'});
-    }
-  }
-
-  return res.status(400).json({ error: "No code provided" })
-}
 
 
 export const getMusicRouteIndexPage = (req: Request, res: Response) => {
@@ -200,6 +129,7 @@ if (!req.session.expires_at || Date.now() > req.session.expires_at) {
 };
 
 
+
 // Handle Spotify Refresh Token
 // Refreshes the access token using the refresh token if the current token has expired.
 export const handleSpotifyRefreshToken = async (req: Request, res: Response) => {
@@ -236,5 +166,74 @@ export const handleSpotifyRefreshToken = async (req: Request, res: Response) => 
     }
   } else {
     return res.redirect('/playlists');
+  }
+};
+
+
+// Handle Spotyify Search
+// http://localhost:3000/music/search?search=Adele for testing
+export const handleSpotifySearch = async (req: Request, res: Response) => {
+  // Check if access_token is in session
+  if (!req.session.access_token) {
+    return res.redirect('/login');
+  }
+
+  // Check if the access token is expired or if expires_at is undefined
+  if (!req.session.expires_at || Date.now() > req.session.expires_at) {
+    return res.redirect('/refresh-token');
+  }
+
+  // Extract search query from request
+  const { search } = req.query;
+
+  if (!search || typeof search !== 'string') {
+    return res.status(400).json({ error: 'Search query is required and must be a string' });
+  }
+
+  try {
+    // Set up headers with the Bearer token
+    const headers = {
+      Authorization: `Bearer ${req.session.access_token}`
+    };
+
+    // Make the API call to search tracks
+    const response = await axios.get(`${API_BASE_URL}search`, {
+      headers,
+      params: {
+        q: search,
+        type: 'track',
+        limit: 10 // You can adjust this limit as needed
+      }
+    });
+
+    const searchResults = response.data;
+
+    // Return search results as JSON
+    return res.json(searchResults);
+
+  } catch (error: unknown) {
+    // Narrow down the error type
+    if (axios.isAxiosError(error)) {
+      // Axios-specific error handling
+      console.error('Axios error:', error.response ? error.response.data : error.message);
+      return res.status(500).json({
+        error: 'Failed to search tracks',
+        details: error.response ? error.response.data : error.message
+      });
+    } else if (error instanceof Error) {
+      // General error handling
+      console.error('General error:', error.message);
+      return res.status(500).json({
+        error: 'Failed to search tracks',
+        details: error.message
+      });
+    } else {
+      // Unknown error type
+      console.error('Unknown error:', error);
+      return res.status(500).json({
+        error: 'Failed to search tracks',
+        details: 'An unknown error occurred'
+      });
+    }
   }
 };

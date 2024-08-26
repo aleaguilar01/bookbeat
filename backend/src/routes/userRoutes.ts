@@ -4,7 +4,7 @@ import { userAuth } from "../controllers/userController";
 
 const router = express.Router();
 
-router.post("/user-auth", userAuth);
+router.get("/user-auth", userAuth);
 
 
 export default router

@@ -1,4 +1,7 @@
 import React, { useState, useEffect } from "react";
+import TestPage from "./MediaPlayer";
+import { useAuth } from "../../context/auth-context";
+import { FrownOutlined } from "@ant-design/icons";
 
 interface Playlist {
   id: string;   // or number, depending on your data
@@ -8,6 +11,9 @@ interface Playlist {
 const MusicDashboard = () => {
   const [playlists, setPlaylists] = useState<Playlist[]>([]);
   const [error, setError] = useState<string | null>(null);
+
+const {user} = useAuth()
+user.spotifyToken
 
   useEffect(() => {
     const fetchPlaylists = async () => {
@@ -49,6 +55,8 @@ const MusicDashboard = () => {
       ))}
     </ul>
   </div> */}
+   <TestPage></TestPage>
+
   </>
 }
 
@@ -57,47 +65,4 @@ export default MusicDashboard;
 
 
 
-// import React, { useState, useEffect } from 'react';
 
-// const MusicDashboard = () => {
-//   const [playlists, setPlaylists] = useState([]);
-//   const [error, setError] = useState(null);
-
-//   useEffect(() => {
-//     const fetchPlaylists = async () => {
-//       try {
-//         // Make a request to your backend route that handles fetching playlists
-//         const response = await fetch('http://localhost:3000/music/playlists', {
-//           credentials: 'include', // Ensure that cookies (session data) are included in the request
-//         });
-//         if (!response.ok) {
-//           throw new Error('Failed to fetch playlists');
-//         }
-//         const data = await response.json();
-//         setPlaylists(data.items); // Assuming the response structure has `items` for playlists
-//       } catch (err) {
-//         setError(err.message);
-//       }
-//     };
-
-//     // Call the function to fetch playlists
-//     fetchPlaylists();
-//   }, []); // Empty array ensures this runs once on component mount
-
-//   if (error) {
-//     return <div>Error: {error}</div>;
-//   }
-
-//   return (
-//     <div>
-//       <h1>Music Dashboard</h1>
-//       <ul>
-//         {playlists.map((playlist) => (
-//           <li key={playlist.id}>{playlist.name}</li>
-//         ))}
-//       </ul>
-//     </div>
-//   );
-// };
-
-// export default MusicDashboard;
