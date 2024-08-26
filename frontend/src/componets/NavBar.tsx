@@ -2,6 +2,7 @@ import { Button, Flex, Layout } from "antd";
 import { useAuth } from "../context/auth-context";
 const logoUrl = new URL("../../logo.jpeg", import.meta.url).href;
 import SearchBar from "./SearchBar";
+import { Link } from "react-router-dom";
 
 const { Header } = Layout;
 
@@ -23,6 +24,7 @@ const NavBar = () => {
   <img src={logoUrl} alt="logo" style={{height: '50px'}} />
     Book Beat
     <SearchBar placeholder="Search book" style={{width: 400}}/>
+    <Link to="/music-dashboard">Music Player</Link>
     <Button onClick={logout}>Logout</Button>
     </Flex>
   </Header>

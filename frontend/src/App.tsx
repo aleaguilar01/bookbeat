@@ -17,9 +17,10 @@ function App() {
           clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}
         >
           <Routes>
-          <Route path='/music-dashboard' element={<MusicDashboard /> } />
+          
             <Route path="login" element={<LoginScreen />} />
             <Route element={<PrivateRoute />}>
+              <Route path='/music-dashboard' element={<MusicDashboard /> } />
               <Route path="/" element={<HomeScreen />} />
             </Route>
           </Routes>

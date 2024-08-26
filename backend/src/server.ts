@@ -17,11 +17,19 @@ const port = process.env.PORT || 3000;
 if(!process.env.JWT_SIGN){
   throw new Error("Please ensure having JWT_SIGN in your environment variables")
 }
+
+if(!process.env.SPOTIFY_CLIENT_SECRET){
+  throw new 
+  Error("Please ensure having SPOTIFY_CLIENT_SECRET in your environment variables")
+}
+
+if(!process.env.SPOTIFY_CLIENT_ID){
+  throw new Error("Please ensure having SPOTIFY_CLIENT_ID in your environment variables")
+}
+
 // cors
-app.use(cors({
-  origin: 'http://localhost:5173',  // Your frontend URL
-  credentials: true  // Allow credentials (cookies)
-}));
+app.use(cors());
+
 app.use(json())
 
 // Retrieve the session secret from environment variables or use an empty string if not available
