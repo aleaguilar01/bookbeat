@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import TestPage from "./MediaPlayer";
 
 interface Playlist {
   id: string;   // or number, depending on your data
@@ -49,6 +50,8 @@ const MusicDashboard = () => {
       ))}
     </ul>
   </div> */}
+   <TestPage></TestPage>
+
   </>
 }
 
