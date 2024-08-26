@@ -2,7 +2,6 @@ import express, { Express, Request, Response } from "express";
 import session from 'express-session';
 import dotenv from "dotenv";
 import cors from 'cors';
-import { getBooksByTitle } from "./utils/apiHelper";
 import bookRoutes from "./routes/booksRoutes"
 import musicRoutes from "./routes/musicRoutes" 
 import userRoutes from "./routes/userRoutes";
