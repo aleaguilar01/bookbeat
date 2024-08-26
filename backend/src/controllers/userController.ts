@@ -1,21 +1,26 @@
 import { Request, Response } from "express";
 
-import { prisma } from '../lib/prismaClient'
+import { prisma } from "../lib/prismaClient";
 
-import jwt from 'jsonwebtoken';
+import jwt, { JwtPayload } from "jsonwebtoken";
 
 interface IAuthRequest {
-    email: string,
-    profile_picture: string,
-    name: string
-};
+  email: string;
+  profile_picture: string;
+  name: string;
+}
+
+export interface IJwtPayload extends JwtPayload {
+  email: string;
+  userId: string;
+}
 
 export const userAuth = async (req: Request, res: Response) => {
   const data: IAuthRequest = req.body;
 
   // validate the inputs
   if (!data.email) {
-    return res.status(400).send("No email provided")
+    return res.status(400).send("No email provided");
   }
 
   let user = await prisma.user.findUnique({
@@ -26,17 +31,20 @@ export const userAuth = async (req: Request, res: Response) => {
     user = await prisma.user.create({
       data: {
         email: data.email,
-        provider: 'GOOGLE',
-        profilePicture: data.profile_picture
-      }
-    })
+        provider: "GOOGLE",
+        profilePicture: data.profile_picture,
+      },
+    });
   }
 
   // once created or found create jwt token to send to frontend
 
-  const token = jwt.sign({email: user.email}, 'my secret password', {expiresIn: '1w'})
+  const token = jwt.sign(
+    { email: user.email, userId: user.id },
+    process.env.JWT_SIGN!,
+    { expiresIn: "1w" }
+  );
 
-  
   // generate a token -> in our middleware to validate that the user is able to use our app
-  res.send({token: token})
-}
+  res.send({ token: token });
+};
