@@ -9,20 +9,18 @@ import MusicDashboard from './views/MusicViews/MusicDashboard';
 import HomeScreen from "./views/AuthViews/HomeScreen";
 
 function App() {
-  //@ts-ignore
-  console.log(import.meta.env.VITE_GOOGLE_CLIENT_ID);
   return (
 
     <Router>
       <AuthProvider>
         <GoogleOAuthProvider
-          //@ts-ignore
           clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}
         >
           <Routes>
-          <Route path='/music-dashboard' element={<MusicDashboard /> } />
+          
             <Route path="login" element={<LoginScreen />} />
             <Route element={<PrivateRoute />}>
+              <Route path='/music-dashboard' element={<MusicDashboard /> } />
               <Route path="/" element={<HomeScreen />} />
             </Route>
           </Routes>

@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { Select, Space, Image, Typography, Flex } from "antd";
-import axios from "axios";
+import { AxiosInstance } from "axios";
 import BookModal from "./BookModal";
+import { useApi } from "../hooks/useApi";
 const noImage = new URL("../../no-image.png", import.meta.url).href; 
 let timeout: ReturnType<typeof setTimeout> | null;
 let currentValue: string;
@@ -9,8 +10,10 @@ let currentValue: string;
 const { Text } = Typography
 const fetch = (
   value: string,
-  callback: (data: { value: string; text: string }[]) => void
+  callback: (data: { value: string; text: string }[]) => void,
+  api: AxiosInstance
 ) => {
+  
   if (timeout) {
     clearTimeout(timeout);
     timeout = null;
@@ -18,13 +21,15 @@ const fetch = (
   currentValue = value;
 
   const backendCall = () => {
-    const url = encodeURI(`http://localhost:3000/book/${value}`);
-    axios(url).then((result: any) => {
+    const url = encodeURI(`book/${value}`);
+    api(url).then((result: any) => {
       if (currentValue === value) {
         const { data } = result;
+        console.log(data)
         const mapdata = data
           .filter((item) => !!item.author && item.isbn && item.isbn.length > 0)
           .map((item: any) => ({
+            isbn: item.isbn,
             author: item.author.join(", "),
             cover: item.cover_url,
             value: item.isbn,
@@ -32,7 +37,8 @@ const fetch = (
             published_year: item.published_year,
             publisher: item.publisher,
             number_of_pages: item.number_of_pages,
-            first_sentence: item.first_sentence
+            first_sentence: item.first_sentence,
+            ratings: item.ratings
           }));
         callback(mapdata);
       }
@@ -51,9 +57,9 @@ const SearchBar: React.FC<{
 }> = (props) => {
   const [data, setData] = useState([]);
   const [value, setValue] = useState<any>();
-
+  const api = useApi();
   const handleSearch = (newValue: string) => {
-    fetch(newValue, setData);
+    fetch(newValue, setData, api);
   };
 
   const handleChange = (isbn: string) => {
