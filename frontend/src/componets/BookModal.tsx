@@ -13,7 +13,6 @@ const BookModal = (props) => {
 
   const { createBook } = useCreateBook();
   const handleOk = () => {
-    console.log("here")
     createBook({readingStatus, isbn: props.value.isbn, title: props.value.title, author: props.value.author, rating: props.value.rating, publishedYear: props.value.published_year, numberOfPages: props.value.number_of_pages, firstSentence: props.value.first_sentence}).then(() => {
       props.setValue(undefined);
     });

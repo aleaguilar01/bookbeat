@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import cors from 'cors';
 import bookRoutes from "./routes/booksRoutes"
 import musicRoutes from "./routes/musicRoutes" 
+import aiRoutes from "./routes/aiRoutes" 
 import userRoutes from "./routes/userRoutes";
 import { redisClient } from "./lib/redisClient";
 import { authMiddleware } from "./middleware/authMiddleware";
@@ -53,6 +54,7 @@ redisClient.connect();
 app.use(userRoutes)
 /// after the middleware is authenticated
 app.use("/book", authMiddleware, bookRoutes)
+app.use("/ai", authMiddleware, aiRoutes)
 app.use("/music", musicRoutes);
 
 

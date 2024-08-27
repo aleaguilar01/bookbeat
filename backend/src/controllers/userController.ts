@@ -4,6 +4,7 @@ import { prisma } from "../lib/prismaClient";
 
 import jwt, { JwtPayload } from "jsonwebtoken";
 import axios from "axios";
+import qs from "qs";
 
 interface IAuthRequest {
   email: string;
@@ -19,13 +20,10 @@ export interface IJwtPayload extends JwtPayload {
 const SPOTIFY_CLIENT_ID: string = process.env.SPOTIFY_CLIENT_ID || '';
 const SPOTIFY_CLIENT_SECRET: string = process.env.SPOTIFY_CLIENT_SECRET || '';
 const REDIRECT_URI: string = 'http://localhost:5173/login';
-
-const AUTH_URL: string = 'https://accounts.spotify.com/authorize';
 const TOKEN_URL: string = 'https://accounts.spotify.com/api/token';
-const API_BASE_URL: string = 'https://api.spotify.com/v1/';
 
 export const userAuth = async (req: Request, res: Response) => {
-  const { error, code } = req.query;
+  const { error, code } = req.body;
 
   if (error) {
     return res.json({ error });
@@ -42,7 +40,7 @@ export const userAuth = async (req: Request, res: Response) => {
 
     try {
       // Make a POST request to the Spotify token endpoint to exchange the authorization code for an access token
-      const response = await axios.post(TOKEN_URL, new URLSearchParams(reqBody).toString(), {
+      const response = await axios.post(TOKEN_URL, qs.stringify(reqBody), {
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded'
         }
@@ -65,40 +63,35 @@ export const userAuth = async (req: Request, res: Response) => {
         where: { email: data.email },
       });
 
-      console.log(user);
-      
-
       if (!user) {
         user = await prisma.user.create({
           data: {
             email: data.email,
             provider: "GOOGLE",
-            // providerId: data.id
+            providerId: data.id,
           },
         });
       }
-      
+
       const token = jwt.sign(
         { email: user.email, userId: user.id, spotifyToken: tokenInfo },
         process.env.JWT_SIGN!,
         { expiresIn: "1w" }
       );
-    
+
       // generate a token -> in our middleware to validate that the user is able to use our app
-      return res.send({ user: {email: user.email, token: token, name: data.display_name, spotifyToken: tokenInfo} });
-
-    
-
+      return res.send({
+        user: {
+          email: user.email,
+          token: token,
+          name: data.display_name,
+          spotifyToken: tokenInfo,
+        },
+      });
     } catch (error) {
       return res.status(500).json({ error: 'Failed to retrieve access token'});
     }
   }
 
-  return res.status(400).json({ error: "No code provided" })
-
-
-  // const data: IAuthRequest = req.body;
-  // // once created or found create jwt token to send to frontend
-
-  
+  return res.status(400).json({ error: "No code provided" })  
 };
