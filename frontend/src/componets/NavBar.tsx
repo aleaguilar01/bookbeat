@@ -16,19 +16,19 @@ const headerStyle: React.CSSProperties = {
 };
 
 const NavBar = () => {
-  const {logout } = useAuth();
+  const { logout } = useAuth();
 
-  return(
+  return (
     <Header style={headerStyle}>
-    <Flex dir="horizontal" justify="space-between" align="center">
-    <Image src={logoUrl} alt="logo" style={{height: '50px'}} />
-    Book Beat
-    <SearchBar placeholder="Search book" style={{width: 400}}/>
-    <Link to="/music-dashboard">Music Player</Link>
-    <Button onClick={logout}>Logout</Button>
-    </Flex>
-  </Header>
-  )
-}
+      <Flex dir="horizontal" justify="space-between" align="center">
+        <Image src={logoUrl} alt="logo" style={{ height: "50px" }} />
+        Book Beat
+        <SearchBar placeholder="Search book" style={{ width: 400 }} />
+        <Link to="/music-dashboard">Music Player</Link>
+        <Button onClick={logout}>Logout</Button>
+      </Flex>
+    </Header>
+  );
+};
 
 export default NavBar;
