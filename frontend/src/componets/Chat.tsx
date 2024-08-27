@@ -28,7 +28,7 @@ const Chat: FC = () => {
   return (
     <Card
       style={{
-        position: "absolute",
+        position: "fixed",
         right: 100,
         bottom: 100,
         height: 500,

@@ -14,13 +14,14 @@ const ChatButton: React.FC = () => {
         ghost
         style={{
           margin: 0,
-          position: "absolute",
+          position: "fixed",
           bottom: 35,
           right: 94,
           height: ICON_SIZE,
           width: ICON_SIZE,
           padding: 0,
           boxShadow: "0px 0px 12px 6px rgba(0, 0, 0, 0.35)",
+          zIndex: 400
         }}
         shape="round"
       >
