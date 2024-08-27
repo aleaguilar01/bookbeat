@@ -12,30 +12,46 @@ const MusicDashboard = () => {
   const [playlists, setPlaylists] = useState<Playlist[]>([]);
   const [error, setError] = useState<string | null>(null);
 
+
+//// Getting Spotify Auth Token
 const {user} = useAuth()
 user.spotifyToken
+// console.log('this is the spotify token', user.spotifyToken);
 
-  useEffect(() => {
-    const fetchPlaylists = async () => {
-      try {
-        const response = await fetch('http://localhost:3000/music/playlists', {
-          credentials: 'include',
-        });
-        if (!response.ok) {
-          throw new Error("Failed to fetch Playlists");
-        }
-        const data = await response.json();
-        setPlaylists(data.items)
-      } catch(err){
-        setError(err.message);
-      }
-    }
-    fetchPlaylists();
-  }, [])
 
-  if (error) {
-    return <div>Error: {error}</div>
+useEffect(() => {
+  if (!user.spotifyToken.access_token) {
+    setError('Spotify token is missing');
+    return;
   }
+  const fetchPlaylists = async () => {
+    try {
+      const response = await fetch('http://localhost:3000/music/playlists', {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${user.spotifyToken.access_token}`, // Include the token here
+          'Content-Type': 'application/json', // Optional: Ensure JSON format
+        },
+        credentials: 'include', // If you need to send cookies or other credentials
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch Playlists");
+      }
+      const data = await response.json();
+      // console.log('data from fetch playlists', data);
+      
+      setPlaylists(data.items);
+      // console.log('playlists state', playlists);
+      
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+  fetchPlaylists();
+  
+  
+}, [user.spotifyToken.access_token]); // Add user.spotifyToken as a dependency
   
   return <>
   This is the Music Dashboard <br />
@@ -47,6 +63,7 @@ user.spotifyToken
     <a href=''>Your Playlists (for book) N/A</a> <br />
     <a href=''>Create Playlist N/A</a> <br />
     <a href=''>Adding Tracks to Playlist N/A</a>
+
   
   {/* <div>
     <ul>

@@ -24,6 +24,7 @@ const AUTH_URL: string = 'https://accounts.spotify.com/authorize';
 
 
 useEffect(() => {
+  // Retrieving code from search params
   setSearchParams(window.location.hash);
   
 
@@ -38,7 +39,7 @@ useEffect(() => {
 }, [searchParams]);
     
 
-    const scope: string = "user-read-private user-read-email playlist-read-private playlist-modify-public playlist-modify-private";
+    const scope: string = "user-read-private user-read-email playlist-read-private playlist-read-collaborative playlist-modify-public playlist-modify-private app-remote-control user-read-playback-state user-modify-playback-state user-read-currently-playing streaming user-library-modify user-library-read";
 
     const params = {
       client_id: SPOTIFY_CLIENT_ID,

@@ -28,7 +28,12 @@ if(!process.env.SPOTIFY_CLIENT_ID){
 }
 
 // cors
-app.use(cors());
+// app.use(cors());
+
+app.use(cors({
+  origin: 'http://localhost:5173', // Specify the allowed origin
+  credentials: true, // Allow credentials (cookies, etc.)
+}));
 
 app.use(json())
 
