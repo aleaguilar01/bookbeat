@@ -14,9 +14,12 @@ const getRandomCharacter = () => {
 export const useChat = () => {
   const [conversation, setConversation] = useState<Array<IMessage>>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [avatarUrl, setAvatarUrl] = useState("");
   const api = useApi();
+
   useEffect(() => {
     const character = getRandomCharacter();
+    setAvatarUrl(CHARACTERS[character].avatar);
     setConversation([
       {
         role: "assistant",
@@ -45,13 +48,14 @@ export const useChat = () => {
       });
   };
 
-  return { conversation, onChat, isLoading };
+  return { conversation, onChat, isLoading, avatarUrl };
 };
 
 interface ICharacters {
   name: string;
   book: string;
   role: "character" | "writter";
+  avatar: string;
 }
 
 const CHARACTERS: Record<string, ICharacters> = {
@@ -59,15 +63,30 @@ const CHARACTERS: Record<string, ICharacters> = {
     name: "Samwise Gamgee",
     book: "Lord of The Rings",
     role: "character",
+    avatar: new URL(`../../characters/sam.png`, import.meta.url).href,
   },
   poe: {
     name: "Edgar Allan Poe",
     role: "writter",
     book: "The Raven",
+    avatar: new URL(`../../characters/poe.png`, import.meta.url).href,
   },
   rhysand: {
     name: "Rhysand",
     role: "character",
-    book: "A Court of Thorns and Roses"
-  } 
+    book: "A Court of Thorns and Roses",
+    avatar: new URL(`../../characters/rhysan.png`, import.meta.url).href,
+  },
+  holmes: {
+    name: "Sherlock Holmes",
+    role: "character",
+    book: "A Study in Scarlet",
+    avatar: new URL(`../../characters/holmes.png`, import.meta.url).href,
+  },
+  elizabeth: {
+    name: "Elizabeth Bennet",
+    role: "character",
+    book: "Pride and Prejudice",
+    avatar: new URL(`../../characters/elizabeth.png`, import.meta.url).href,
+  },
 };
