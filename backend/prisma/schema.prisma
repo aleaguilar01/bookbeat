@@ -40,6 +40,9 @@ model UserBook {
   playlist Playlist? 
   playlistId String?
   rating Int?
+  isFavorite Boolean? @default(false)
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
 }
 enum ReadingStatus {
   WANT_TO_READ
@@ -57,6 +60,7 @@ model Book {
   publishedYear Int?
   numberOfPages Int?
   firstSentence String?
+  imageUrl String?
   users UserBook[]
 }
 

@@ -9,6 +9,7 @@ interface CreateBookArgs {
   publishedYear?: number
   numberOfPages?: number
   firstSentence?: string
+  imageUrl?: string;
 }
 export const useCreateBook = () => {
   const api = useApi();

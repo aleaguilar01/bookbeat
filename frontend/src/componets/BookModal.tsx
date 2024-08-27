@@ -1,19 +1,42 @@
 import Rating from "./Rating";
 import { Modal, Image, Flex, Typography } from "antd";
 import ReadingStatusRadioButton from "./ReadingStatusRadioButton";
-import { useState } from "react";
+import { Dispatch, FC, useState } from "react";
 import { useCreateBook } from "../hooks/useCreateBook";
 
 const noImage = new URL("../../no-image.png", import.meta.url).href;
 const alternativeText = "NO DESCRIPTION AVAILABLE FOR THIS BOOK. SORRY!";
 const { Text, Title } = Typography;
 
-const BookModal = (props) => {
+export interface IBook {
+  isbn: string;
+  author: string;
+  cover: string;
+  value: string;
+  title: string;
+  published_year?: number;
+  publisher?: string[];
+  ratings?: number;
+  first_sentence?: string;
+  number_of_pages?: number
+}
+
+const BookModal: FC<{value: IBook, setValue: Dispatch<any>}> = (props) => {
   const [readingStatus, setReadingStatus] = useState<null | string>(null);
 
   const { createBook } = useCreateBook();
   const handleOk = () => {
-    createBook({readingStatus, isbn: props.value.isbn, title: props.value.title, author: props.value.author, rating: props.value.rating, publishedYear: props.value.published_year, numberOfPages: props.value.number_of_pages, firstSentence: props.value.first_sentence}).then(() => {
+    createBook({
+      readingStatus,
+      isbn: props.value.isbn,
+      title: props.value.title,
+      author: props.value.author,
+      rating: props.value.ratings,
+      publishedYear: props.value.published_year,
+      numberOfPages: props.value.number_of_pages,
+      firstSentence: props.value.first_sentence,
+      imageUrl: props.value.cover
+    }).then(() => {
       props.setValue(undefined);
     });
   };
@@ -25,7 +48,7 @@ const BookModal = (props) => {
   return (
     <>
       <Modal
-        open={props.value}
+        open={!!props.value}
         onOk={handleOk}
         okText="Add"
         onCancel={handleCancel}

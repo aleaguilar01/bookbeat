@@ -2,6 +2,7 @@ import { useAuth } from "../../context/auth-context";
 import { Outlet, Navigate } from "react-router-dom";
 import { Button, Layout, Flex } from "antd";
 import NavBar from "../../componets/NavBar";
+import ChatButton from "../../componets/ChatButton";
 
 
 const { Content } = Layout;
@@ -21,6 +22,7 @@ const PrivateRoute = () => {
       <Content style={contentStyle}>
         <Outlet />
       </Content>
+      <ChatButton />
     </Layout>
   ) : (
     <Navigate to="login" />
