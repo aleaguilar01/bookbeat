@@ -25,7 +25,6 @@ const fetch = (
     api(url).then((result: any) => {
       if (currentValue === value) {
         const { data } = result;
-        console.log(data)
         const mapdata = data
           .filter((item) => !!item.author && item.isbn && item.isbn.length > 0)
           .map((item: any) => ({

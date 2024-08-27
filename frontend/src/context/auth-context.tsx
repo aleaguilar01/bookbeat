@@ -39,7 +39,7 @@ const AuthProvider = ({children}) => {
   const login = async (code) => {
     setLoading(true)
     try {
-      const response = await axios.get('/user-auth', { baseURL: 'http://localhost:3000/', params: {code} });
+      const response = await axios.post('/user-auth', {code}, { baseURL: 'http://localhost:3000/' });
       
       setUser(response.data.user);
       localStorage.setItem("user", JSON.stringify(response.data.user));

@@ -25,7 +25,6 @@ export const getBooksByTitle = async (
     const { data } = await openLibraryApi.get(`/`, {
       params: { title, limit: 15 },
     });
-    //console.log(JSON.stringify(data.docs[0]))
     return data.docs
       .filter((book: any) => book.isbn && book.author_name)
       .map((book: any) => {
