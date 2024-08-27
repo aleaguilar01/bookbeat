@@ -4,6 +4,7 @@ import { Container, Form } from "react-bootstrap";
 import { useAuth } from "../../context/auth-context";
 import TrackSearchResult from './TrackSearchResult';
 import Player from './Player';
+import MusicContainer from './MusicComponents/MusicContainer';
 
 
 const TestPage: FC = () =>  {
@@ -137,7 +138,11 @@ function chooseTrack(track) {
   }, [search, user.spotifyToken]);
 
   return (
+    
+
     <Container className="d-flex flex-column py-2" style={{height: "100vh"}}>
+        {/* <MusicContainer/> */}
+
         <Form.Control 
           type="search" 
           placeholder="Search Songs/Artists" 
@@ -152,7 +157,13 @@ function chooseTrack(track) {
               chooseTrack={chooseTrack}
             />
           ))}
+          {searchResults.length === 0 &&(
+            <div >
+              <MusicContainer />
+            </div>
+          )}
           </div>
+
           <div><Player accessToken={user.spotifyToken.access_token} trackUri={playingTrack?.uri}/></div>
     </Container>
   );
