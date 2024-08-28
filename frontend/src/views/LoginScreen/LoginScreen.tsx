@@ -1,69 +1,57 @@
-import React, { useState } from "react";
+import { Button, Image } from "antd";
 import { useAuth } from "../../context/auth-context";
-import { useNavigate } from "react-router";
-import { GoogleLogin } from "@react-oauth/google";
-import { Form, Input, Button } from "antd";
-import { jwtDecode } from "jwt-decode";
+import { useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
+
+const logoUrl = new URL("../../../logo.jpeg", import.meta.url).href;
+
+const SPOTIFY_CLIENT_ID: string = import.meta.env.VITE_SPOTIFY_CLIENT_ID || "";
+const REDIRECT_URI: string = "http://localhost:5173/login";
+const AUTH_URL: string = "https://accounts.spotify.com/authorize";
+const SCOPE: string =
+  "user-read-private user-read-email playlist-read-private playlist-read-collaborative playlist-modify-public playlist-modify-private app-remote-control user-read-playback-state user-modify-playback-state user-read-currently-playing streaming user-library-modify user-library-read";
 
 const LoginScreen = () => {
   const { login } = useAuth();
-  const navigate = useNavigate();
 
-  const responseGoogle = (response) => {
-    const decoded = jwtDecode < {name: string, email: string, picture: string, sub: string} > (response.credential);
-    // decode the jwt token // npm i jwt-decode
-    // Create hook that sends this information to the backend
-    //  axios.post("/social-auth", {})
-    login({
-      name: decoded.name,
-      email: decoded.email,
-      profile_picture: decoded.picture,
-      provider_id: decoded.sub
-    });
-    navigate("/")
+  let [searchParams, setSearchParams] = useSearchParams();
+
+  useEffect(() => {
+    // Retrieving code from search params
+    setSearchParams(window.location.hash);
+  }, []);
+
+  useEffect(() => {
+    if (searchParams.get("code")) {
+      login(searchParams.get("code"));
+    }
+  }, [searchParams]);
+
+  const params = {
+    client_id: SPOTIFY_CLIENT_ID,
+    response_type: "code",
+    scope: SCOPE,
+    redirect_uri: REDIRECT_URI,
+    show_dialog: true, // set to true for testing
   };
 
-  const onFinish = (values) => {
-    console.log("Received values of form: ", values);
-  };
+  const urlParams = new URLSearchParams(params as any);
+
+  const auth_url: string = `${AUTH_URL}?${urlParams.toString()}`;
+
+  // Redirect the user to Spotify's authentication page
 
   return (
     <div>
-      {/* <Form
-        name="normal_login"
-        className="login-form"
-        initialValues={{ remember: true }}
-        onFinish={onFinish}
+      <Image src={logoUrl} alt="logo" style={{ height: 300 }} />
+      <Button
+        style={{ backgroundColor: "purple", color: "white" }}
+        href={auth_url}
+        shape="round"
+        size="large"
       >
-        <Form.Item
-          name="email"
-          rules={[{ required: true, message: "Please input your Email!" }]}
-        >
-          <Input placeholder="Email" />
-        </Form.Item>
-        <Form.Item
-          name="password"
-          rules={[{ required: true, message: "Please input your Password!" }]}
-        >
-          <Input type="password" placeholder="Password" />
-        </Form.Item>
-        <Form.Item>
-          <Button
-            type="primary"
-            htmlType="submit"
-            className="login-form-button"
-          >
-            Log in
-          </Button>
-        </Form.Item>
-      </Form> */}
-      <GoogleLogin
-        onSuccess={responseGoogle}
-        onError={() => {
-          console.log("Login Failed");
-        }}
-      />
-      ;
+        Login With Spotify
+      </Button>
     </div>
   );
 };

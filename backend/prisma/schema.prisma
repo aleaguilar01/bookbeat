@@ -27,16 +27,19 @@ model Playlist {
   name String
   picture String?
   description String? @db.Text
-  userbook UserBook @relation(fields: [id], references: [isbn])
+  userbook UserBook @relation(fields: [id], references: [id])
 }
 
 model UserBook {
-  isbn String @id
+  id String @id @default(uuid())
   user User @relation(fields: [userId], references: [id])
   userId String
+  book Book @relation(fields: [bookId], references: [isbn])
+  bookId String
   readingStatus ReadingStatus @default(WANT_TO_READ)
   playlist Playlist? 
   playlistId String?
+  rating Int?
 }
 enum ReadingStatus {
   WANT_TO_READ
@@ -44,5 +47,16 @@ enum ReadingStatus {
   READ
   RE_READING
   DID_NOT_FINISH
+}
+
+model Book {
+  isbn String @id
+  title String
+  author String
+  rating Float?
+  publishedYear Int?
+  numberOfPages Int?
+  firstSentence String?
+  users UserBook[]
 }
 

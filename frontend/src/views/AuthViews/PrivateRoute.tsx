@@ -1,13 +1,30 @@
-import React, { createContext, useContext, useState } from 'react';
-import { useAuth } from '../../context/auth-context';
-import { Outlet, Navigate} from "react-router-dom";
+import { useAuth } from "../../context/auth-context";
+import { Outlet, Navigate } from "react-router-dom";
+import { Button, Layout, Flex } from "antd";
+import NavBar from "../../componets/NavBar";
 
 
-const PrivateRoute = () =>{
-  const { user } = useAuth()
-  return(
-        user ? <Outlet /> : <Navigate to="login" />
-      )
-}
+const { Content } = Layout;
+
+const contentStyle: React.CSSProperties = {
+  padding: "0 48px",
+};
+const PrivateRoute = () => {
+  const { user, loading } = useAuth();
+
+  if (loading) {
+    return <>Loading....</>;
+  }
+  return user && user.token ? (
+    <Layout>
+      <NavBar />
+      <Content style={contentStyle}>
+        <Outlet />
+      </Content>
+    </Layout>
+  ) : (
+    <Navigate to="login" />
+  );
+};
 
 export default PrivateRoute;
