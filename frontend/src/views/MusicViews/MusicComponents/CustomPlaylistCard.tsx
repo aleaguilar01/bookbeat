@@ -28,16 +28,15 @@ type Playlist = {
 };
 
 // Define the prop types for the FavouritePlaylistCard component
-type FavouritePlaylistCardProps = {
+type CustomPlaylistCardProps = {
   playlist: Playlist;
 };
 
 
-const FavouritePlaylistCard: React.FC<FavouritePlaylistCardProps> = ({ playlist }) => {
+const CustomPlaylistCard: React.FC<CustomPlaylistCardProps> = ({ playlist }) => {
   return (
-    <div >
+    <div>
       <Card
-          className='card'
           hoverable
           cover={<img alt={playlist.title} src={playlist.imageUrl} />}
           actions={[
@@ -50,5 +49,5 @@ const FavouritePlaylistCard: React.FC<FavouritePlaylistCardProps> = ({ playlist 
   )
 };
 
-export default FavouritePlaylistCard;
+export default CustomPlaylistCard;
 

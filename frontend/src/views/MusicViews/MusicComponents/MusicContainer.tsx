@@ -2,6 +2,7 @@
 import { Row, Col, Typography } from 'antd';
 import FavouritePlayListRow from './FavouritePlaylistRow';
 import ReccomendedPlayListRow from './ReccomendedPlaylistsRow';
+import CustomPlayListRow from './CustomPlaylistRow';
 
 const { Title } = Typography;
 
@@ -20,6 +21,7 @@ const MusicContainer = () => {
 
       <FavouritePlayListRow/>
       <ReccomendedPlayListRow/>
+      <CustomPlayListRow />
     </div>
   );
 };

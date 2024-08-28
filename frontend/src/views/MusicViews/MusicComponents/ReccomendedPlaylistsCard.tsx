@@ -2,6 +2,7 @@
 import React from 'react'
 import { Card, Row, Col, Button, Typography } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
+import '../MusicStyles/PlaylistCard.styles.css'
 
 const { Title } = Typography;
 
@@ -45,7 +46,8 @@ const ReccomendedPlaylistCard: React.FC<ReccomendedPlaylistCardProps> = ({ playl
         >
           <Card.Meta title={playlist.title} description={playlist.description} style={{ textAlign: 'left' }} />
         </Card>
-    </div>
+    </div> 
+
   )
 };
 

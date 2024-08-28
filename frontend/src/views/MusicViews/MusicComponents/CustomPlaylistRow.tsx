@@ -1,6 +1,6 @@
 import { Card, Row, Col, Button, Typography } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
-import FavouritePlaylistCard from './FavouritePlaylistCard';
+import CustomPlaylistCard from './CustomPlaylistCard';
 
 const { Title } = Typography;
 
@@ -21,7 +21,7 @@ const playlists = [
 
 const MAX_PLAYLISTS = 4;
 
-const FavouritePlayListRow: React.FC = () => {
+const CustomPlayListRow: React.FC = () => {
   return (
   <div>
 
@@ -29,7 +29,7 @@ const FavouritePlayListRow: React.FC = () => {
     <Row>
         <Col span={24}>
           <Title level={3} style={{ textAlign: 'left' }}>
-            Favourite Playlists for -BookTitle-
+            Custom Playlists for -BookTitle-
           </Title>
         </Col>
     </Row>
@@ -37,7 +37,7 @@ const FavouritePlayListRow: React.FC = () => {
     <Row gutter={16}>
     {playlists.map((playlist, index) => (
       <Col span={6} key={index}>
-        <FavouritePlaylistCard playlist={playlist}/>
+        <CustomPlaylistCard playlist={playlist}/>
       </Col>
     ))}
 
@@ -62,4 +62,4 @@ const FavouritePlayListRow: React.FC = () => {
   );
 };
 
-export default FavouritePlayListRow;
+export default CustomPlayListRow;
