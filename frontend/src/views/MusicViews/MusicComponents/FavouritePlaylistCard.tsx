@@ -37,14 +37,17 @@ const FavouritePlaylistCard: React.FC<FavouritePlaylistCardProps> = ({ playlist 
   return (
     <div >
       <Card
-          className='card'
+          className='playlist-card'
           hoverable
-          cover={<img alt={playlist.title} src={playlist.imageUrl} />}
-          actions={[
-            <Button icon={<PlusOutlined />} type="primary" />,
-          ]}
+          cover={<img alt={playlist.title} src={playlist.imageUrl}/>}
+          // actions={[
+          //   <Button icon={<PlusOutlined />} type="primary" />,
+          // ]}
         >
-          <Card.Meta title={playlist.title} description={playlist.description} style={{ textAlign: 'left' }} />
+          <Card.Meta className='playlist-card-text' title={<div className='playlist-card-title-text'> {playlist.title}</div>} description={
+          <div className='playlist-card-description-text'> {playlist.description } 
+          </div>}
+          />
         </Card>
     </div>
   )

@@ -111,6 +111,7 @@ function chooseTrack(track) {
         const data: SearchResponse = await response.json();
         // console.log('this is the data',data);
         
+        console.log(data);
         
         setSearchResults(
           data.tracks.items.map((track) => {

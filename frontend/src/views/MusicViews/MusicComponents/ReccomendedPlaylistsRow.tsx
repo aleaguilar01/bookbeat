@@ -31,15 +31,15 @@ const ReccomendedPlayListRow: React.FC = () => {
     {/* Title for the Favorite Playlists section */}
     <Row>
         <Col span={24}>
-          <Title level={3} style={{ textAlign: 'left'} }>
+          <Title level={3}  className='playlist-row-title'>
             Reccomended Playlists for -BookTitle-
           </Title>
         </Col>
     </Row>
     {/* Playlists Row */}
-    <Row gutter={16} >
+    <Row gutter={[16, 16]} justify="start" >
     {playlists.map((playlist, index) => (
-      <Col span={6} key={index} > 
+      <Col span={4} key={index} > 
         <ReccomendedPlaylistCard playlist={playlist} />
       </Col>
     ))}

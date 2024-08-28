@@ -1,4 +1,75 @@
 
-.card{
-  
+/* 
+
+image
+title
+description 
+<img src={track.albumUrl} style={{height: '64px', width: '64px'}} alt="" />
+      <div className='ml-3' style={{ flexGrow: 1, textAlign: 'left' }}>
+        <div>{track.title}</div>
+        <div className='text-muted'>{track.artist}</div>
+      </div>
+square photos 64px
+text with margin on the left, aligned left
+
+
+*/
+
+/* .playlist-card{ 
+  transform: scale(1); 
+  transform-origin: top left; 
+} */
+
+
+/* .ant-card-body {
+  padding-top: 0px;
+
+} */
+
+.playlist-card .ant-card-body {
+  padding: 12px;
+  position: relative;
+}
+.image-container {
+  position: relative; /* Position relative to enable absolute positioning of the button */
+}
+
+.card-image {
+  width: 100%; /* Ensure the image covers the container */
+  height: auto; /* Maintain aspect ratio */
+}
+
+.ant-card-meta-title {
+  margin-bottom: 0px !important;
+}
+
+.playlist-card-title-text {
+  display: -webkit-box;
+  -webkit-line-clamp: 1; /* Number of lines to show */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-align: left;
+
+}
+.playlist-card-description-text {
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* Number of lines to show */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-align: left;
+
+} 
+
+.card-button {
+  position: absolute; /* Position button absolutely within the image container */
+  top: 16px; /* Adjust the distance from the bottom */
+  right: 16px; /* Adjust the distance from the right */
+  z-index: 10; /* Ensure the button is above other content */
+}
+
+.card-button-delete {
+  position: absolute; 
+  top: 16px; 
+  left: 16px; 
+  z-index: 10; 
 }

@@ -37,14 +37,25 @@ const CustomPlaylistCard: React.FC<CustomPlaylistCardProps> = ({ playlist }) => 
   return (
     <div>
       <Card
+          className='playlist-card'
           hoverable
-          cover={<img alt={playlist.title} src={playlist.imageUrl} />}
+          cover={
+            <div className='image-container'>
+            <img alt={playlist.title} src={playlist.imageUrl} className='card-image' />
+            <Button className='card-button' icon={<PlusOutlined />} type="primary" />
+            <Button className='card-button-delete' icon={<PlusOutlined />} type="primary" />
+
+            </div>
+            }
           actions={[
-            <Button icon={<PlusOutlined />} type="primary" />,
+            // <Button icon={<PlusOutlined />} type="primary" />,
           ]}
         >
-          <Card.Meta title={playlist.title} description={playlist.description} style={{ textAlign: 'left' }} />
-        </Card>
+          <Card.Meta className='playlist-card-text' title={<div className='playlist-card-title-text'> {playlist.title}</div>} description={
+            <div className='playlist-card-description-text'> {playlist.description } 
+            </div>}
+          />
+      </Card>
     </div>
   )
 };
