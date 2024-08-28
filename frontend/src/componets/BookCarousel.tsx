@@ -11,6 +11,7 @@ import "./BookCarousel.styles.css";
 import { EffectCoverflow, Pagination } from "swiper/modules";
 import { useMyBooks } from "../hooks/useMyBooks";
 import { useMemo } from "react";
+import BookCarouselEmpty from "./BookCarouselEmpty";
 
 const BookCarousel = () => {
   const { data } = useMyBooks();
@@ -20,7 +21,7 @@ const BookCarousel = () => {
   }, [data]);
 
   if (!filteredData || filteredData.length === 0) {
-    return <>Empty State</>;
+    return <BookCarouselEmpty />
   }
   return (
     <>
@@ -41,7 +42,7 @@ const BookCarousel = () => {
         className="mySwiper"
       >
         {filteredData.map((book) => (
-          <SwiperSlide>
+          <SwiperSlide onClick={()=> console.log("BOOK", book.id)} key={book.id}>
             <img src={book.imageUrl} />
           </SwiperSlide>
         ))}

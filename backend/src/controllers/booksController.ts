@@ -2,7 +2,6 @@ import { Request, Response } from "express";
 import { getBooksByTitle } from "../utils/apiHelper";
 import { redisClient } from "../lib/redisClient";
 import { prisma } from "../lib/prismaClient";
-import { connect } from "http2";
 
 export const getBook = async (req: Request, res: Response) => {
   const title = req.params.title;

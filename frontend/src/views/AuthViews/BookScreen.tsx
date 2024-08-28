@@ -105,7 +105,7 @@ const BookScreen = () => {
             actions={[
               <IconText
                 icon={StarOutlined}
-                text={item.rating?.toFixed(2) || "?"}
+                text={item.rating?.toFixed(2) || " - "}
                 key="list-vertical-star-o"
               />,
               <IconText
@@ -125,6 +125,7 @@ const BookScreen = () => {
               />,
             ]}
             extra={<img height={150} alt={item.title} src={item.imageUrl} />}
+            style={{borderWidth: 30 }}
           >
             <List.Item.Meta
               avatar={
