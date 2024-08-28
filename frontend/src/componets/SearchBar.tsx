@@ -3,17 +3,16 @@ import { Select, Space, Image, Typography, Flex } from "antd";
 import { AxiosInstance } from "axios";
 import BookModal from "./BookModal";
 import { useApi } from "../hooks/useApi";
-const noImage = new URL("../../no-image.png", import.meta.url).href; 
+const noImage = new URL("../../no-image.png", import.meta.url).href;
 let timeout: ReturnType<typeof setTimeout> | null;
 let currentValue: string;
 
-const { Text } = Typography
+const { Text } = Typography;
 const fetch = (
   value: string,
   callback: (data: { value: string; text: string }[]) => void,
   api: AxiosInstance
 ) => {
-  
   if (timeout) {
     clearTimeout(timeout);
     timeout = null;
@@ -37,14 +36,14 @@ const fetch = (
             publisher: item.publisher,
             number_of_pages: item.number_of_pages,
             first_sentence: item.first_sentence,
-            ratings: item.ratings
+            ratings: item.ratings,
           }));
         callback(mapdata);
       }
     });
   };
   if (value) {
-    timeout = setTimeout(backendCall, 500 );
+    timeout = setTimeout(backendCall, 500);
   } else {
     callback([]);
   }
@@ -81,12 +80,17 @@ const SearchBar: React.FC<{
         options={data}
         optionRender={(option: any) => (
           <Space>
-            <Image height={84}  src={option.data.cover || noImage} preview={false} />
-            <Flex vertical style={{width: 300}}>
-            <Text strong style={{ textWrap: "wrap" }}>{option.data.title}</Text>
-            <Text italic>{option.data.author}</Text>
+            <Image
+              height={90}
+              src={option.data.cover || noImage}
+              preview={false}
+            />
+            <Flex vertical style={{ width: 300 }}>
+              <Text strong style={{ textWrap: "wrap" }}>
+                {option.data.title}
+              </Text>
+              <Text italic>{option.data.author}</Text>
             </Flex>
-            {option.data.isbn}
           </Space>
         )}
       />
