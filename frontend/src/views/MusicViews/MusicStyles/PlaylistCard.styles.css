@@ -65,6 +65,8 @@ text with margin on the left, aligned left
   top: 16px; /* Adjust the distance from the bottom */
   right: 16px; /* Adjust the distance from the right */
   z-index: 10; /* Ensure the button is above other content */
+  background-color: #EEEEEE;
+
 }
 
 .card-button-delete {
@@ -72,4 +74,11 @@ text with margin on the left, aligned left
   top: 16px; 
   left: 16px; 
   z-index: 10; 
+  background-color: #EEEEEE;
+  color: red;
+}
+
+
+.delete-icon {
+  transform: scale(1.5); 
 }
