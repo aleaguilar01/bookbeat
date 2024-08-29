@@ -1,5 +1,12 @@
 import { createElement, useMemo, useState } from "react";
-import { Button, Flex, List, Select, Space, Typography } from "antd";
+import {
+  Button,
+  Flex,
+  List,
+  Select,
+  Space,
+  Typography,
+} from "antd";
 import {
   CalendarOutlined,
   MessageOutlined,
@@ -8,8 +15,9 @@ import {
   HeartOutlined,
   HeartFilled,
 } from "@ant-design/icons";
-import { useMyBooks } from "../../hooks/useMyBooks";
 import Rating from "../../componets/Rating";
+import { useBook } from "../../context/books-context";
+import { useHandleBooks } from "../../hooks/useHandleBooks";
 
 const { Title } = Typography;
 const extraBookOptions = [
@@ -20,10 +28,9 @@ const extraBookOptions = [
   {
     value: "favorites",
     label: "Favorites",
-  }
-]
+  },
+];
 const defaultBookOptions = [
-  
   {
     value: "WANT_TO_READ",
     label: "Want to Read",
@@ -43,16 +50,11 @@ const defaultBookOptions = [
   {
     value: "RE_READING",
     label: "Re Reading",
-  }
-]; 
+  },
+];
 const BookScreen = () => {
-  const {
-    data,
-    isLoading,
-    updateRating,
-    updateIsFavorite,
-    updateReadingStatus,
-  } = useMyBooks();
+  const { updateRating, updateIsFavorite, updateReadingStatus, isLoading: isProcessing } = useHandleBooks();
+  const { isLoading, myBooks, selectCurrentBook } = useBook();
   const [bookStatusFilter, setBookStatusFilter] = useState("all");
   const IconText = ({
     icon,
@@ -70,20 +72,20 @@ const BookScreen = () => {
   const handleSelectStatus = (value) => {
     setBookStatusFilter(value);
   };
-  
+
   const filteredData = useMemo(() => {
-    return data.filter(({ readingStatus, isFavorite }) => {
+    return myBooks.filter(({ readingStatus, isFavorite }) => {
       if (bookStatusFilter === "all") return true;
       if (bookStatusFilter === "favorites") return isFavorite;
       return readingStatus === bookStatusFilter;
     });
-  }, [data, bookStatusFilter]);
+  }, [myBooks, bookStatusFilter]);
 
   return (
     <>
       <Space />
       <List
-        loading={isLoading}
+        loading={isLoading || isProcessing}
         itemLayout="vertical"
         size="large"
         header={
@@ -124,8 +126,15 @@ const BookScreen = () => {
                 key="list-vertical-message"
               />,
             ]}
-            extra={<img height={150} alt={item.title} src={item.imageUrl} />}
-            style={{borderWidth: 30 }}
+            extra={
+              <img
+                height={150}
+                alt={item.title}
+                src={item.imageUrl}
+                onClick={() => selectCurrentBook(item.id)}
+              />
+            }
+            style={{ borderWidth: 30 }}
           >
             <List.Item.Meta
               avatar={
@@ -163,7 +172,16 @@ const BookScreen = () => {
                   </Button>
                 </Flex>
               }
-              title={item.title}
+              title={
+                  <Button
+                    type="link"
+                    ghost
+                    style={{ color: "black" }}
+                    onClick={() => selectCurrentBook(item.id)}
+                  >
+                    {item.title}
+                  </Button>
+              }
               description={item.author}
             />
             <>{item.firstSentence}</>

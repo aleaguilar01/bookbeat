@@ -2,7 +2,7 @@ import Rating from "./Rating";
 import { Modal, Image, Flex, Typography } from "antd";
 import ReadingStatusRadioButton from "./ReadingStatusRadioButton";
 import { Dispatch, FC, useState } from "react";
-import { useCreateBook } from "../hooks/useCreateBook";
+import { useHandleBooks } from "../hooks/useHandleBooks";
 
 const noImage = new URL("../../no-image.png", import.meta.url).href;
 const alternativeText = "NO DESCRIPTION AVAILABLE FOR THIS BOOK. SORRY!";
@@ -18,13 +18,13 @@ export interface IBook {
   publisher?: string[];
   ratings?: number;
   first_sentence?: string;
-  number_of_pages?: number
+  number_of_pages?: number;
 }
 
-const BookModal: FC<{value: IBook, setValue: Dispatch<any>}> = (props) => {
+const BookModal: FC<{ value: IBook; setValue: Dispatch<any> }> = (props) => {
   const [readingStatus, setReadingStatus] = useState<null | string>(null);
 
-  const { createBook } = useCreateBook();
+  const { createBook } = useHandleBooks();
   const handleOk = () => {
     createBook({
       readingStatus,
@@ -35,7 +35,7 @@ const BookModal: FC<{value: IBook, setValue: Dispatch<any>}> = (props) => {
       publishedYear: props.value.published_year,
       numberOfPages: props.value.number_of_pages,
       firstSentence: props.value.first_sentence,
-      imageUrl: props.value.cover
+      imageUrl: props.value.cover,
     }).then(() => {
       props.setValue(undefined);
     });

@@ -1,9 +1,11 @@
 import { useAuth } from "../../context/auth-context";
 import { Outlet, Navigate } from "react-router-dom";
-import { Button, Layout, Flex } from "antd";
+import { Layout } from "antd";
 import NavBar from "../../componets/NavBar";
 import ChatButton from "../../componets/ChatButton";
-
+import BookProvider from "../../context/books-context";
+import BookDisplayModal from "../../componets/BookDisplayModal";
+import Loading from "../../componets/Loading";
 
 const { Content } = Layout;
 
@@ -14,16 +16,19 @@ const PrivateRoute = () => {
   const { user, loading } = useAuth();
 
   if (loading) {
-    return <>Loading....</>;
+    return <Loading />;
   }
   return user && user.token ? (
-    <Layout>
-      <NavBar />
-      <Content style={contentStyle}>
-        <Outlet />
-      </Content>
-      <ChatButton />
-    </Layout>
+    <BookProvider>
+      <Layout>
+        <NavBar />
+        <Content style={contentStyle}>
+          <Outlet />
+        </Content>
+        <BookDisplayModal />
+        <ChatButton />
+      </Layout>
+    </BookProvider>
   ) : (
     <Navigate to="login" />
   );
