@@ -3,10 +3,27 @@ import { Select, Space, Image, Typography, Flex } from "antd";
 import { AxiosInstance } from "axios";
 import BookModal from "./BookModal";
 import { useApi } from "../hooks/useApi";
+import { IBook } from "../context/books-context";
 const noImage = new URL("../../no-image.png", import.meta.url).href;
 let timeout: ReturnType<typeof setTimeout> | null;
 let currentValue: string;
 
+export interface IBookResponse {
+  isbn: string;
+  author: string[];
+  cover_url: string;
+  value: string;
+  title: string;
+  published_year?: number;
+  publisher?: string[];
+  ratings?: number;
+  first_sentence?: string;
+  number_of_pages?: number;
+}
+
+interface IOption {
+  data: IBook;
+}
 const { Text } = Typography;
 const fetch = (
   value: string,
@@ -21,22 +38,24 @@ const fetch = (
 
   const backendCall = () => {
     const url = encodeURI(`book/${value}`);
-    api(url).then((result: any) => {
+    api(url).then(({ data }) => {
       if (currentValue === value) {
-        const { data } = result;
-        const mapdata = data
-          .filter((item) => !!item.author && item.isbn && item.isbn.length > 0)
-          .map((item: any) => ({
+        const mapdata: Array<IBook & { value: string; text: string }> = data
+          .filter(
+            (item: IBookResponse) =>
+              !!item.author && item.isbn && item.isbn.length > 0
+          )
+          .map((item: IBookResponse) => ({
+            value: item.isbn,
             isbn: item.isbn,
             author: item.author.join(", "),
-            cover: item.cover_url,
-            value: item.isbn,
+            imageUrl: item.cover_url,
             title: item.title,
-            published_year: item.published_year,
+            publishedYear: item.published_year,
             publisher: item.publisher,
-            number_of_pages: item.number_of_pages,
-            first_sentence: item.first_sentence,
-            ratings: item.ratings,
+            numberOfPages: item.number_of_pages,
+            firstSentence: item.first_sentence,
+            rating: item.ratings,
           }));
         callback(mapdata);
       }
@@ -52,7 +71,7 @@ const fetch = (
 const SearchBar: React.FC<{
   placeholder: string;
   style: React.CSSProperties;
-}> = (props) => {
+}> = ({ style, placeholder }) => {
   const [data, setData] = useState([]);
   const [value, setValue] = useState<any>();
   const api = useApi();
@@ -69,8 +88,8 @@ const SearchBar: React.FC<{
       <Select
         value={value}
         showSearch
-        placeholder={props.placeholder}
-        style={props.style}
+        placeholder={placeholder}
+        style={style}
         defaultActiveFirstOption={false}
         suffixIcon={null}
         filterOption={false}
@@ -78,11 +97,11 @@ const SearchBar: React.FC<{
         onChange={handleChange}
         notFoundContent={null}
         options={data}
-        optionRender={(option: any) => (
+        optionRender={(option: IOption) => (
           <Space>
             <Image
               height={90}
-              src={option.data.cover || noImage}
+              src={option.data.imageUrl || noImage}
               preview={false}
             />
             <Flex vertical style={{ width: 300 }}>
@@ -94,7 +113,7 @@ const SearchBar: React.FC<{
           </Space>
         )}
       />
-      <BookModal value={value} setValue={setValue} />
+      <BookModal book={value} onClose={() => setValue(undefined)} />
     </>
   );
 };

@@ -1,12 +1,5 @@
-import { createElement, useMemo, useState } from "react";
-import {
-  Button,
-  Flex,
-  List,
-  Select,
-  Space,
-  Typography,
-} from "antd";
+import { ChangeEventHandler, createElement, useMemo, useState } from "react";
+import { Button, Flex, Input, List, Select, Space, Typography } from "antd";
 import {
   CalendarOutlined,
   MessageOutlined,
@@ -53,9 +46,17 @@ const defaultBookOptions = [
   },
 ];
 const BookScreen = () => {
-  const { updateRating, updateIsFavorite, updateReadingStatus, isLoading: isProcessing } = useHandleBooks();
+  const {
+    updateRating,
+    updateIsFavorite,
+    updateReadingStatus,
+    isLoading: isProcessing,
+  } = useHandleBooks();
   const { isLoading, myBooks, selectCurrentBook } = useBook();
   const [bookStatusFilter, setBookStatusFilter] = useState("all");
+
+  const [searchContent, setSearchContent] = useState("");
+
   const IconText = ({
     icon,
     text,
@@ -73,13 +74,27 @@ const BookScreen = () => {
     setBookStatusFilter(value);
   };
 
+  const handleSearchContent: ChangeEventHandler<HTMLInputElement> = (event) => {
+    setSearchContent(event.currentTarget.value);
+  };
+
   const filteredData = useMemo(() => {
-    return myBooks.filter(({ readingStatus, isFavorite }) => {
-      if (bookStatusFilter === "all") return true;
-      if (bookStatusFilter === "favorites") return isFavorite;
-      return readingStatus === bookStatusFilter;
-    });
-  }, [myBooks, bookStatusFilter]);
+    return myBooks
+      .filter(({ readingStatus, isFavorite }) => {
+        if (bookStatusFilter === "all") return true;
+        if (bookStatusFilter === "favorites") return isFavorite;
+        return readingStatus === bookStatusFilter;
+      })
+      .filter((book) => {
+        if (searchContent.length === 0) {
+          return true;
+        }
+        return (
+          book.author.toLowerCase().includes(searchContent.toLowerCase()) ||
+          book.title.toLowerCase().includes(searchContent.toLowerCase())
+        );
+      });
+  }, [myBooks, bookStatusFilter, searchContent]);
 
   return (
     <>
@@ -90,7 +105,13 @@ const BookScreen = () => {
         size="large"
         header={
           <Flex justify="space-around" align="center">
-            <Title>My Books</Title>
+            <Title level={2}>My Books</Title>
+            <Input
+              placeholder="Search Your Books"
+              value={searchContent}
+              onChange={handleSearchContent}
+              style={{ width: 250 }}
+            />
             <Select
               style={{ width: 150 }}
               optionFilterProp="label"
@@ -173,14 +194,14 @@ const BookScreen = () => {
                 </Flex>
               }
               title={
-                  <Button
-                    type="link"
-                    ghost
-                    style={{ color: "black" }}
-                    onClick={() => selectCurrentBook(item.id)}
-                  >
-                    {item.title}
-                  </Button>
+                <Button
+                  type="link"
+                  ghost
+                  style={{ color: "black" }}
+                  onClick={() => selectCurrentBook(item.id)}
+                >
+                  {item.title}
+                </Button>
               }
               description={item.author}
             />

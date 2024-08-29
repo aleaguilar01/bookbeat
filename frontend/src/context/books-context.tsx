@@ -1,18 +1,22 @@
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { useApi } from "../hooks/useApi";
 
-export interface IBook {
+export interface IBook extends IBookUser {
   id: string;
   isbn: string;
   title: string;
   author: string;
-  publishedYear?: string;
+  publishedYear?: number;
+  publisher?: string;
   imageUrl: string;
-  isFavorite?: boolean;
   rating?: number;
   firstSentence: string;
-  readingStatus: string;
   numberOfPages?: number;
+}
+
+export interface IBookUser {
+  isFavorite?: boolean;
+  readingStatus: string;
   myRating?: number;
   comments?: number;
 }
@@ -69,7 +73,7 @@ const BookProvider = ({ children }) => {
   const currentBook = useMemo(() => {
     if (!currentBookId) return undefined;
     return myBooks.find((book) => book.id === currentBookId);
-  }, [currentBookId, myBooks])
+  }, [currentBookId, myBooks]);
 
   return (
     <BookContext.Provider

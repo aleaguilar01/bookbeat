@@ -3,9 +3,9 @@ import { Outlet, Navigate } from "react-router-dom";
 import { Layout } from "antd";
 import NavBar from "../../componets/NavBar";
 import ChatButton from "../../componets/ChatButton";
-import BookProvider from "../../context/books-context";
-import BookDisplayModal from "../../componets/BookDisplayModal";
+import BookModalWrapper from "../../componets/BookModalWrapper";
 import Loading from "../../componets/Loading";
+import BookProvider from "../../context/books-context";
 
 const { Content } = Layout;
 
@@ -14,23 +14,23 @@ const contentStyle: React.CSSProperties = {
 };
 const PrivateRoute = () => {
   const { user, loading } = useAuth();
-
   if (loading) {
     return <Loading />;
   }
-  return user && user.token ? (
+  if (!user || !user.token) {
+    return <Navigate to="login" />;
+  }
+  return (
     <BookProvider>
       <Layout>
         <NavBar />
         <Content style={contentStyle}>
           <Outlet />
         </Content>
-        <BookDisplayModal />
+        <BookModalWrapper />
         <ChatButton />
       </Layout>
     </BookProvider>
-  ) : (
-    <Navigate to="login" />
   );
 };
 

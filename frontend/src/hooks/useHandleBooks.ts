@@ -3,16 +3,16 @@ import { useBook } from "../context/books-context";
 import { useApi } from "./useApi";
 
 interface CreateBookArgs {
-    readingStatus: string
-    isbn: string
-    title: string
-    author: string
-    rating?: number
-    publishedYear?: number
-    numberOfPages?: number
-    firstSentence?: string
-    imageUrl?: string;
-  }
+  readingStatus: string;
+  isbn: string;
+  title: string;
+  author: string;
+  rating?: number;
+  publishedYear?: number;
+  numberOfPages?: number;
+  firstSentence?: string;
+  imageUrl?: string;
+}
 
 export const useHandleBooks = () => {
   const { refetch } = useBook();
@@ -22,10 +22,13 @@ export const useHandleBooks = () => {
     setIsLoading(true);
     api
       .put("/book", { id, myRating })
-      .then(() => refetch())
+      .then(() => {
+        refetch();
+      })
       .catch(() => {
         setIsLoading(false);
-      });
+      })
+      .finally(() => setIsLoading(false));
   };
   const updateIsFavorite = (isFavorite: boolean, id: string) => {
     setIsLoading(true);
@@ -34,7 +37,8 @@ export const useHandleBooks = () => {
       .then(() => refetch())
       .catch(() => {
         setIsLoading(false);
-      });
+      })
+      .finally(() => setIsLoading(false));
   };
   const updateReadingStatus = (readingStatus: string, id: string) => {
     setIsLoading(true);
@@ -43,15 +47,18 @@ export const useHandleBooks = () => {
       .then(() => refetch())
       .catch(() => {
         setIsLoading(false);
-      });
+      })
+      .finally(() => setIsLoading(false));
   };
 
   const createBook = async (args: CreateBookArgs) => {
     setIsLoading(true);
-    api.post("book", args).then(() => refetch())
-    .catch(() => {
-      setIsLoading(false);
-    });
+    api
+      .post("book", args)
+      .then(() => refetch())
+      .catch(() => {
+        setIsLoading(false);
+      });
   };
 
   return {

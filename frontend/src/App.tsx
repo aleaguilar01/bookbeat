@@ -9,7 +9,6 @@ import BookScreen from './views/AuthViews/BookScreen';
 
 function App() {
   return (
-
     <Router>
       <AuthProvider>
           <Routes>
