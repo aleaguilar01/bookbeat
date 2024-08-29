@@ -89,4 +89,28 @@ const CHARACTERS: Record<string, ICharacters> = {
     book: "Pride and Prejudice",
     avatar: new URL(`../../characters/elizabeth.png`, import.meta.url).href,
   },
+  hermione: {
+    name: "Hermione Granger",
+    role: "character",
+    book: "Harry Potter",
+    avatar: new URL(`../../characters/hermione.jpeg`, import.meta.url).href,
+  },
+  draco: {
+    name: "Draco Malfoy",
+    role: "character",
+    book: "Harry Potter",
+    avatar: new URL(`../../characters/draco.jpg`, import.meta.url).href,
+  },
+  dracula: {
+    name: "Dracula",
+    role: "character",
+    book: "Dracula",
+    avatar: new URL(`../../characters/dracula.jpg`, import.meta.url).href,
+  },
+  poirot: {
+    name: "Hercules Poirot",
+    role: "character",
+    book: "Dracula",
+    avatar: new URL(`../../characters/poirot.jpg`, import.meta.url).href,
+  },
 };
