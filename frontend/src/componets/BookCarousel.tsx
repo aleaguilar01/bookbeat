@@ -1,5 +1,6 @@
 // Import Swiper React components
 import { Swiper, SwiperSlide } from "swiper/react";
+import { Image } from "antd"
 
 // Import Swiper styles
 import "swiper/css";
@@ -9,23 +10,23 @@ import "./BookCarousel.styles.css";
 
 // import required modules
 import { EffectCoverflow, Pagination } from "swiper/modules";
-import { useMyBooks } from "../hooks/useMyBooks";
-import { useMemo } from "react";
 import BookCarouselEmpty from "./BookCarouselEmpty";
+import { useBook } from "../context/books-context";
+import Loading from "./Loading";
 
 const BookCarousel = () => {
-  const { data } = useMyBooks();
+  const { favoriteBooks, isLoading, selectCurrentBook } = useBook();
 
-  const filteredData = useMemo(() => {
-    return data.filter((book) => book.isFavorite && !!book.imageUrl);
-  }, [data]);
-
-  if (!filteredData || filteredData.length === 0) {
-    return <BookCarouselEmpty />
+  if (isLoading) {
+    return <Loading />
+  }
+  if (!favoriteBooks || favoriteBooks.length === 0) {
+    return <BookCarouselEmpty />;
   }
   return (
     <>
       <Swiper
+        height={80}
         effect={"coverflow"}
         grabCursor={true}
         centeredSlides={true}
@@ -41,8 +42,11 @@ const BookCarousel = () => {
         modules={[EffectCoverflow, Pagination]}
         className="mySwiper"
       >
-        {filteredData.map((book) => (
-          <SwiperSlide onClick={()=> console.log("BOOK", book.id)} key={book.id}>
+        {favoriteBooks.map((book) => (
+          <SwiperSlide
+            onClick={() => selectCurrentBook(book.id)}
+            key={book.id}
+          >
             <img src={book.imageUrl} />
           </SwiperSlide>
         ))}

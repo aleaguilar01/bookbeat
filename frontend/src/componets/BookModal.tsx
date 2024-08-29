@@ -1,57 +1,48 @@
 import Rating from "./Rating";
-import { Modal, Image, Flex, Typography } from "antd";
-import ReadingStatusRadioButton from "./ReadingStatusRadioButton";
-import { Dispatch, FC, useState } from "react";
-import { useCreateBook } from "../hooks/useCreateBook";
+import { Modal, Image, Flex, Typography, Space } from "antd";
+import { FC, useState } from "react";
+import { useHandleBooks } from "../hooks/useHandleBooks";
+import { IBook } from "../context/books-context";
+import ReadingStatusRadioBtn from "./ReadingStatusRadioBtn";
 
 const noImage = new URL("../../no-image.png", import.meta.url).href;
 const alternativeText = "NO DESCRIPTION AVAILABLE FOR THIS BOOK. SORRY!";
 const { Text, Title } = Typography;
 
-export interface IBook {
-  isbn: string;
-  author: string;
-  cover: string;
-  value: string;
-  title: string;
-  published_year?: number;
-  publisher?: string[];
-  ratings?: number;
-  first_sentence?: string;
-  number_of_pages?: number
+interface IBookModalProps {
+  book: Omit<IBook, "readingStatus"> & { readingStatus?: string };
+  onClose: VoidFunction;
+  isReadOnly?: boolean;
 }
 
-const BookModal: FC<{value: IBook, setValue: Dispatch<any>}> = (props) => {
-  const [readingStatus, setReadingStatus] = useState<null | string>(null);
+const BookModal: FC<IBookModalProps> = ({
+  book,
+  onClose,
+  isReadOnly = false,
+}) => {
+  if (!book) return null;
 
-  const { createBook } = useCreateBook();
+  const [readingStatus, setReadingStatus] = useState<null | string>(
+    book.readingStatus ?? null
+  );
+  const { createBook } = useHandleBooks();
   const handleOk = () => {
     createBook({
       readingStatus,
-      isbn: props.value.isbn,
-      title: props.value.title,
-      author: props.value.author,
-      rating: props.value.ratings,
-      publishedYear: props.value.published_year,
-      numberOfPages: props.value.number_of_pages,
-      firstSentence: props.value.first_sentence,
-      imageUrl: props.value.cover
+      ...book,
     }).then(() => {
-      props.setValue(undefined);
+      onClose();
     });
   };
 
-  const handleCancel = () => {
-    props.setValue(undefined);
-  };
-  if (!props.value) return null;
   return (
     <>
       <Modal
-        open={!!props.value}
+        open={!!book}
         onOk={handleOk}
         okText="Add"
-        onCancel={handleCancel}
+        onCancel={onClose}
+        footer={isReadOnly ? null : undefined}
         styles={{
           header: {
             alignSelf: "center",
@@ -59,32 +50,33 @@ const BookModal: FC<{value: IBook, setValue: Dispatch<any>}> = (props) => {
             width: "100%",
             fontSize: "74px",
           },
-          body: { height: 400 },
+          body: { height: 650 },
         }}
+        width="800px"
       >
-        <Title level={3}>{props.value.title}</Title>
-        <Flex gap={24}>
+        <Title level={3}>{book.title}</Title>
+        <Space size="large" align="center">
           <Image
-            src={props.value.cover || noImage}
+            src={book.imageUrl || noImage}
             style={{
-              maxWidth: "600px",
-              maxHeight: "400px",
+              height: "500px",
               objectFit: "cover",
+              marginRight: 40
             }}
             preview={false}
           />
-          <Flex vertical style={{ width: 300 }}>
-            <Text italic>{props.value.author}</Text>
-            <Rating rating={props.value.ratings || 0} isEditable={false} />
-            <Text>First published: {props.value.published_year}</Text>
-            <Text>{props.value.number_of_pages} pages</Text>
-            <Text>{props.value.first_sentence || alternativeText}</Text>
+          <Flex vertical gap={16} style={{width: 350}}>
+            <Text italic>{book.author}</Text>
+            <Rating rating={book.rating || 0} isEditable={false} />
+            <Text>First published: {book.publishedYear}</Text>
+            <Text>{book.numberOfPages} pages</Text>
+            <Text>{book.firstSentence || alternativeText}</Text>
+            <ReadingStatusRadioBtn
+              readingStatus={readingStatus}
+              setReadingStatus={setReadingStatus}
+            />
           </Flex>
-        </Flex>
-        <ReadingStatusRadioButton
-          readingStatus={readingStatus}
-          setReadingStatus={setReadingStatus}
-        />
+        </Space>
       </Modal>
     </>
   );

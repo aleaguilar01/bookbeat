@@ -1,54 +1,34 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useBook } from "../context/books-context";
 import { useApi } from "./useApi";
 
-interface IBook {
-  id: string;
+interface CreateBookArgs {
+  readingStatus: string;
   isbn: string;
   title: string;
   author: string;
-  publishedYear?: string;
-  imageUrl: string;
-  isFavorite?: boolean;
   rating?: number;
-  firstSentence: string;
-  readingStatus: string;
+  publishedYear?: number;
   numberOfPages?: number;
-  myRating?: number;
-  comments?: number;
+  firstSentence?: string;
+  imageUrl?: string;
 }
 
-export const useMyBooks = () => {
+export const useHandleBooks = () => {
+  const { refetch } = useBook();
   const [isLoading, setIsLoading] = useState(false);
-  const [data, setData] = useState<Array<IBook>>([]);
   const api = useApi();
-  const fetchData = async () => {
-    api
-      .get("/book")
-      .then((res) => {
-        setData(res.data);
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
-  };
-
-  useEffect(() => {
-    setIsLoading(true);
-    fetchData();
-  }, []);
-
-  const refetch = () => {
-    fetchData();
-  };
-
   const updateRating = (myRating: number, id: string) => {
     setIsLoading(true);
     api
       .put("/book", { id, myRating })
-      .then(() => refetch())
+      .then(() => {
+        refetch();
+      })
       .catch(() => {
         setIsLoading(false);
-      });
+      })
+      .finally(() => setIsLoading(false));
   };
   const updateIsFavorite = (isFavorite: boolean, id: string) => {
     setIsLoading(true);
@@ -57,7 +37,8 @@ export const useMyBooks = () => {
       .then(() => refetch())
       .catch(() => {
         setIsLoading(false);
-      });
+      })
+      .finally(() => setIsLoading(false));
   };
   const updateReadingStatus = (readingStatus: string, id: string) => {
     setIsLoading(true);
@@ -66,14 +47,25 @@ export const useMyBooks = () => {
       .then(() => refetch())
       .catch(() => {
         setIsLoading(false);
+      })
+      .finally(() => setIsLoading(false));
+  };
+
+  const createBook = async (args: CreateBookArgs) => {
+    setIsLoading(true);
+    api
+      .post("book", args)
+      .then(() => refetch())
+      .catch(() => {
+        setIsLoading(false);
       });
   };
 
   return {
-    data,
-    isLoading,
-    updateRating,
     updateIsFavorite,
     updateReadingStatus,
+    updateRating,
+    createBook,
+    isLoading,
   };
 };

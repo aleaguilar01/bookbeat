@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { getBooksByTitle } from "../utils/apiHelper";
 import { redisClient } from "../lib/redisClient";
 import { prisma } from "../lib/prismaClient";
+import { getBookDescription } from "../utils/aiHelper";
 
 export const getBook = async (req: Request, res: Response) => {
   const title = req.params.title;
@@ -28,6 +29,7 @@ export const createBook = async (req: Request, res: Response) => {
   const data = req.body;
   let book = await prisma.book.findUnique({ where: { isbn: data.isbn } });
   if (!book) {
+    const description = await getBookDescription(data.title, data.author)
     try {
       book = await prisma.book.create({
         data: {
@@ -37,7 +39,7 @@ export const createBook = async (req: Request, res: Response) => {
           rating: data.rating,
           publishedYear: data.publishedYear,
           numberOfPages: data.numberOfPages,
-          firstSentence: data.firstSentence,
+          firstSentence: description,
           imageUrl: data.imageUrl,
         },
       });
