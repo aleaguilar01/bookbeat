@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import TestPage from "./MediaPlayer";
+import TestPage from "./TestPage";
 import { useAuth } from "../../context/auth-context";
 import { FrownOutlined } from "@ant-design/icons";
 
@@ -18,7 +18,7 @@ const {user} = useAuth()
 user.spotifyToken
 // console.log('this is the spotify token', user.spotifyToken);
 
-
+/// GET User's Playlists. Used to initially check that Spotify was connected. Not in use now.
 useEffect(() => {
   if (!user.spotifyToken.access_token) {
     setError('Spotify token is missing');
@@ -54,24 +54,7 @@ useEffect(() => {
 }, [user.spotifyToken.access_token]); // Add user.spotifyToken as a dependency
   
   return <>
-  This is the Music Dashboard <br />
-  BookBeat's Available Spotify Routes <br />
-  {/* Change these urls to Link or useNavigate*/}
-    <a href='http://localhost:3000/music/playlists'>Get User's Playlists</a> <br />
-    <a href=''>Music Player N/A</a> <br />
-    <a href=''>Reccomended Playlist N/A</a> <br />
-    <a href=''>Your Playlists (for book) N/A</a> <br />
-    <a href=''>Create Playlist N/A</a> <br />
-    <a href=''>Adding Tracks to Playlist N/A</a>
-
   
-  {/* <div>
-    <ul>
-      {playlists.map((playlist) => (
-        <li key={playlist.id}> {playlist.id}</li>
-      ))}
-    </ul>
-  </div> */}
    <TestPage></TestPage>
 
   </>

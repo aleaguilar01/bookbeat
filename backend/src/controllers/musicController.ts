@@ -167,7 +167,7 @@ export const handleSpotifyPlaylists = async (req: Request, res: Response) => {
 
 
 
-// Handle Spotify Search
+// Handle Spotify Track Search
 // http://localhost:3000/music/search?search=Adele for testing
 export const handleSpotifySearch = async (req: Request, res: Response) => {
   // Extract the access token from the Authorization header
@@ -203,6 +203,74 @@ export const handleSpotifySearch = async (req: Request, res: Response) => {
 
     const searchResults = response.data;
     // console.log(searchResults);
+    
+    // Return search results as JSON
+    return res.json(searchResults);
+
+  } catch (error: unknown) {
+    // Narrow down the error type
+    if (axios.isAxiosError(error)) {
+      // Axios-specific error handling
+      console.error('Axios error:', error.response ? error.response.data : error.message);
+      return res.status(500).json({
+        error: 'Failed to search tracks',
+        details: error.response ? error.response.data : error.message
+      });
+    } else if (error instanceof Error) {
+      // General error handling
+      console.error('General error:', error.message);
+      return res.status(500).json({
+        error: 'Failed to search tracks',
+        details: error.message
+      });
+    } else {
+      // Unknown error type
+      console.error('Unknown error:', error);
+      return res.status(500).json({
+        error: 'Failed to search tracks',
+        details: 'An unknown error occurred'
+      });
+    }
+  }
+};
+
+
+// Handle Spotify Playlist Search
+
+export const handleSpotifyPlaylistSearch = async (req: Request, res: Response) => {
+  // Extract the access token from the Authorization header
+  const authHeader = req.headers.authorization;
+  const accessToken = authHeader?.split(' ')[1]; 
+
+  if (!accessToken) {
+    return res.status(401).json({ error: 'Access token is missing' });
+  }
+
+  // Extract search query from request
+  const { search } = req.query;
+
+  if (!search || typeof search !== 'string') {
+    return res.status(400).json({ error: 'Search query is required and must be a string' });
+  }
+
+  try {
+    // Set up headers with the Bearer token
+    const headers = {
+      Authorization: `Bearer ${accessToken}`
+    };
+
+    // Make the API call to search tracks
+    const response = await axios.get(`${API_BASE_URL}search`, {
+      headers,
+      params: {
+        q: search,
+        type: 'playlist', // change to playlist to search playlists
+        limit: 1 // You can adjust this limit as needed
+      }
+    });
+
+    const searchResults = response.data;
+    console.log(searchResults);
     
     // Return search results as JSON
     return res.json(searchResults);

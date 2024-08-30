@@ -1,11 +1,12 @@
 import React from 'react'
-import { cursorTo } from 'readline'
 
 export default function TrackSearchResult({track, chooseTrack}) {
   
   function handlePlay() {
     chooseTrack(track);
   }
+  console.log(track);
+  
   
   return (
     <div 

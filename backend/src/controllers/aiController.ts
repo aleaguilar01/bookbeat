@@ -22,3 +22,4 @@ export const aiChat = async (req: Request, res: Response) => {
     res.status(500).send("Failed to Process Chat");
   }
 };
+
