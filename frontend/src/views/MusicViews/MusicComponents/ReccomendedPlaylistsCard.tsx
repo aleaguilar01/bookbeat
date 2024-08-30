@@ -7,52 +7,50 @@ import FavIcon from './FavIcon';
 
 const { Title } = Typography;
 
-const playlists = [
-  {
-    title: 'Chill Vibes',
-    description: 'Relax and unwind with these chill tracks.',
-    imageUrl: 'path-to-image',
-  },
-  {
-    title: 'Not Chill Vibes',
-    description: 'Relax and unwind with these chill tracks.',
-    imageUrl: 'path-to-image',
-  }
-]
-
 const MAX_PLAYLISTS = 4;
 
 // Define the type for the playlist object
 type Playlist = {
-  title: string;
+  playlist: string;
   description: string;
-  imageUrl: string;
+  image: string;
+  uri: string
 };
 
 // Define the prop types for the FavouritePlaylistCard component
 type ReccomendedPlaylistCardProps = {
   playlist: Playlist;
+  choosePlaylist: any
 };
 
 
-const ReccomendedPlaylistCard: React.FC<ReccomendedPlaylistCardProps> = ({ playlist }) => {
+
+
+const ReccomendedPlaylistCard: React.FC<ReccomendedPlaylistCardProps> = ({ playlist, choosePlaylist }) => {
+  
+  const handlePlay = () => {
+    choosePlaylist(playlist);
+  };
+  console.log('handle play playlist',playlist);
+
   return (
     <div>
       <Card
           className='playlist-card'
           hoverable
           cover={
-            <div className='image-container'>
-            <img alt={playlist.title} src={playlist.imageUrl} className='card-image' />
+            <div className='image-container' onClick={handlePlay}>
+            <img alt={playlist.playlist} src={playlist.image} className='card-image' />
             <Button className='card-button fav-icon' icon={<FavIcon />} type="primary" shape='circle'/>
             <Button className='card-button-delete' icon={<CloseCircleOutlined className='delete-icon'/>} type="primary" shape='circle'/>
             </div>
             }
           actions={[
             // <Button icon={<PlusOutlined />} type="primary" />,
+            
           ]}
         >
-          <Card.Meta className='playlist-card-text' title={<div className='playlist-card-title-text'> {playlist.title}</div>} description={
+          <Card.Meta className='playlist-card-text' title={<div className='playlist-card-title-text'> {playlist.playlist}</div>} description={
             <div className='playlist-card-description-text'> {playlist.description } 
             </div>}
           />

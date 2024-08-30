@@ -1,30 +1,8 @@
 
-/* 
-
-image
-title
-description 
-<img src={track.albumUrl} style={{height: '64px', width: '64px'}} alt="" />
-      <div className='ml-3' style={{ flexGrow: 1, textAlign: 'left' }}>
-        <div>{track.title}</div>
-        <div className='text-muted'>{track.artist}</div>
-      </div>
-square photos 64px
-text with margin on the left, aligned left
-
-
+/* TODO  - Ensure that the image size is consitent across all playlists.
+Ensure that if the data does not return a description filler text is inserted
+Ensure that all cards are the same sizes
 */
-
-/* .playlist-card{ 
-  transform: scale(1); 
-  transform-origin: top left; 
-} */
-
-
-/* .ant-card-body {
-  padding-top: 0px;
-
-} */
 
 .playlist-card .ant-card-body {
   padding: 12px;
@@ -36,7 +14,7 @@ text with margin on the left, aligned left
 
 .card-image {
   width: 100%; /* Ensure the image covers the container */
-  height: auto; /* Maintain aspect ratio */
+  height: auto /* Maintain aspect ratio */
 }
 
 .ant-card-meta-title {

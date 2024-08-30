@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import TestPage from "./MediaPlayer";
+import TestPage from "./TrackSearchPage";
 import { useAuth } from "../../context/auth-context";
 import { FrownOutlined } from "@ant-design/icons";
 

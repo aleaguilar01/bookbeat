@@ -265,7 +265,7 @@ export const handleSpotifyPlaylistSearch = async (req: Request, res: Response) =
       params: {
         q: search,
         type: 'playlist', // change to playlist to search playlists
-        limit: 10 // You can adjust this limit as needed
+        limit: 1 // You can adjust this limit as needed
       }
     });
 
