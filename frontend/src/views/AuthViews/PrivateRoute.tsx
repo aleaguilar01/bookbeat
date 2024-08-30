@@ -9,9 +9,6 @@ import BookProvider from "../../context/books-context";
 
 const { Content } = Layout;
 
-const contentStyle: React.CSSProperties = {
-  padding: "0 48px",
-};
 const PrivateRoute = () => {
   const { user, loading } = useAuth();
   if (loading) {
@@ -24,7 +21,7 @@ const PrivateRoute = () => {
     <BookProvider>
       <Layout>
         <NavBar />
-        <Content style={contentStyle}>
+        <Content>
           <Outlet />
         </Content>
         <BookModalWrapper />
