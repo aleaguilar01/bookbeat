@@ -5,7 +5,7 @@ import { useAuth } from "../../context/auth-context";
 import TrackSearchResult from './TrackSearchResult';
 import Player from './Player';
 import MusicContainer from './MusicComponents/MusicContainer';
-import PlaylistSearchPage from './PlaylistSearchPage';
+import PlaylistSearchPage from './PlaylistSearchBar';
 import { usePlaylistSearch } from '../../hooks/usePlaylistSearch';
 
 
@@ -13,7 +13,6 @@ const TestPage: FC = () =>  {
   const [search, setSearch] = useState('')
   const [searchResults, setSearchResults] = useState([])
   const [playingTrack, setPlayingTrack] = useState<any>()
-  // const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const { playlistSearch, setPlaylistSearch, playlistSearchResults, playlistSearchError } = usePlaylistSearch();
   const [playingPlaylist, setPlayingPlaylist] = useState<any>()
@@ -53,7 +52,9 @@ const TestPage: FC = () =>  {
   //// Getting Spotify Auth Token
   const {user} = useAuth()
   user.spotifyToken
-  // console.log('this is the spotify token', user.spotifyToken);
+
+
+  /// SEARCHING FOR TRACKS
   useEffect(() => {
     if (!search) return setSearchResults([]);
   
@@ -65,9 +66,8 @@ const TestPage: FC = () =>  {
             'Authorization': `Bearer ${user.spotifyToken.access_token}`, // Include the token here
             'Content-Type': 'application/json', // Optional: Ensure JSON format
           },
-          credentials: 'include', // If you need to send cookies or other credentials
+          credentials: 'include', 
         });
-        // console.log(response);
         
   
         if (!response.ok) {
@@ -75,7 +75,6 @@ const TestPage: FC = () =>  {
         }
   
         const data: SearchResponse = await response.json();
-        // console.log('this is the data',data);
         
         console.log(data);
         
@@ -94,7 +93,6 @@ const TestPage: FC = () =>  {
             };
           })
         );
-        // console.log(data);
         
       } catch (error) {
         setError((error as Error).message);
@@ -104,13 +102,11 @@ const TestPage: FC = () =>  {
     fetchSearchResults();
   }, [search, user.spotifyToken]);
 
-  console.log("playlist search results inside TrackSearchPage", playlistSearchResults);
 
   return (
     
 
     <Container className="d-flex flex-column py-2" style={{height: "100vh"}}>
-        {/* <MusicContainer/> */}
         
         <Form.Control 
           type="search" 

@@ -2,6 +2,8 @@
 import React from 'react'
 import { Card, Row, Col, Button, Typography } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
+import { CloseCircleOutlined } from '@ant-design/icons';
+
 
 const { Title } = Typography;
 
@@ -39,7 +41,16 @@ const FavouritePlaylistCard: React.FC<FavouritePlaylistCardProps> = ({ playlist 
       <Card
           className='playlist-card'
           hoverable
-          cover={<img alt={playlist.title} src={playlist.imageUrl}/>}
+          cover={
+            <div className='image-container'>
+          <img alt={playlist.title} src={playlist.imageUrl} className='card-image'/>
+
+          
+            {/* <Button className='card-button fav-icon' icon={<FavIcon />} type="primary" shape='circle'/> */}
+            <Button className='card-button-delete' icon={<CloseCircleOutlined className='delete-icon'/>} type="primary" shape='circle'/>
+            </div>
+          
+        }
           // actions={[
           //   <Button icon={<PlusOutlined />} type="primary" />,
           // ]}

@@ -5,11 +5,8 @@ import { CloseCircleOutlined } from '@ant-design/icons';
 import '../MusicStyles/PlaylistCard.styles.css'
 import FavIcon from './FavIcon';
 
-const { Title } = Typography;
 
-const MAX_PLAYLISTS = 4;
 
-// Define the type for the playlist object
 type Playlist = {
   playlist: string;
   description: string;
@@ -17,13 +14,10 @@ type Playlist = {
   uri: string
 };
 
-// Define the prop types for the FavouritePlaylistCard component
 type ReccomendedPlaylistCardProps = {
   playlist: Playlist;
   choosePlaylist: any
 };
-
-
 
 
 const ReccomendedPlaylistCard: React.FC<ReccomendedPlaylistCardProps> = ({ playlist, choosePlaylist }) => {
@@ -31,7 +25,7 @@ const ReccomendedPlaylistCard: React.FC<ReccomendedPlaylistCardProps> = ({ playl
   const handlePlay = () => {
     choosePlaylist(playlist);
   };
-  console.log('handle play playlist',playlist);
+  // console.log('handle play playlist',playlist);
 
   return (
     <div>
@@ -42,11 +36,10 @@ const ReccomendedPlaylistCard: React.FC<ReccomendedPlaylistCardProps> = ({ playl
             <div className='image-container' onClick={handlePlay}>
             <img alt={playlist.playlist} src={playlist.image} className='card-image' />
             <Button className='card-button fav-icon' icon={<FavIcon />} type="primary" shape='circle'/>
-            <Button className='card-button-delete' icon={<CloseCircleOutlined className='delete-icon'/>} type="primary" shape='circle'/>
+            {/* <Button className='card-button-delete' icon={<CloseCircleOutlined className='delete-icon'/>} type="primary" shape='circle'/> */}
             </div>
             }
           actions={[
-            // <Button icon={<PlusOutlined />} type="primary" />,
             
           ]}
         >

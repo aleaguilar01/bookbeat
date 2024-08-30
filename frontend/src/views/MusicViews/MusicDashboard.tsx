@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import TestPage from "./TrackSearchPage";
+import TestPage from "./TestPage";
 import { useAuth } from "../../context/auth-context";
 import { FrownOutlined } from "@ant-design/icons";
 
@@ -18,7 +18,7 @@ const {user} = useAuth()
 user.spotifyToken
 // console.log('this is the spotify token', user.spotifyToken);
 
-
+/// GET User's Playlists. Used to initially check that Spotify was connected. Not in use now.
 useEffect(() => {
   if (!user.spotifyToken.access_token) {
     setError('Spotify token is missing');
