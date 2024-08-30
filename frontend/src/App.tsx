@@ -5,10 +5,10 @@ import PrivateRoute from './views/AuthViews/PrivateRoute';
 import LoginScreen from './views/LoginScreen/LoginScreen';
 import MusicDashboard from './views/MusicViews/MusicDashboard';
 import HomeScreen from "./views/AuthViews/HomeScreen";
+import BookScreen from './views/AuthViews/BookScreen';
 
 function App() {
   return (
-
     <Router>
       <AuthProvider>
           <Routes>
@@ -16,6 +16,7 @@ function App() {
             <Route element={<PrivateRoute />}>
               <Route path='/music-dashboard' element={<MusicDashboard /> } />
               <Route path="/" element={<HomeScreen />} />
+              <Route path="/books" element={<BookScreen />} />
             </Route>
           </Routes>
       </AuthProvider>
