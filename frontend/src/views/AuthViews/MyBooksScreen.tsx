@@ -45,7 +45,7 @@ const defaultBookOptions = [
     label: "Re Reading",
   },
 ];
-const BookScreen = () => {
+const MyBooksScreen = () => {
   const {
     updateRating,
     updateIsFavorite,
@@ -213,4 +213,4 @@ const BookScreen = () => {
   );
 };
 
-export default BookScreen;
+export default MyBooksScreen;
