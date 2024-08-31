@@ -1,4 +1,4 @@
-import { Button, Dropdown, Menu, Layout, Image, Avatar } from "antd";
+import { Button, Dropdown, Menu, Layout, Avatar } from "antd";
 import { useAuth } from "../context/auth-context";
 const logoUrl = new URL("../../logo.jpeg", import.meta.url).href;
 import SearchBar from "./SearchBar";
@@ -15,7 +15,7 @@ const headerStyle: React.CSSProperties = {
   padding: "0 24px",
   display: "flex",
   lineHeight: 64,
-  backgroundColor: "#4096ff",
+  backgroundColor: "#179BAE",
   boxShadow: "0 2px 8px rgba(0, 0, 0, 0.15)",
 };
 

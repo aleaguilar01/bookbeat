@@ -24,6 +24,7 @@ export interface IBookUser {
 interface IBookContext {
   myBooks: Array<IBook>;
   favoriteBooks: Array<IBook>;
+  activeBooks: Array<IBook>;
   isLoading: boolean;
   refetch: VoidFunction;
   currentBook?: IBook;
@@ -35,6 +36,7 @@ const BookContext = createContext<IBookContext>({
   isLoading: false,
   refetch: () => {},
   favoriteBooks: [],
+  activeBooks: [],
   currentBook: undefined,
   selectCurrentBook: () => {},
 });
@@ -70,6 +72,11 @@ const BookProvider = ({ children }) => {
     return myBooks.filter((book) => book.isFavorite && !!book.imageUrl);
   }, [myBooks]);
 
+  const activeBooks = useMemo(() => {
+    return myBooks
+      .filter((book) => book.readingStatus === "READING");
+  }, [myBooks]);
+
   const currentBook = useMemo(() => {
     if (!currentBookId) return undefined;
     return myBooks.find((book) => book.id === currentBookId);
@@ -84,6 +91,7 @@ const BookProvider = ({ children }) => {
         favoriteBooks,
         selectCurrentBook: (bookId?: string) => setCurrentBookId(bookId),
         currentBook,
+        activeBooks,
       }}
     >
       {children}

@@ -21,7 +21,7 @@ const PrivateRoute = () => {
     <BookProvider>
       <Layout>
         <NavBar />
-        <Content>
+        <Content style={{ paddingLeft: 20, paddingRight: 20 }}>
           <Outlet />
         </Content>
         <BookModalWrapper />

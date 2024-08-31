@@ -40,7 +40,8 @@ const BookModal: FC<IBookModalProps> = ({
       <Modal
         open={!!book}
         onOk={handleOk}
-        okText="Add"
+        okText="Save"
+        okButtonProps={{ disabled: readingStatus ? false : true }}
         onCancel={onClose}
         footer={isReadOnly ? null : undefined}
         styles={{
@@ -61,11 +62,11 @@ const BookModal: FC<IBookModalProps> = ({
             style={{
               height: "500px",
               objectFit: "cover",
-              marginRight: 40
+              marginRight: 40,
             }}
             preview={false}
           />
-          <Flex vertical gap={16} style={{width: 350}}>
+          <Flex vertical gap={16} style={{ width: 350 }}>
             <Text italic>{book.author}</Text>
             <Rating rating={book.rating || 0} isEditable={false} />
             <Text>First published: {book.publishedYear}</Text>
