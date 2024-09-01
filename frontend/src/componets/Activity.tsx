@@ -1,21 +1,18 @@
 import { FC, useState } from "react";
 import { Flex, List, Typography } from "antd";
-import Loading from "./Loading";
 import { PlayCircleOutlined } from "@ant-design/icons";
 
 import { IBook, useBook } from "../context/books-context";
 import BookModal from "./BookModal";
+import { Link } from "react-router-dom";
 
 const { Title } = Typography;
-interface BookRecommendationsProps {}
+interface ActivityProps {}
 
-const BookRecommendations: FC<BookRecommendationsProps> = () => {
+const Activity: FC<ActivityProps> = () => {
   const { activeBooks, isLoading } = useBook();
   const [selectedBook, setSelectedBook] = useState<IBook>(undefined);
 
-  if (isLoading) {
-    return <Loading />;
-  }
   return (
     <Flex vertical style={{ borderRadius: 20, marginTop: 25, height: "35vh" }}>
       <Title level={3}>My Activity</Title>
@@ -23,10 +20,12 @@ const BookRecommendations: FC<BookRecommendationsProps> = () => {
         pagination={{
           pageSize: 2,
         }}
+        loading={isLoading}
         itemLayout="horizontal"
         dataSource={activeBooks}
         renderItem={(item) => (
           <List.Item
+            key={item.id}
             actions={[
               <a key="list-edit" onClick={() => setSelectedBook(item)}>
                 edit
@@ -40,8 +39,12 @@ const BookRecommendations: FC<BookRecommendationsProps> = () => {
             ]}
           >
             <List.Item.Meta
-              avatar={<img src={item.imageUrl} height={80} />}
-              title={<>{item.title}</>}
+              avatar={
+                <Link to={`books/${item.id}`}>
+                  <img src={item.imageUrl} height={80} />
+                </Link>
+              }
+              title={<Link to={`books/${item.id}`}>{item.title}</Link>}
             />
           </List.Item>
         )}
@@ -54,4 +57,4 @@ const BookRecommendations: FC<BookRecommendationsProps> = () => {
   );
 };
 
-export default BookRecommendations;
+export default Activity;

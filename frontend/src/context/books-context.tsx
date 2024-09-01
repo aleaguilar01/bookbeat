@@ -12,6 +12,8 @@ export interface IBook extends IBookUser {
   rating?: number;
   firstSentence: string;
   numberOfPages?: number;
+  createdAt: Date
+  genres?: Array<{id: string, name: string}> 
 }
 
 export interface IBookUser {
@@ -52,7 +54,11 @@ const BookProvider = ({ children }) => {
     api
       .get("/book")
       .then((res) => {
-        setData(res.data);
+        const mapped = res.data.map(({createdAt, ...rest})=> ({
+          ...rest,
+          createdAt: new Date(createdAt)
+        }))
+        setData(mapped);
       })
       .finally(() => {
         setIsLoading(false);
