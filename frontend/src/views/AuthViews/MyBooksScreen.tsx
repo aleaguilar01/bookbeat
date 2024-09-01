@@ -1,5 +1,20 @@
-import { ChangeEventHandler, createElement, useMemo, useState } from "react";
-import { Button, Flex, Input, List, Select, Space, Typography } from "antd";
+import {
+  ChangeEventHandler,
+  createElement,
+  FC,
+  useMemo,
+  useState,
+} from "react";
+import {
+  Button,
+  Flex,
+  Input,
+  List,
+  Rate,
+  Select,
+  Space,
+  Typography,
+} from "antd";
 import {
   CalendarOutlined,
   MessageOutlined,
@@ -8,9 +23,10 @@ import {
   HeartOutlined,
   HeartFilled,
 } from "@ant-design/icons";
-import Rating from "../../componets/Rating";
 import { useBook } from "../../context/books-context";
 import { useHandleBooks } from "../../hooks/useHandleBooks";
+import { Colors, DEFAULT_READING_STATUS } from "../../constants";
+import { Link } from "react-router-dom";
 
 const { Title } = Typography;
 const extraBookOptions = [
@@ -23,47 +39,19 @@ const extraBookOptions = [
     label: "Favorites",
   },
 ];
-const defaultBookOptions = [
-  {
-    value: "WANT_TO_READ",
-    label: "Want to Read",
-  },
-  {
-    value: "READING",
-    label: "Reading",
-  },
-  {
-    value: "READ",
-    label: "Read",
-  },
-  {
-    value: "DID_NOT_FINISH",
-    label: "DNF",
-  },
-  {
-    value: "RE_READING",
-    label: "Re Reading",
-  },
-];
-const MyBooksScreen = () => {
+
+const MyBooksScreen: FC = () => {
   const {
     updateRating,
     updateIsFavorite,
     updateReadingStatus,
     isLoading: isProcessing,
   } = useHandleBooks();
-  const { isLoading, myBooks, selectCurrentBook } = useBook();
+  const { isLoading, myBooks } = useBook();
   const [bookStatusFilter, setBookStatusFilter] = useState("all");
-
   const [searchContent, setSearchContent] = useState("");
 
-  const IconText = ({
-    icon,
-    text,
-  }: {
-    icon: React.FC;
-    text: string | number;
-  }) => (
+  const IconText = ({ icon, text }: { icon: FC; text: string | number }) => (
     <Space>
       {createElement(icon)}
       {text}
@@ -116,7 +104,7 @@ const MyBooksScreen = () => {
               style={{ width: 150 }}
               optionFilterProp="label"
               onChange={handleSelectStatus}
-              options={[...extraBookOptions, ...defaultBookOptions]}
+              options={[...extraBookOptions, ...DEFAULT_READING_STATUS]}
               value={bookStatusFilter}
             />
           </Flex>
@@ -148,35 +136,36 @@ const MyBooksScreen = () => {
               />,
             ]}
             extra={
-              <img
-                height={150}
-                alt={item.title}
-                src={item.imageUrl}
-                onClick={() => selectCurrentBook(item.id)}
-              />
+              <Link to={`/books/${item.id}`}>
+                <img height={150} alt={item.title} src={item.imageUrl} />
+              </Link>
             }
             style={{ borderWidth: 30 }}
           >
             <List.Item.Meta
               avatar={
-                <Flex gap={12} vertical align="center">
-                  <Rating
-                    isEditable
-                    rating={item.myRating}
-                    handleRating={(rating) => {
-                      updateRating(rating, item.id);
-                    }}
-                  />
-                  <Select
-                    style={{ width: 150 }}
-                    optionFilterProp="label"
-                    onChange={(value: string) => {
-                      updateReadingStatus(value, item.id);
-                    }}
-                    options={defaultBookOptions}
-                    value={item.readingStatus}
-                    variant="filled"
-                  />
+                <Flex gap={20} align="center">
+                  <Flex vertical gap={12} align="center" justify="center">
+                    <Rate
+                      allowHalf
+                      defaultValue={item.myRating}
+                      className="ml-2"
+                      style={{ color: Colors.secondary }}
+                      onChange={(rating) => {
+                        updateRating(rating, item.id);
+                      }}
+                    />
+                    <Select
+                      style={{ width: 150 }}
+                      optionFilterProp="label"
+                      onChange={(value: string) => {
+                        updateReadingStatus(value, item.id);
+                      }}
+                      options={DEFAULT_READING_STATUS}
+                      value={item.readingStatus}
+                      variant="filled"
+                    />
+                  </Flex>
                   <Button
                     ghost
                     style={{ padding: 0, margin: 0 }}
@@ -194,13 +183,8 @@ const MyBooksScreen = () => {
                 </Flex>
               }
               title={
-                <Button
-                  type="link"
-                  ghost
-                  style={{ color: "black" }}
-                  onClick={() => selectCurrentBook(item.id)}
-                >
-                  {item.title}
+                <Button type="link" ghost style={{ color: "black" }}>
+                  <Link to={`/books/${item.id}`}> {item.title}</Link>
                 </Button>
               }
               description={item.author}

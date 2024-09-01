@@ -7,6 +7,7 @@ import MusicDashboard from "./views/MusicViews/MusicDashboard";
 import HomeScreen from "./views/AuthViews/HomeScreen";
 import MyBooksScreen from "./views/AuthViews/MyBooksScreen";
 import { ConfigProvider } from "antd";
+import BookView from "./views/AuthViews/BookView";
 
 function App() {
   return (
@@ -16,9 +17,8 @@ function App() {
           fontFamily: "Slminoel",
           fontSize: 18,
           colorPrimary: "#FF8343",
-          colorFillSecondary: "#179BAE",
+          // colorFillSecondary: "#179BAE",
           colorPrimaryBg: "#4158A6",
-          
         },
       }}
     >
@@ -30,6 +30,7 @@ function App() {
               <Route path="/music-dashboard" element={<MusicDashboard />} />
               <Route path="/" element={<HomeScreen />} />
               <Route path="/books" element={<MyBooksScreen />} />
+              <Route path="/books/:id" element={<BookView />} />
             </Route>
           </Routes>
         </AuthProvider>

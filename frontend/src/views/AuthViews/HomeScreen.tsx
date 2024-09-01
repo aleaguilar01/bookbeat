@@ -23,9 +23,6 @@ const HomeScreen = () => {
           margin: 0,
           minHeight: "92vh",
           background: colorBgContainer,
-          // borderRightColor: "black",
-          // borderRightWidth: 2,
-          // borderRightStyle: "solid",
         }}
       >
         <Title level={2}>My Favorite Books</Title>
