@@ -56,7 +56,8 @@ const BookScreen = () => {
   const [bookStatusFilter, setBookStatusFilter] = useState("all");
 
   const [searchContent, setSearchContent] = useState("");
-
+  console.log("my books",myBooks);
+  
   const IconText = ({
     icon,
     text,
