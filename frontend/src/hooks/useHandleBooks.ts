@@ -53,7 +53,7 @@ export const useHandleBooks = () => {
   const getRelatedBooks = async (isbn: string) => {
     setIsLoading(true);
     return api
-      .get("/book/related", { params: { isbn } })
+      .post("/book/related", { isbn })
       .then((res) => res.data)
       .finally(() => {
         setIsLoading(false);

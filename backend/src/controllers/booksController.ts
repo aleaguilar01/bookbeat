@@ -33,7 +33,7 @@ export const getBook = async (req: Request, res: Response) => {
       res.send(response);
     }
   } catch (error) {
-    console.log(error);
+    console.error(error);
     res.status(500).send("Error ocurred while fetching book data");
   }
 };
@@ -68,7 +68,7 @@ export const createBook = async (req: Request, res: Response) => {
         },
       });
     } catch (error) {
-      console.log(error);
+      console.error(error);
       return res.status(500).send("Error occurred while creating the book.");
     }
   }
@@ -119,8 +119,7 @@ export const getMyBooks = async (req: Request, res: Response) => {
 };
 
 export const getRelatedBooks = async (req: Request, res: Response) => {
-  console.log(req.params, 'Im here')
-  const { isbn } = req.params;
+  const { isbn } = req.body;
 
   if(!isbn || isbn === "") {
     return res.status(400).send("No ISBN provided")
@@ -134,12 +133,19 @@ export const getRelatedBooks = async (req: Request, res: Response) => {
 
   const myBook = await prisma.book.findUnique({
     where: { isbn },
+    include: {
+      relatedBooks: true
+    }
   });
 
   if (!myBook) {
     return res.status(404).send("No Book Found to Update");
   }
 
+  if(myBook.relatedBooks.length > 0){
+    await redisClient.setEx(`related-${isbn}`, 3600, JSON.stringify(myBook.relatedBooks))
+    return res.send(myBook.relatedBooks)
+  }
   
   const aiRelatedBooks = await getAiRelatedBooks(myBook.title, myBook.author);
   const relatedBooks = await findAndCreateBooks(aiRelatedBooks);
@@ -149,11 +155,11 @@ export const getRelatedBooks = async (req: Request, res: Response) => {
       data: {
         relatedBooks: {
           connect: {
-            isbn: associatedBook.isbn,
+            isbn: myBook.isbn,
           },
         },
       },
-      where: { isbn: myBook.isbn },
+      where: { isbn: associatedBook.isbn },
     });
   });
 

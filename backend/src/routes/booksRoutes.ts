@@ -16,6 +16,6 @@ router.post("/", createBook);
 router.get("/", getMyBooks);
 router.put("/", updateMyBooks);
 router.post("/recommendations", getRecommendedBooks);
-router.get("/related",getRelatedBooks);
+router.post("/related", getRelatedBooks);
 
 export default router;

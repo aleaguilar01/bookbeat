@@ -221,6 +221,7 @@ const BookPage = () => {
         <Divider orientation="left">Related Books</Divider>
         <List
           grid={{ gutter: 16, column: 3 }}
+          loading={isLoading}
           dataSource={relatedBooks}
           renderItem={(item) => (
             <List.Item>
