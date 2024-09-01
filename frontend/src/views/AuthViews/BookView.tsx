@@ -31,19 +31,25 @@ const BookPage = () => {
   const navigate = useNavigate();
   const { myBooks } = useBook();
   const [relatedBooks, setRelatedBooks] = useState<Array<IBook>>([]);
-  const { updateIsFavorite, updateRating, updateReadingStatus } =
-    useHandleBooks();
+  const {
+    updateIsFavorite,
+    updateRating,
+    updateReadingStatus,
+    getRelatedBooks,
+    isLoading,
+  } = useHandleBooks();
   const book = useMemo(
     () => myBooks.find((book) => book.id === id),
     [myBooks, id]
   );
 
   useEffect(() => {
-    if (book) {
-      setRelatedBooks(myBooks.filter((b) => b.id !== book.id).slice(0, 3));
+    if (book && !isLoading && relatedBooks.length === 0) {
+      getRelatedBooks(book.isbn).then(setRelatedBooks);
     }
-  }, [book, myBooks]);
+  }, [book, relatedBooks, isLoading]);
 
+  console.log(relatedBooks)
   const relatedBookStyles: Record<string, CSSProperties> = {
     card: {
       height: "100%",

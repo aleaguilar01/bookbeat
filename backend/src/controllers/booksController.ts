@@ -6,7 +6,7 @@ import {
   getBookDescription,
   getBookRecommendations,
   getBookGenres,
-  getAiRelatedBooks
+  getAiRelatedBooks,
 } from "../utils/aiHelper";
 import { getFlattenedBooks, getScoredBooks } from "../utils/bookHelper";
 import { Prisma } from "@prisma/client";
@@ -107,44 +107,60 @@ export const getMyBooks = async (req: Request, res: Response) => {
         },
       },
       orderBy: {
-        createdAt: 'desc',
+        createdAt: "desc",
       },
     });
-
-    const updatedBooks = await Promise.all(
-      books.map(async (userBook) => {
-        if (userBook.book.relatedBooks.length === 0) {
-          const relatedBooks = await getRelatedBooks(userBook.book.title, userBook.book.author);
-          
-          await prisma.book.update({
-            where: { isbn: userBook.book.isbn },
-            data: {
-              relatedBooks: {
-                connect: relatedBooks.map(book => ({ isbn: book.isbn })),
-              },
-            },
-          });
-
-          return {
-            ...userBook,
-            book: {
-              ...userBook.book,
-              relatedBooks,
-            },
-          };
-        }
-        return userBook;
-      })
-    );
-
-    const flattenedBooks = getFlattenedBooks(updatedBooks);
+    const flattenedBooks = getFlattenedBooks(books);
     return res.send(flattenedBooks);
   } catch (error) {
-    console.error('Error in getMyBooks:', error);
-    return res.status(500).send({ error: 'Internal server error' });
+    console.error("Error in getMyBooks:", error);
+    return res.status(500).send({ error: "Internal server error" });
   }
 };
 
+export const getRelatedBooks = async (req: Request, res: Response) => {
+  console.log(req.params, 'Im here')
+  const { isbn } = req.params;
+
+  if(!isbn || isbn === "") {
+    return res.status(400).send("No ISBN provided")
+  }
+  const data = await redisClient.get(
+    `related-${isbn}`
+  );
+  if (data !== null) {
+    return res.json(JSON.parse(data));
+  }
+
+  const myBook = await prisma.book.findUnique({
+    where: { isbn },
+  });
+
+  if (!myBook) {
+    return res.status(404).send("No Book Found to Update");
+  }
+
+  
+  const aiRelatedBooks = await getAiRelatedBooks(myBook.title, myBook.author);
+  const relatedBooks = await findAndCreateBooks(aiRelatedBooks);
+
+  const promises = relatedBooks.map((associatedBook) => {
+    return prisma.book.update({
+      data: {
+        relatedBooks: {
+          connect: {
+            isbn: associatedBook.isbn,
+          },
+        },
+      },
+      where: { isbn: myBook.isbn },
+    });
+  });
+
+  const response = await Promise.all(promises);
+  await redisClient.setEx(`related-${isbn}`, 3600, JSON.stringify(response))
+  return res.send(response);
+};
 
 export const updateMyBooks = async (req: Request, res: Response) => {
   const data = req.body;
@@ -184,7 +200,7 @@ export const getRecommendedBooks = async (req: Request, res: Response) => {
   const { currentRecommendations } = req.body;
   try {
     const data = await redisClient.get(
-      `recommed-${req.user?.userId}-${currentRecommendations?.length || 0}`
+      `recommended-${req.user?.userId}-${currentRecommendations?.length || 0}`
     );
     if (data !== null) {
       return res.json(JSON.parse(data));
@@ -203,75 +219,13 @@ export const getRecommendedBooks = async (req: Request, res: Response) => {
     const bookRecommendations = await getBookRecommendations(scoredBooks);
     // const aiSuggestedBooks = createAiGeneratedBooks(scoredBooks)
 
-   
-    // Get data from api
-    const apiDataPromise = bookRecommendations.map((recommendation) => {
-      return getBooksFromApi(
-        recommendation.title + " " + recommendation.author,
-        1
-      );
-    });
-    const apiData = await Promise.all(apiDataPromise);
-    const flattenedData = apiData.flat();
-    if (!flattenedData) {
-      return res.send([]);
-    }
-
-    const isbns = flattenedData.flat().map((data) => data.isbn);
-
-    const books = await prisma.book.findMany({
-      where: { isbn: { in: isbns } },
-    });
-
-    const foundIsbns = books.map(({ isbn }) => isbn);
-
-    const booksNotFound = flattenedData.filter(
-      ({ isbn }) => !foundIsbns.includes(isbn)
-    );
-
-    let createdBooks: any[] = [];
-    if (booksNotFound && booksNotFound.length > 0) {
-      // get genres
-      const activeGenres = await getActiveGenres();
-      const createdBooksPromise = booksNotFound.map(async (book) => {
-        const descriptionPromise =  getBookDescription(
-          book.title,
-          book.author.join(", ")
-        );
-        const genresPromise = getBookGenres(
-          activeGenres,
-          book.title,
-          book.author.join(", ")
-        );
-        const [description, genres] = await Promise.all([descriptionPromise, genresPromise])
-        return prisma.book.create({
-          data: {
-            isbn: book.isbn,
-            title: book.title,
-            author: book.author.join(", "),
-            rating: book.ratings,
-            publishedYear: book.published_year,
-            numberOfPages: book.number_of_pages,
-            firstSentence: description,
-            imageUrl: book.cover_url,
-            genres: {
-              connect: genres.map((id) => ({ id })),
-            },
-          },
-        });
-      });
-      const promisedResolved = await Promise.all(createdBooksPromise);
-      createdBooks = promisedResolved;
-    }
-    
-
     // only recommend books with covers
-    const mergedBooks = [...books, ...createdBooks].filter(
+    const mergedBooks = (await findAndCreateBooks(bookRecommendations)).filter(
       (book) => !!book.imageUrl
     );
 
     await redisClient.setEx(
-      `recommed-${req.user?.userId}-${currentRecommendations?.length || 0}`,
+      `recommended-${req.user?.userId}-${currentRecommendations?.length || 0}`,
       3600,
       JSON.stringify(mergedBooks)
     );
@@ -298,66 +252,69 @@ const getActiveGenres = async () => {
   return activeGenres;
 };
 
-const getRelatedBooks= async (title: string, author: string): Promise<Array<BookWithGenre>> =>{
-  return []
-}
+const findAndCreateBooks = async (
+  books: Array<{ author: string; title: string }>
+): Promise<Array<BookWithGenre>> => {
+  // Get data from api
+  const apiDataPromise = books.map(({ title, author }) => {
+    return getBooksFromApi(title + " " + author, 1);
+  });
+  const apiData = await Promise.all(apiDataPromise);
+  const flattenedData = apiData.flat();
+  if (!flattenedData) {
+    return [];
+  }
 
-const createAiGeneratedBooks = async (aiBooks: Array<{author: string, title: string}>) : Promise<any> => {
-  
-    // Get data from api
-    const apiDataPromise = aiBooks.map(({title, author}) => {
-      return getBooksFromApi(title + " " + author, 1);
-    });
-    const apiData = await Promise.all(apiDataPromise);
-    const flattenedData = apiData.flat();
-    if (!flattenedData) {
-      return []
-    }
+  const isbns = flattenedData.map((data) => data.isbn);
 
-    const isbns = flattenedData.flat().map((data) => data.isbn);
+  const existingBooks = await prisma.book.findMany({
+    where: { isbn: { in: isbns } },
+    include: { genres: true },
+  });
 
-    const books = await prisma.book.findMany({
-      where: { isbn: { in: isbns } },
-    });
+  const foundIsbns = existingBooks.map(({ isbn }) => isbn);
 
-    const foundIsbns = books.map(({ isbn }) => isbn);
-
-    const booksNotFound = flattenedData.filter(
-      ({ isbn }) => !foundIsbns.includes(isbn)
-    );
-
-    let createdBooks: any[] = [];
-    if (booksNotFound && booksNotFound.length > 0) {
-      // get genres
-      const activeGenres = await getActiveGenres();
-      const createdBooksPromise = booksNotFound.map(async (book) => {
-        const descriptionPromise =  getBookDescription(
-          book.title,
-          book.author.join(", ")
-        );
-        const genresPromise = getBookGenres(
-          activeGenres,
-          book.title,
-          book.author.join(", ")
-        );
-        const [description, genres] = await Promise.all([descriptionPromise, genresPromise])
-        return prisma.book.create({
-          data: {
-            isbn: book.isbn,
-            title: book.title,
-            author: book.author.join(", "),
-            rating: book.ratings,
-            publishedYear: book.published_year,
-            numberOfPages: book.number_of_pages,
-            firstSentence: description,
-            imageUrl: book.cover_url,
-            genres: {
-              connect: genres.map((id) => ({ id })),
-            },
+  const booksToBeCreated = flattenedData.filter(
+    ({ isbn }) => !foundIsbns.includes(isbn)
+  );
+  let createdBooks: Array<BookWithGenre> = [];
+  if (booksToBeCreated && booksToBeCreated.length > 0) {
+    // get genres
+    const activeGenres = await getActiveGenres();
+    const createdBooksPromise = booksToBeCreated.map(async (book) => {
+      const descriptionPromise = getBookDescription(
+        book.title,
+        book.author.join(", ")
+      );
+      const genresPromise = getBookGenres(
+        activeGenres,
+        book.title,
+        book.author.join(", ")
+      );
+      const [description, genres] = await Promise.all([
+        descriptionPromise,
+        genresPromise,
+      ]);
+      return prisma.book.create({
+        data: {
+          isbn: book.isbn,
+          title: book.title,
+          author: book.author.join(", "),
+          rating: book.ratings,
+          publishedYear: book.published_year,
+          numberOfPages: book.number_of_pages,
+          firstSentence: description,
+          imageUrl: book.cover_url,
+          genres: {
+            connect: genres.map((id) => ({ id })),
           },
-        });
+        },
+        include: {
+          genres: true,
+        },
       });
-      const promisedResolved = await Promise.all(createdBooksPromise);
-      createdBooks = promisedResolved;
-    }
-}
+    });
+    createdBooks = await Promise.all(createdBooksPromise);
+  }
+  return [...existingBooks, ...createdBooks];
+};

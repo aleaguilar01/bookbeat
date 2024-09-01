@@ -62,7 +62,7 @@ export const getBookGenres = async (
 export const getAiRelatedBooks = async (title: string, author?: string)=>{
   try {
     const SYSTEM = `You are a professional book publisher that can associate different books. When provided a title and the author, you can provide the top 5 books that has de greatest relation with the input. Limit your self to give only one suggestion from the same author. The response has to be in an Array of JSON objects with the keys title and author. Keep you anwser limited just to the JSON object. Example output: [{ title: "Book A", author: "Same Author" }, {title: "New Book", author: "Another Author" ...}]`;
-    const PREFILL = "[{ title:";
+    const PREFILL = '[{ "title": "';
     const INITIAL_PROMPT = `Provide the related books for "${title}" by "${author}".`;
     const response = await anthropic.messages.create({
       model: "claude-3-haiku-20240307",
@@ -74,6 +74,7 @@ export const getAiRelatedBooks = async (title: string, author?: string)=>{
       ],
     });
     const msg = (response.content[0] as TextBlock).text as string;
+    console.log(msg)
     const relatedBooks = JSON.parse(PREFILL+msg);
     if (!Array.isArray(relatedBooks)) {
       // do something else

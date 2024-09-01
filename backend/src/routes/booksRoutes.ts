@@ -4,7 +4,8 @@ import {
   createBook,
   getMyBooks,
   updateMyBooks,
-  getRecommendedBooks
+  getRecommendedBooks,
+  getRelatedBooks
 } from "../controllers/booksController";
 
 const router = express.Router();
@@ -14,6 +15,7 @@ router.get("/:title", getBook);
 router.post("/", createBook);
 router.get("/", getMyBooks);
 router.put("/", updateMyBooks);
-router.post("/recommendations", getRecommendedBooks)
+router.post("/recommendations", getRecommendedBooks);
+router.get("/related",getRelatedBooks);
 
 export default router;
