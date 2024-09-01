@@ -315,7 +315,7 @@ export const createPlaylist = async (req: Request, res: Response) => {
   let playlist = await prisma.playlist.findUnique({ where: { playlistId: data.id } });
   console.log("(createPlaylist) Found playlist in database:", playlist);
 
-  if (!playlist) {
+  if (!playlist) { 
     try {
       console.log("Playlist not found, creating a new one...");
       playlist = await prisma.playlist.create({
@@ -337,7 +337,12 @@ export const createPlaylist = async (req: Request, res: Response) => {
   }
 
   try {
+
+    let userPlaylist = await prisma.userBookPlaylist.findUnique({ where: { userBookPlaylistIdentifier: {playlistId: data.id, userBookId: data.userBookId} } });
+
     console.log("Creating UserBookPlaylist...");
+    if (userPlaylist) return res.send(userPlaylist)
+    
     const userBookPlaylist = await prisma.userBookPlaylist.create({
       data: {
         userBook: {

@@ -42,7 +42,7 @@ model UserBookPlaylist {
   playlist Playlist @relation(fields: [playlistId], references: [id])
   playlistId String
   isFavorite Boolean @default(false)
-
+  @@unique([playlistId, userBookId], name: "userBookPlaylistIdentifier")
   createdAt   DateTime?     @default(now())
   updatedAt   DateTime?     @updatedAt
 }
