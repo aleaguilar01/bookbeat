@@ -1,8 +1,7 @@
-import { Card, Row, Col, Button, Typography } from "antd";
+import { Row, Col, Typography } from "antd";
 import ReccomendedPlaylistCard from "./ReccomendedPlaylistsCard";
 import "../MusicStyles/PlaylistRow.styles.css";
 import { useState, useEffect } from "react";
-import { useHandlePlaylists } from "../../../hooks/useHandlePlaylists";
 
 const { Title } = Typography;
 
@@ -15,6 +14,7 @@ interface ReccomendedPlaylistRowProps {
   createPlaylist: Function;
   fetchPlaylistsByBook: Function;
   updatePlaylistIsFavorite: Function;
+  title: string
 }
 
 const ReccomendedPlayListRow: React.FC<ReccomendedPlaylistRowProps> = ({
@@ -23,7 +23,8 @@ const ReccomendedPlayListRow: React.FC<ReccomendedPlaylistRowProps> = ({
   fetchPlaylistsByBook,
   playlistSearchResults,
   choosePlaylist,
-  bookId = "1ea7e9b0-a5e2-4e00-b6b1-aeab35178921",
+  bookId,
+  title
 }) => {
   const [reccomendedCardData, setReccomendedCardData] = useState([]);
   const [fetchedPlaylists, setFetchedPlaylists] = useState([]);
@@ -106,7 +107,7 @@ const ReccomendedPlayListRow: React.FC<ReccomendedPlaylistRowProps> = ({
       <Row>
         <Col span={24}>
           <Title level={3} className="playlist-row-title">
-            Reccomended Playlists for -BookTitle-
+            Reccomended Playlists for -{title}-
           </Title>
         </Col>
       </Row>

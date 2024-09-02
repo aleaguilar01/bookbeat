@@ -122,7 +122,7 @@ export const handleSpotifyPlaylists = async (req: Request, res: Response) => {
   // console.log('new console log req.headers',req.headers);
 
   // Extracts the access token from the 'Authorization' header of the request, providing space between Bearer and token
-  const accessToken = req.headers.authorization?.split(' ')[1];
+  const accessToken = req.user?.spotifyToken.access_token
   // console.log('access token', accessToken);
   
   
@@ -173,9 +173,7 @@ export const handleSpotifyPlaylists = async (req: Request, res: Response) => {
 // http://localhost:3000/music/search?search=Adele for testing
 export const handleSpotifySearch = async (req: Request, res: Response) => {
   // Extract the access token from the Authorization header
-  const authHeader = req.headers.authorization;
-  const accessToken = authHeader?.split(' ')[1]; // 'Bearer token' => 'token'
-
+  const accessToken = req.user?.spotifyToken.access_token
   if (!accessToken) {
     return res.status(401).json({ error: 'Access token is missing' });
   }

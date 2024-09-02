@@ -6,13 +6,15 @@ interface PlaylistSearchPageProps {
   playlistSearch: string;
   setPlaylistSearch: React.Dispatch<React.SetStateAction<string>>;
   playlistSearchError: string;
+  title: string;
+  author?: string;
 }
 
-const PlaylistSearchPage: FC<PlaylistSearchPageProps> = ( {playlistSearch, setPlaylistSearch, playlistSearchError} ) =>  {
+const PlaylistSearchPage: FC<PlaylistSearchPageProps> = ( {playlistSearch, setPlaylistSearch, playlistSearchError, title, author} ) =>  {
   const {recommendations, getRecommendations } = useMusicRecommendation();
 
   useEffect(() => {
-    getRecommendations("The Elegance of the Hedgehog by Muriel Barbery");
+    getRecommendations(`${title} by ${author ? author: "unknown"}`);
   }, []); 
 
   console.log('testing reccomendations response', recommendations);

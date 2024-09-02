@@ -8,8 +8,13 @@ import MusicContainer from './MusicComponents/MusicContainer';
 import PlaylistSearchPage from './PlaylistSearchBar';
 import { usePlaylistSearch } from '../../hooks/usePlaylistSearch';
 
+interface TestPageProps{
+  bookId: string, 
+  title: string, 
+  author?: string
+}
 
-const TestPage: FC = () =>  {
+const TestPage: FC<TestPageProps> = ({bookId, title, author}) =>  {
   const [search, setSearch] = useState('')
   const [searchResults, setSearchResults] = useState([])
   const [playingTrack, setPlayingTrack] = useState<any>()
@@ -50,8 +55,7 @@ const TestPage: FC = () =>  {
 
   
   //// Getting Spotify Auth Token
-  const {user} = useAuth()
-  user.spotifyToken
+  const { user } = useAuth()
 
 
   /// SEARCHING FOR TRACKS
@@ -63,7 +67,7 @@ const TestPage: FC = () =>  {
         const response = await fetch(`http://localhost:3000/music/search?search=${encodeURIComponent(search)}`, {
           method: 'GET',
           headers: {
-            'Authorization': `Bearer ${user.spotifyToken.access_token}`, // Include the token here
+            'Authorization': `Bearer ${user.token}`, // Include the token here
             'Content-Type': 'application/json', // Optional: Ensure JSON format
           },
           credentials: 'include', 
@@ -128,8 +132,10 @@ const TestPage: FC = () =>  {
                 setPlaylistSearch={setPlaylistSearch}
                 playlistSearchError={playlistSearchError}
                 playlistSearch={playlistSearch}
+                title={title}
+                author={author}
                 />
-              <MusicContainer playlistSearchResults={playlistSearchResults} setPlaylistSearch={setPlaylistSearch} choosePlaylist={choosePlaylist}/>
+              <MusicContainer playlistSearchResults={playlistSearchResults} setPlaylistSearch={setPlaylistSearch} choosePlaylist={choosePlaylist} bookId={bookId} title={title}/>
             </div>
           )}
           </div>
