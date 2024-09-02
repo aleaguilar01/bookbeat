@@ -55,7 +55,7 @@ app.use(userRoutes)
 /// after the middleware is authenticated
 app.use("/book", authMiddleware, bookRoutes)
 app.use("/ai", authMiddleware, aiRoutes)
-app.use("/music", musicRoutes);
+app.use("/music", authMiddleware, musicRoutes);
 
 
 

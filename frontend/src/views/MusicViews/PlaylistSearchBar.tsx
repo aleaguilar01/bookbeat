@@ -6,13 +6,16 @@ interface PlaylistSearchPageProps {
   playlistSearch: string;
   setPlaylistSearch: React.Dispatch<React.SetStateAction<string>>;
   playlistSearchError: string;
+  title: string;
+  author?: string;
+  isBookPage: boolean
 }
 
-const PlaylistSearchPage: FC<PlaylistSearchPageProps> = ( {playlistSearch, setPlaylistSearch, playlistSearchError} ) =>  {
+const PlaylistSearchPage: FC<PlaylistSearchPageProps> = ( {playlistSearch, setPlaylistSearch, playlistSearchError, title, author, isBookPage} ) =>  {
   const {recommendations, getRecommendations } = useMusicRecommendation();
 
   useEffect(() => {
-    getRecommendations("The Elegance of the Hedgehog by Muriel Barbery");
+    getRecommendations(`${title} by ${author ? author: "unknown"}`);
   }, []); 
 
   console.log('testing reccomendations response', recommendations);
@@ -28,13 +31,13 @@ const PlaylistSearchPage: FC<PlaylistSearchPageProps> = ( {playlistSearch, setPl
 
   return (
     <div>
-      {playlistSearchError && <div>Error: {playlistSearchError}</div>}
-      <input
+      {!isBookPage && playlistSearchError && <div>Error: {playlistSearchError}</div>}
+      {!isBookPage && <input
         type="text"
         value={playlistSearch}
         onChange={(e) => setPlaylistSearch(e.target.value)}
         placeholder="Search for playlists (to be an AI search value)"
-      />
+      />}
     </div>
 
   );

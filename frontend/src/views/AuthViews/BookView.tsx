@@ -25,6 +25,7 @@ import {
 import { IBook, useBook } from "../../context/books-context";
 import { Colors, DEFAULT_READING_STATUS } from "../../constants";
 import { useHandleBooks } from "../../hooks/useHandleBooks";
+import TestPage from "../MusicViews/TestPage";
 import BookModal from "../../componets/BookModal";
 
 const { Title, Text, Paragraph } = Typography;
@@ -245,7 +246,13 @@ const BookPage = () => {
             <Paragraph>{book.firstSentence}</Paragraph>
           </Col>
         </Row>
-
+        <Divider orientation="left">Music</Divider>
+        <TestPage
+          bookId={book.id}
+          title={book.title}
+          author={book.author}
+          isBookPage
+        />
         <Divider orientation="left">Related Books</Divider>
         <List
           grid={{ gutter: 16, column: 3 }}

@@ -15,6 +15,10 @@ interface IAuthRequest {
 export interface IJwtPayload extends JwtPayload {
   email: string;
   userId: string;
+  spotifyToken: {
+    access_token: string,
+    refresh_token: string,
+  }
 }
 
 const SPOTIFY_CLIENT_ID: string = process.env.SPOTIFY_CLIENT_ID || '';

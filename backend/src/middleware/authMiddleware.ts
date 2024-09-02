@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import { IJwtPayload } from "../controllers/userController";
+import { decode } from "punycode";
 
 export const authMiddleware = async (
   req: Request,
@@ -14,7 +15,7 @@ export const authMiddleware = async (
   }
   try {
     const decoded = jwt.verify(token, process.env.JWT_SIGN!) as IJwtPayload;
-    req.user = { userId: decoded.userId, email: decoded.email };
+    req.user = { userId: decoded.userId, email: decoded.email, spotifyToken: decoded.spotifyToken};
     next();
   } catch (error) {
     res.status(401).json({ error: "Invalid token" });
