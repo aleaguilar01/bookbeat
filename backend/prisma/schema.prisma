@@ -24,11 +24,28 @@ enum Provider {
 }
 
 model Playlist {
-  id          String   @id @default(uuid())
-  name        String
-  picture     String?
-  description String?  @db.Text
-  userbook    UserBook @relation(fields: [id], references: [id])
+  id String @id @default(uuid())
+  playlistId String @unique
+  playlist String
+  image String?
+  description String? @db.Text
+  uri String
+  createdAt   DateTime?         @default(now())
+  updatedAt   DateTime?         @updatedAt
+  
+  userBooks   UserBookPlaylist[]
+}
+
+model UserBookPlaylist {
+  id String @id @default(uuid())
+  userBook UserBook @relation(fields: [userBookId], references: [id])
+  userBookId String
+  playlist Playlist @relation(fields: [playlistId], references: [id])
+  playlistId String
+  isFavorite Boolean @default(false)
+  @@unique([playlistId, userBookId], name: "userBookPlaylistIdentifier")
+  createdAt   DateTime?     @default(now())
+  updatedAt   DateTime?     @updatedAt
 }
 
 model UserBook {
@@ -38,12 +55,12 @@ model UserBook {
   book          Book          @relation(fields: [bookId], references: [isbn])
   bookId        String
   readingStatus ReadingStatus @default(WANT_TO_READ)
-  playlist      Playlist?
-  playlistId    String?
-  rating        Float?
-  isFavorite    Boolean?      @default(false)
-  createdAt     DateTime?     @default(now())
-  updatedAt     DateTime?     @updatedAt
+  rating Float?
+  isFavorite Boolean? @default(false)
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+
+  playlists UserBookPlaylist[] // Create relationship with join table
 }
 
 enum ReadingStatus {

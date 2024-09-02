@@ -21,9 +21,9 @@ export const useMusicRecommendation = () => {
     try {
       const response = await api.post("ai/music-reccomendations", { book });
       if (response.data) {
-        // console.log("getRecommendations response ", response);
+        console.log("getRecommendations response ", response);
         
-        // Assuming the response is an array of playlist names
+        // the response is an array of playlist names
         setRecommendations(response.data.playlist);
       }
     } catch (err) {

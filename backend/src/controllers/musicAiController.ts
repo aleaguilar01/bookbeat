@@ -33,6 +33,17 @@ export const aiPlaylistReccomendations = async (req: Request, res: Response) => 
     console.log('Ai giving response', msg)
 
     res.send(msg);
+
+    /* What if here I:
+    used the AI response to make a playlist search ('/playlist-search', handleSpotifyPlaylistSearch)
+    Added the results from the playlist search to the db (I would need some book identifier- maybe as another parameter in getReccomendations)
+    have the response from this aiPlaylistReccomendations be an array of object playlists, retrieved from the playlist search
+    
+    Then I could delete mapping reccomendations array to setPlaylistSearch.
+    And instead of mapping playlistSearchResults to reccomendedCardData
+    I could map reccomendations to reccomendedCardData 
+    */
+
   } catch (error) {
     console.error('AI Playlist Recommendation Error:', error); // Log the actual error
     res.status(500).send("Failed to Process AI Reccomendation");

@@ -49,13 +49,14 @@ export const usePlaylistSearch = () => {
         const data: PlaylistSearchResponse = await response.json();
         // console.log('this is the data',data);
         
-        // console.log('Playlist search results:', data);
+        console.log('Playlist search results in usePlaylistSearch:', data);
         
         setPlaylistSearchResults(
           data.playlists.items.map((playlist: any) => {
             
 
             return {
+              id: playlist.id,
               playlist: playlist.name,
               description: playlist.description,
               uri: playlist.uri,

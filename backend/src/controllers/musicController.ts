@@ -3,6 +3,8 @@ import { Request, Response } from 'express';
 import session from 'express-session';
 import axios from 'axios';
 import dotenv from "dotenv";
+import { redisClient } from "../lib/redisClient";
+import { prisma } from "../lib/prismaClient";
 
 dotenv.config();
 
@@ -270,7 +272,7 @@ export const handleSpotifyPlaylistSearch = async (req: Request, res: Response) =
     });
 
     const searchResults = response.data;
-    console.log(searchResults);
+    console.log('Response from searching playlists', searchResults);
     
     // Return search results as JSON
     return res.json(searchResults);
@@ -299,5 +301,195 @@ export const handleSpotifyPlaylistSearch = async (req: Request, res: Response) =
         details: 'An unknown error occurred'
       });
     }
+  }
+};
+
+
+
+///// DB Playlist Handlers
+
+export const createPlaylist = async (req: Request, res: Response) => {
+  const data = req.body;
+  console.log("Received request data in createPlaylist:", data);
+
+  let playlist = await prisma.playlist.findUnique({ where: { playlistId: data.id } });
+  console.log("(createPlaylist) Found playlist in database:", playlist);
+
+  if (!playlist) { 
+    try {
+      console.log("Playlist not found, creating a new one...");
+      playlist = await prisma.playlist.create({
+        data: {
+          playlistId: data.id,
+          playlist: data.playlist,
+          image: data.image,
+          description: data.description,
+          uri: data.uri,
+        },
+      });
+      console.log("Created new playlist:", playlist);
+    } catch (error) {
+      console.error("Error while creating the playlist:", error);
+      return res.status(500).send("Error occurred while creating the playlist.");
+    }
+  } else {
+    console.log("(createPlaylist) Using existing playlist:", playlist);
+  }
+
+  try {
+
+    let userPlaylist = await prisma.userBookPlaylist.findUnique({ where: { userBookPlaylistIdentifier: {playlistId: data.id, userBookId: data.userBookId} } });
+
+    console.log("Creating UserBookPlaylist...");
+    if (userPlaylist) return res.send(userPlaylist)
+
+    const userBookPlaylist = await prisma.userBookPlaylist.create({
+      data: {
+        userBook: {
+          connect: {
+            id: data.userBookId,
+          },
+        },
+        playlist: {
+          connect: {
+            id: playlist.id,
+          },
+        },
+        isFavorite: false,
+      },
+    });
+    console.log("Successfully created UserBookPlaylist:", userBookPlaylist);
+    res.send(userBookPlaylist);
+  } catch (error) {
+    console.error("Error while creating UserBookPlaylist:", error);
+    return res.status(500).send("(createPlaylist) Error occurred while linking the playlist.");
+  }
+};
+
+
+export const updateMyPlaylists = async (req: Request, res: Response) => {
+  const data = req.body;
+
+  // Log the incoming request data
+  console.log("Request Data in updateMyPlaylists:", data);
+
+  // Validate that "isFavorite" exists in the request body
+  if (!Object(data).hasOwnProperty("isFavorite")) {
+    return res.status(400).send("No valid data to update");
+  }
+
+  try {
+    // Log that you're about to find the userBookPlaylist
+    console.log("(updateMyPlaylists) Finding UserBookPlaylist with id:", data.id, "and userId:", req.user?.userId);
+
+    // Validate that the playlist belongs to the user and exists
+    const userBookPlaylist = await prisma.userBookPlaylist.findFirstOrThrow({
+      where: {
+        id: data.id,
+        userBook: {
+          userId: req.user?.userId, // Ensures it belongs to the logged-in user
+        },
+      },
+    });
+
+    // Log that the playlist was found
+    console.log("(updateMyPlaylists) Found UserBookPlaylist:", userBookPlaylist);
+
+    // Update the favorite status of the playlist
+    const updatedUserBookPlaylist = await prisma.userBookPlaylist.update({
+      where: {
+        id: userBookPlaylist.id,
+      },
+      data: {
+        isFavorite: data.isFavorite,
+      },
+    });
+
+    // Log the successful update
+    console.log("Updated UserBookPlaylist:", updatedUserBookPlaylist);
+
+    // Send a response with the updated record
+    return res.send({ updatedUserBookPlaylist });
+  } catch (error) {
+    // Log the error if something goes wrong
+    console.error("Error updating playlist favorite status:", error);
+    return res.status(500).send("Error occurred while updating the playlist.");
+  }
+};
+
+
+export const getFavoritedPlaylistsByBook = async (req: Request, res: Response) => {
+  const { bookId } = req.params; // Assuming the bookId is passed as a URL parameter
+
+  // Log the received bookId
+  console.log("Fetching favorited playlists for bookId:", bookId);
+
+  try {
+    // Fetch the favorited playlists associated with the specified book
+    const favoritedPlaylists = await prisma.userBookPlaylist.findMany({
+      where: {
+        userBookId: bookId, // Ensure this matches the field name and value
+        isFavorite: true,
+      },
+      include: {
+        playlist: true, // Include playlist details in the result
+      },
+    });
+
+    // Log the fetched playlists
+    console.log("Fetched favorited playlists:", favoritedPlaylists);
+
+    // Send the fetched playlists as the response
+    return res.json(favoritedPlaylists.map(({playlist, ...rest}) => ({...playlist, ...rest})));
+  } catch (error) {
+    // Log the error if something goes wrong
+    console.error("Error fetching favorited playlists:", error);
+    return res.status(500).send("Error occurred while fetching favorited playlists.");
+  }
+};
+
+
+export const getPlaylistsByBook = async (req: Request, res: Response) => {
+  const { bookId } = req.params; // Assuming the bookId is passed as a URL parameter
+
+  // Log the received bookId
+  console.log("MusicController- Fetching playlists for bookId:", bookId);
+
+  try {
+    // Fetch the playlists associated with the specified book without filtering by favorite status
+    const playlists = await prisma.userBookPlaylist.findMany({
+      
+      where: {
+        userBookId: bookId, // Ensure this matches the field name and value
+      },
+      include: {
+        playlist: true, // Include playlist details in the result
+      },
+    });
+
+    // Log the fetched playlists
+    console.log("MusicController- Fetched playlists:", playlists);
+
+
+    /*
+    const transformedPlaylists = playlists.map(playlist => ({
+    //       id: playlist.id,
+    //       playlistId: playlist.playlistId,
+    //       playlist: playlist.playlist.playlist, // Nested field
+    //       description: playlist.playlist.description, // Nested field
+    //       uri: playlist.playlist.uri, // Nested field
+    //       image: playlist.playlist.image, // Nested field
+    //       createdAt: playlist.createdAt,
+    //       updatedAt: playlist.updatedAt,
+    //       isFavorite: playlist.isFavorite
+    //     })); 
+    */
+
+    // Send the fetched playlists as the response
+    return res.json(playlists.map(({playlist, ...rest}) => ({...playlist, ...rest})));
+  } catch (error) {
+    // Log the error if something goes wrong
+    console.error("Error fetching playlists:", error);
+    return res.status(500).send("Error occurred while fetching playlists.");
   }
 };
