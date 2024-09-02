@@ -1,48 +1,63 @@
-import { ChangeEventHandler, FC } from "react";
-import "./ReadingStatusRadioBtn.styles.css";
+import React, { ChangeEventHandler, FC } from "react";
+import { Radio, RadioChangeEvent, Space } from "antd";
+import {
+  BookOutlined,
+  ReadOutlined,
+  CheckOutlined,
+  ReloadOutlined,
+  StopOutlined,
+} from "@ant-design/icons";
 
 interface ReadingStatusRadioButtonProps {
   readingStatus: string;
   setReadingStatus: (val: string) => void;
-  width?: string;
 }
 
-const READING_STATUS: Record<string, string> = {
-  WANT_TO_READ: "Want To Read",
-  READING: "Reading",
-  READ: "Read",
-  RE_READING: "Re Reading",
-  DID_NOT_FINISH: "DNF",
+const READING_STATUS: Record<string, { label: string; icon: JSX.Element }> = {
+  WANT_TO_READ: { label: "Want To Read", icon: <BookOutlined /> },
+  READING: { label: "Reading", icon: <ReadOutlined /> },
+  READ: { label: "Read", icon: <CheckOutlined /> },
+  RE_READING: { label: "Re Reading", icon: <ReloadOutlined /> },
+  DID_NOT_FINISH: { label: "DNF", icon: <StopOutlined /> },
 };
 
 const ReadingStatusRadioBtn: FC<ReadingStatusRadioButtonProps> = ({
   readingStatus,
   setReadingStatus,
-  width = "100%",
 }) => {
-  const handleChange: ChangeEventHandler<HTMLInputElement> = (event) => {
-    setReadingStatus(event.currentTarget.value);
+  const handleChange: (e: RadioChangeEvent) => void = (event) => {
+    setReadingStatus(event.target.value);
   };
+
   return (
-    <div>
-      {Object.keys(READING_STATUS).map((key) => {
-        return (
-          <div className="inputGroup" key={key}>
-            <input
-              name="radio"
-              type="radio"
-              id={key}
-              value={key}
-              checked={readingStatus === key}
-              onChange={handleChange}
-            />
-            <label htmlFor={key} style={{ width }}>
-              {READING_STATUS[key]}
-            </label>
-          </div>
-        );
-      })}
-    </div>
+    <Radio.Group
+      onChange={handleChange}
+      value={readingStatus}
+      style={{ width: "100%" }}
+    >
+      <Space direction="vertical" style={{ width: "100%" }}>
+        {Object.entries(READING_STATUS).map(([key, { label, icon }]) => (
+          <Radio
+            key={key}
+            value={key}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              padding: "8px 12px",
+              border: "1px solid #d9d9d9",
+              borderRadius: "4px",
+              marginBottom: "8px",
+              transition: "all 0.3s",
+            }}
+          >
+            <Space>
+              {icon}
+              {label}
+            </Space>
+          </Radio>
+        ))}
+      </Space>
+    </Radio.Group>
   );
 };
 
