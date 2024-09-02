@@ -1,13 +1,6 @@
-import {
-  Card,
-  Flex,
-  Input,
-  Typography,
-  Button,
-  Avatar,
-} from "antd";
+import { Card, Flex, Input, Typography, Button, Avatar } from "antd";
 import { ChangeEventHandler, FC, useState } from "react";
-import { UserOutlined } from '@ant-design/icons';
+import { UserOutlined } from "@ant-design/icons";
 import Loading from "./Loading";
 import { useChat } from "../hooks/useChat";
 import { Colors } from "../constants";
@@ -53,15 +46,17 @@ const Chat: FC = () => {
                   borderRadius: 8,
                   padding: 8,
                   color: "white",
-                  fontSize: 12,
+                  fontSize: 18,
                   alignSelf: msg.role == "user" ? "right" : "left",
                   width: 320,
-                  textAlign: "left"
+                  textAlign: "left",
                 }}
               >
                 {msg.content}
               </Paragraph>
-              {msg.role == "user" && <Avatar size={44} icon={<UserOutlined />} />}
+              {msg.role == "user" && (
+                <Avatar size={44} icon={<UserOutlined />} />
+              )}
             </Flex>
           );
         })}
@@ -74,6 +69,11 @@ const Chat: FC = () => {
           value={text}
           onChange={handleText}
           style={{ width: 370 }}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              handleChat();
+            }
+          }}
         />
         <Button type="primary" onClick={handleChat}>
           Send

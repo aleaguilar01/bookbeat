@@ -1,6 +1,5 @@
 // Import Swiper React components
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Image } from "antd"
 
 // Import Swiper styles
 import "swiper/css";
