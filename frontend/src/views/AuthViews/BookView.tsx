@@ -23,7 +23,7 @@ import {
 import { IBook, useBook } from "../../context/books-context";
 import { Colors, DEFAULT_READING_STATUS } from "../../constants";
 import { useHandleBooks } from "../../hooks/useHandleBooks";
-import MusicDashboard from "../MusicViews/MusicDashboard";
+import TestPage from "../MusicViews/TestPage";
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -50,7 +50,7 @@ const BookPage = () => {
     }
   }, [book, relatedBooks, isLoading]);
 
-  console.log(relatedBooks)
+  console.log(relatedBooks);
   const relatedBookStyles: Record<string, CSSProperties> = {
     card: {
       height: "100%",
@@ -218,7 +218,13 @@ const BookPage = () => {
             <Paragraph>{book.firstSentence}</Paragraph>
           </Col>
         </Row>
-
+        <Divider orientation="left">Music</Divider>
+        <TestPage
+          bookId={book.id}
+          title={book.title}
+          author={book.author}
+          isBookPage
+        />
         <Divider orientation="left">Related Books</Divider>
         <List
           grid={{ gutter: 16, column: 3 }}
@@ -264,7 +270,6 @@ const BookPage = () => {
           )}
         />
       </Card>
-      <MusicDashboard bookId={book.id} title={book.title} author={book.author} />
     </div>
   );
 };

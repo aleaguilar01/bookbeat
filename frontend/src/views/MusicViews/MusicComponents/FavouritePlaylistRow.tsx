@@ -1,11 +1,7 @@
-import { Card, Row, Col, Button, Typography } from "antd";
-import { PlusOutlined } from "@ant-design/icons";
+import { Row, Col, Typography } from "antd";
 import FavouritePlaylistCard from "./FavouritePlaylistCard";
-import {
-  IPlaylist,
-  useHandlePlaylists,
-} from "../../../hooks/useHandlePlaylists";
-import { useState, useEffect } from "react";
+import { IPlaylist } from "../../../hooks/useHandlePlaylists";
+import { useEffect } from "react";
 
 const { Title } = Typography;
 
@@ -26,7 +22,7 @@ const FavouritePlayListRow: React.FC<FavoritePlaylistRowProps> = ({
   choosePlaylist,
   fetchedFavoritePlaylists,
   fetchFavoritePlaylistsByBook,
-  title
+  title,
 }) => {
   // const [fetchedFavoritePlaylists, setFetchedFavoritePlaylists] = useState([]);
   // const [favoriteCardData, setFavoriteCardData] = useState([])
@@ -92,30 +88,24 @@ const FavouritePlayListRow: React.FC<FavoritePlaylistRowProps> = ({
   // Limit the number of playlists rendered to MAX_PLAYLISTS
 
   return (
-    <div>
+    <>
       {/* Title for the Favorite Playlists section */}
-      <Row>
-        <Col span={24}>
-          <Title level={3} className="playlist-row-title">
-            Favourite Playlists for -{title}-
-          </Title>
-        </Col>
-      </Row>
+
       {/* Playlists Row */}
       <Row gutter={[16, 16]} justify="start">
-        {fetchedFavoritePlaylists.map((playlist: any, index) => (
-          <Col span={4} key={playlist.id}>
+        {fetchedFavoritePlaylists.slice(0, 3).map((playlist) => (
+          <Col span={8} key={playlist.id}>
             <FavouritePlaylistCard
               updatePlaylistIsFavorite={updatePlaylistIsFavorite}
               playlist={playlist}
               choosePlaylist={choosePlaylist}
-              bookId={bookId} /*onFavoriteChange={handleFavoriteChange}*/
+              bookId={bookId}
             />
           </Col>
         ))}
-
-        {/* Render a single + button in the next available slot if there's space */}
-        {/* {playlists.length < MAX_PLAYLISTS && (
+      </Row>
+      {/* Render a single + button in the next available slot if there's space */}
+      {/* {playlists.length < MAX_PLAYLISTS && (
       <Col span={4}>
         <Card
           hoverable
@@ -130,8 +120,7 @@ const FavouritePlayListRow: React.FC<FavoritePlaylistRowProps> = ({
         </Card>
       </Col>
     )} */}
-      </Row>
-    </div>
+    </>
   );
 };
 
