@@ -64,3 +64,17 @@
 .delete-icon {
   transform: scale(1.5); 
 }
+
+
+.heart-icon {
+  color: pink;
+  font-size: 24px;
+}
+
+.favorited .heart-icon {
+  color: red; /* Example for when it is favorited */
+}
+
+.not-favorited .heart-icon {
+  color: pink; /* Example for when it is not favorited */
+}

@@ -342,7 +342,7 @@ export const createPlaylist = async (req: Request, res: Response) => {
 
     console.log("Creating UserBookPlaylist...");
     if (userPlaylist) return res.send(userPlaylist)
-    
+
     const userBookPlaylist = await prisma.userBookPlaylist.create({
       data: {
         userBook: {
@@ -355,7 +355,7 @@ export const createPlaylist = async (req: Request, res: Response) => {
             id: playlist.id,
           },
         },
-        isFavorite: true,
+        isFavorite: false,
       },
     });
     console.log("Successfully created UserBookPlaylist:", userBookPlaylist);
@@ -428,9 +428,7 @@ export const getFavoritedPlaylistsByBook = async (req: Request, res: Response) =
     // Fetch the favorited playlists associated with the specified book
     const favoritedPlaylists = await prisma.userBookPlaylist.findMany({
       where: {
-        userBook: {
-          bookId: bookId,
-        },
+        userBookId: bookId, // Ensure this matches the field name and value
         isFavorite: true,
       },
       include: {
@@ -442,10 +440,56 @@ export const getFavoritedPlaylistsByBook = async (req: Request, res: Response) =
     console.log("Fetched favorited playlists:", favoritedPlaylists);
 
     // Send the fetched playlists as the response
-    return res.json(favoritedPlaylists);
+    return res.json(favoritedPlaylists.map(({playlist, ...rest}) => ({...playlist, ...rest})));
   } catch (error) {
     // Log the error if something goes wrong
     console.error("Error fetching favorited playlists:", error);
     return res.status(500).send("Error occurred while fetching favorited playlists.");
+  }
+};
+
+
+export const getPlaylistsByBook = async (req: Request, res: Response) => {
+  const { bookId } = req.params; // Assuming the bookId is passed as a URL parameter
+
+  // Log the received bookId
+  console.log("MusicController- Fetching playlists for bookId:", bookId);
+
+  try {
+    // Fetch the playlists associated with the specified book without filtering by favorite status
+    const playlists = await prisma.userBookPlaylist.findMany({
+      
+      where: {
+        userBookId: bookId, // Ensure this matches the field name and value
+      },
+      include: {
+        playlist: true, // Include playlist details in the result
+      },
+    });
+
+    // Log the fetched playlists
+    console.log("MusicController- Fetched playlists:", playlists);
+
+
+    /*
+    const transformedPlaylists = playlists.map(playlist => ({
+    //       id: playlist.id,
+    //       playlistId: playlist.playlistId,
+    //       playlist: playlist.playlist.playlist, // Nested field
+    //       description: playlist.playlist.description, // Nested field
+    //       uri: playlist.playlist.uri, // Nested field
+    //       image: playlist.playlist.image, // Nested field
+    //       createdAt: playlist.createdAt,
+    //       updatedAt: playlist.updatedAt,
+    //       isFavorite: playlist.isFavorite
+    //     })); 
+    */
+
+    // Send the fetched playlists as the response
+    return res.json(playlists.map(({playlist, ...rest}) => ({...playlist, ...rest})));
+  } catch (error) {
+    // Log the error if something goes wrong
+    console.error("Error fetching playlists:", error);
+    return res.status(500).send("Error occurred while fetching playlists.");
   }
 };

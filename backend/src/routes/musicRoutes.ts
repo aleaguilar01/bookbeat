@@ -1,7 +1,7 @@
 import express from "express";
 
 
-import { handleSpotifyPlaylistSearch, handleSpotifyPlaylists, handleSpotifyRefreshToken, handleSpotifySearch, getFavoritedPlaylistsByBook, createPlaylist, updateMyPlaylists} from '../controllers/musicController';  // Import the controller
+import { handleSpotifyPlaylistSearch, handleSpotifyPlaylists, handleSpotifyRefreshToken, handleSpotifySearch, getFavoritedPlaylistsByBook, createPlaylist, updateMyPlaylists, getPlaylistsByBook} from '../controllers/musicController';  // Import the controller
 // getMusicHome, loginWithSpotify, handleSpotifyCallback, getMusicRouteIndexPage
 
 const router = express.Router();
@@ -24,6 +24,8 @@ router.get('/playlist-search', handleSpotifyPlaylistSearch)
 router.get('/my-playlists/favorites/:bookId', getFavoritedPlaylistsByBook);
 router.post("/my-playlists", createPlaylist);
 router.put("/my-playlists", updateMyPlaylists);
+router.get('/my-playlists/:bookId', getPlaylistsByBook);
+
 
 
 export default router;
