@@ -30,7 +30,7 @@ const BookRecommendations: FC<BookRecommendationsProps> = () => {
         position: "relative",
       }}
     >
-      <Title level={3}>Book Recommendations</Title>
+      <Title level={3}>Recommendations</Title>
       {isLoading && <Loading />}
       {recommendedBooks.length > 0 ? (
         <Swiper

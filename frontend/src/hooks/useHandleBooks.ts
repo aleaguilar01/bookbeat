@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useBook } from "../context/books-context";
 import { useApi } from "./useApi";
+import { useNavigate } from "react-router";
+import { message } from "antd";
 
 interface CreateBookArgs {
   readingStatus: string;
@@ -18,6 +20,7 @@ export const useHandleBooks = () => {
   const { refetch } = useBook();
   const [isLoading, setIsLoading] = useState(false);
   const api = useApi();
+  const navigate = useNavigate();
   const updateRating = (myRating: number, id: string) => {
     setIsLoading(true);
     api
@@ -59,6 +62,22 @@ export const useHandleBooks = () => {
         setIsLoading(false);
       });
   };
+  const deleteBook = async (id: string) => {
+    setIsLoading(true);
+    return api
+      .delete("/book/", { params: { id } })
+      .then(() => {
+        refetch();
+        message.success("Book deleted successfully");
+        navigate("/");
+      })
+      .catch(() => {
+        message.error("Something went wrong, please try again later!");
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  };
 
   return {
     updateIsFavorite,
@@ -67,5 +86,6 @@ export const useHandleBooks = () => {
     createBook,
     getRelatedBooks,
     isLoading,
+    deleteBook,
   };
 };
