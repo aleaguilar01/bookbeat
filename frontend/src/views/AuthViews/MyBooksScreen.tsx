@@ -106,7 +106,7 @@ const MyBooksScreen: FC = () => {
               style={{ width: 250 }}
             />
             <Select
-              style={{ width: 150 }}
+              style={{ width: 225 }}
               optionFilterProp="label"
               onChange={handleSelectStatus}
               options={[...extraBookOptions, ...DEFAULT_READING_STATUS]}
@@ -161,7 +161,7 @@ const MyBooksScreen: FC = () => {
                       }}
                     />
                     <Select
-                      style={{ width: 150 }}
+                      style={{ width: 225 }}
                       optionFilterProp="label"
                       onChange={(value: string) => {
                         updateReadingStatus(value, item.id);

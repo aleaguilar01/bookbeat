@@ -147,7 +147,7 @@ const BookPage = () => {
             <div style={{ marginBottom: "16px" }}>
               <Text>Status:</Text>
               <Select
-                style={{ width: 150, marginLeft: "8px" }}
+                style={{ width: 225, marginLeft: "8px" }}
                 optionFilterProp="label"
                 onChange={(value: string) => {
                   updateReadingStatus(value, id);
