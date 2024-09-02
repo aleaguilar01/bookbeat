@@ -3,7 +3,6 @@ import React, { FC } from 'react';
 import { Row, Col, Typography } from 'antd';
 import FavouritePlayListRow from './FavouritePlaylistRow';
 import ReccomendedPlayListRow from './ReccomendedPlaylistsRow';
-import CustomPlayListRow from './CustomPlaylistRow';
 import '../MusicStyles/MusicContainer.styles.css'
 import { useHandlePlaylists } from '../../../hooks/useHandlePlaylists';
 
@@ -13,9 +12,11 @@ interface MusicContainerProps {
   playlistSearchResults: any;
   setPlaylistSearch: any;
   choosePlaylist: any
+  bookId: string;
+  title: string;
 }
 
-const MusicContainer: FC<MusicContainerProps> = ({playlistSearchResults, setPlaylistSearch, choosePlaylist}) => {
+const MusicContainer: FC<MusicContainerProps> = ({playlistSearchResults, setPlaylistSearch, choosePlaylist, bookId, title}) => {
   console.log("playlist search results inside music container", playlistSearchResults);
   const { updatePlaylistIsFavorite,
     createPlaylist,
@@ -39,6 +40,8 @@ const MusicContainer: FC<MusicContainerProps> = ({playlistSearchResults, setPlay
         fetchFavoritePlaylistsByBook={fetchFavoritePlaylistsByBook} 
         updatePlaylistIsFavorite={updatePlaylistIsFavorite} 
         fetchedFavoritePlaylists={fetchedFavoritePlaylists}
+        bookId={bookId}
+        title={title}
       />
       <ReccomendedPlayListRow 
         playlistSearchResults={playlistSearchResults} 
@@ -47,8 +50,9 @@ const MusicContainer: FC<MusicContainerProps> = ({playlistSearchResults, setPlay
         createPlaylist={createPlaylist} 
         fetchPlaylistsByBook={fetchPlaylistsByBook} 
         updatePlaylistIsFavorite={updatePlaylistIsFavorite}
+        bookId={bookId}
+        title={title}
       />
-      {/* <CustomPlayListRow /> */}
     </div>
   );
 };

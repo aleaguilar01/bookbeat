@@ -23,6 +23,7 @@ import {
 import { IBook, useBook } from "../../context/books-context";
 import { Colors, DEFAULT_READING_STATUS } from "../../constants";
 import { useHandleBooks } from "../../hooks/useHandleBooks";
+import MusicDashboard from "../MusicViews/MusicDashboard";
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -263,6 +264,7 @@ const BookPage = () => {
           )}
         />
       </Card>
+      <MusicDashboard bookId={book.id} title={book.title} author={book.author} />
     </div>
   );
 };

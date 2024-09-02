@@ -11,6 +11,7 @@ const { Title } = Typography;
 
 interface FavoritePlaylistRowProps {
   bookId?: string;
+  title: string;
   choosePlaylist: any;
   fetchFavoritePlaylistsByBook: Function;
   updatePlaylistIsFavorite: Function;
@@ -21,10 +22,11 @@ const MAX_PLAYLISTS = 4;
 
 const FavouritePlayListRow: React.FC<FavoritePlaylistRowProps> = ({
   updatePlaylistIsFavorite,
-  bookId = "1ea7e9b0-a5e2-4e00-b6b1-aeab35178921",
+  bookId,
   choosePlaylist,
   fetchedFavoritePlaylists,
   fetchFavoritePlaylistsByBook,
+  title
 }) => {
   // const [fetchedFavoritePlaylists, setFetchedFavoritePlaylists] = useState([]);
   // const [favoriteCardData, setFavoriteCardData] = useState([])
@@ -95,7 +97,7 @@ const FavouritePlayListRow: React.FC<FavoritePlaylistRowProps> = ({
       <Row>
         <Col span={24}>
           <Title level={3} className="playlist-row-title">
-            Favourite Playlists for -BookTitle-
+            Favourite Playlists for -{title}-
           </Title>
         </Col>
       </Row>
