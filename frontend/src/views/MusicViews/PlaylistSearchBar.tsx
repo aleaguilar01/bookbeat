@@ -8,9 +8,10 @@ interface PlaylistSearchPageProps {
   playlistSearchError: string;
   title: string;
   author?: string;
+  isBookPage: boolean
 }
 
-const PlaylistSearchPage: FC<PlaylistSearchPageProps> = ( {playlistSearch, setPlaylistSearch, playlistSearchError, title, author} ) =>  {
+const PlaylistSearchPage: FC<PlaylistSearchPageProps> = ( {playlistSearch, setPlaylistSearch, playlistSearchError, title, author, isBookPage} ) =>  {
   const {recommendations, getRecommendations } = useMusicRecommendation();
 
   useEffect(() => {
@@ -30,13 +31,13 @@ const PlaylistSearchPage: FC<PlaylistSearchPageProps> = ( {playlistSearch, setPl
 
   return (
     <div>
-      {playlistSearchError && <div>Error: {playlistSearchError}</div>}
-      <input
+      {!isBookPage && playlistSearchError && <div>Error: {playlistSearchError}</div>}
+      {!isBookPage && <input
         type="text"
         value={playlistSearch}
         onChange={(e) => setPlaylistSearch(e.target.value)}
         placeholder="Search for playlists (to be an AI search value)"
-      />
+      />}
     </div>
 
   );

@@ -14,7 +14,7 @@ interface ReccomendedPlaylistRowProps {
   createPlaylist: Function;
   fetchPlaylistsByBook: Function;
   updatePlaylistIsFavorite: Function;
-  title: string
+  title: string;
 }
 
 const ReccomendedPlayListRow: React.FC<ReccomendedPlaylistRowProps> = ({
@@ -24,7 +24,7 @@ const ReccomendedPlayListRow: React.FC<ReccomendedPlaylistRowProps> = ({
   playlistSearchResults,
   choosePlaylist,
   bookId,
-  title
+  title,
 }) => {
   const [reccomendedCardData, setReccomendedCardData] = useState([]);
   const [fetchedPlaylists, setFetchedPlaylists] = useState([]);
@@ -98,34 +98,23 @@ const ReccomendedPlayListRow: React.FC<ReccomendedPlaylistRowProps> = ({
   console.log("This is the reccomended card data", reccomendedCardData);
 
   // Limit the number of playlists rendered to MAX_PLAYLISTS
-  const MAX_PLAYLISTS = 4;
+  const MAX_PLAYLISTS = 3;
 
   const displayedPlaylists = reccomendedCardData.slice(0, MAX_PLAYLISTS);
   return (
-    <div>
-      {/* Title for the Favorite Playlists section */}
-      <Row>
-        <Col span={24}>
-          <Title level={3} className="playlist-row-title">
-            Reccomended Playlists for -{title}-
-          </Title>
+    <Row gutter={[16, 16]} justify="start">
+      {displayedPlaylists.map((playlist) => (
+        <Col span={8} key={playlist.id}>
+          <ReccomendedPlaylistCard
+            updatePlaylistIsFavorite={updatePlaylistIsFavorite}
+            playlist={playlist}
+            choosePlaylist={choosePlaylist}
+            onFavoriteChange={handleFavoriteChange}
+            bookId={bookId}
+          />
         </Col>
-      </Row>
-      {/* Playlists Row */}
-      <Row gutter={[16, 16]} justify="start">
-        {displayedPlaylists.map((playlist: any, index) => (
-          <Col span={4} key={index}>
-            <ReccomendedPlaylistCard
-              updatePlaylistIsFavorite={updatePlaylistIsFavorite}
-              playlist={playlist}
-              choosePlaylist={choosePlaylist}
-              onFavoriteChange={handleFavoriteChange}
-              bookId={bookId}
-            />
-          </Col>
-        ))}
-      </Row>
-    </div>
+      ))}
+    </Row>
   );
 };
 

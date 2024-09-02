@@ -12,6 +12,7 @@ interface MusicDashboardProps {
   bookId?: string; // is actually the userBookId = 
   title: string;
   author?: string;
+  isBookPage: boolean;
 }
 
 const MusicDashboard: FC<MusicDashboardProps> = ({ bookId = "1ea7e9b0-a5e2-4e00-b6b1-aeab35178921", title, author }) => {
