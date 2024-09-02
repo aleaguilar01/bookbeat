@@ -1,27 +1,30 @@
-import { Card, Row, Col, Button, Typography } from 'antd';
-import { PlusOutlined } from '@ant-design/icons';
-import FavouritePlaylistCard from './FavouritePlaylistCard';
-import { IPlaylist, useHandlePlaylists } from '../../../hooks/useHandlePlaylists';
-import { useState, useEffect } from 'react';
+import { Card, Row, Col, Button, Typography } from "antd";
+import { PlusOutlined } from "@ant-design/icons";
+import FavouritePlaylistCard from "./FavouritePlaylistCard";
+import {
+  IPlaylist,
+  useHandlePlaylists,
+} from "../../../hooks/useHandlePlaylists";
+import { useState, useEffect } from "react";
 
 const { Title } = Typography;
 
-
 interface FavoritePlaylistRowProps {
-  bookId?: string
+  bookId?: string;
   choosePlaylist: any;
-  fetchFavoritePlaylistsByBook: Function,
-  updatePlaylistIsFavorite: Function,
-  fetchedFavoritePlaylists: Array<IPlaylist>
+  fetchFavoritePlaylistsByBook: Function;
+  updatePlaylistIsFavorite: Function;
+  fetchedFavoritePlaylists: Array<IPlaylist>;
 }
 
 const MAX_PLAYLISTS = 4;
 
-const FavouritePlayListRow: React.FC<FavoritePlaylistRowProps> = ({ 
-  updatePlaylistIsFavorite, bookId = "6059c1ea-815f-4181-9a06-81a17e465776", 
-  choosePlaylist, 
-  fetchedFavoritePlaylists, 
-  fetchFavoritePlaylistsByBook
+const FavouritePlayListRow: React.FC<FavoritePlaylistRowProps> = ({
+  updatePlaylistIsFavorite,
+  bookId = "1ea7e9b0-a5e2-4e00-b6b1-aeab35178921",
+  choosePlaylist,
+  fetchedFavoritePlaylists,
+  fetchFavoritePlaylistsByBook,
 }) => {
   // const [fetchedFavoritePlaylists, setFetchedFavoritePlaylists] = useState([]);
   // const [favoriteCardData, setFavoriteCardData] = useState([])
@@ -36,30 +39,30 @@ const FavouritePlayListRow: React.FC<FavoritePlaylistRowProps> = ({
   //   if(bookId){
   //     fetchFavoritePlaylistsByBook(bookId)
   //   }
-    // const fetchData = async () => {
-    //   try {
-    //     const playlists = await fetchFavoritePlaylistsByBook();
-    //     // Transform the data to include only required fields
-    //     const transformedPlaylists = playlists.map(playlist => ({
-    //       id: playlist.id,
-    //       playlistId: playlist.playlistId,
-    //       playlist: playlist.playlist.playlist, // Nested field
-    //       description: playlist.playlist.description, // Nested field
-    //       uri: playlist.playlist.uri, // Nested field
-    //       image: playlist.playlist.image, // Nested field
-    //       createdAt: playlist.createdAt,
-    //       updatedAt: playlist.updatedAt,
-    //       isFavorite: playlist.isFavorite
-    //     }));
+  // const fetchData = async () => {
+  //   try {
+  //     const playlists = await fetchFavoritePlaylistsByBook();
+  //     // Transform the data to include only required fields
+  //     const transformedPlaylists = playlists.map(playlist => ({
+  //       id: playlist.id,
+  //       playlistId: playlist.playlistId,
+  //       playlist: playlist.playlist.playlist, // Nested field
+  //       description: playlist.playlist.description, // Nested field
+  //       uri: playlist.playlist.uri, // Nested field
+  //       image: playlist.playlist.image, // Nested field
+  //       createdAt: playlist.createdAt,
+  //       updatedAt: playlist.updatedAt,
+  //       isFavorite: playlist.isFavorite
+  //     }));
 
-    //     console.log("Transformed favorite playlists:", transformedPlaylists);
-    //     setFetchedFavoritePlaylists(transformedPlaylists);
-    //   } catch (error) {
-    //     console.error("Error fetching favorite playlists:", error);
-    //   }
-    // };
-  
-    // fetchData();
+  //     console.log("Transformed favorite playlists:", transformedPlaylists);
+  //     setFetchedFavoritePlaylists(transformedPlaylists);
+  //   } catch (error) {
+  //     console.error("Error fetching favorite playlists:", error);
+  //   }
+  // };
+
+  // fetchData();
   // }, []);
 
   // useEffect(() => {
@@ -76,40 +79,41 @@ const FavouritePlayListRow: React.FC<FavoritePlaylistRowProps> = ({
   //   setFavoriteCardData(uniquePlaylists);
   // }, [fetchedFavoritePlaylists]);
 
-
   // const handleFavoriteChange = (playlistId: string, isFavorite: boolean) => {
-  //   setFavoriteCardData(prevData => 
-  //     prevData.map(playlist => 
+  //   setFavoriteCardData(prevData =>
+  //     prevData.map(playlist =>
   //       playlist.id === playlistId ? { ...playlist, isFavorite } : playlist
   //     )
   //   );
   // };
 
-
   // Limit the number of playlists rendered to MAX_PLAYLISTS
 
-
   return (
-  <div>
-
-    {/* Title for the Favorite Playlists section */}
-    <Row>
+    <div>
+      {/* Title for the Favorite Playlists section */}
+      <Row>
         <Col span={24}>
-          <Title level={3} className='playlist-row-title'>
+          <Title level={3} className="playlist-row-title">
             Favourite Playlists for -BookTitle-
           </Title>
         </Col>
-    </Row>
-    {/* Playlists Row */}
-    <Row gutter={[16, 16]} justify="start" >
-    {fetchedFavoritePlaylists.map((playlist: any, index) => (
-      <Col span={4} key={playlist.id}  >
-        <FavouritePlaylistCard updatePlaylistIsFavorite={updatePlaylistIsFavorite} playlist={playlist} choosePlaylist={choosePlaylist}  bookId={bookId} /*onFavoriteChange={handleFavoriteChange}*/ />
-      </Col>
-    ))}
+      </Row>
+      {/* Playlists Row */}
+      <Row gutter={[16, 16]} justify="start">
+        {fetchedFavoritePlaylists.map((playlist: any, index) => (
+          <Col span={4} key={playlist.id}>
+            <FavouritePlaylistCard
+              updatePlaylistIsFavorite={updatePlaylistIsFavorite}
+              playlist={playlist}
+              choosePlaylist={choosePlaylist}
+              bookId={bookId} /*onFavoriteChange={handleFavoriteChange}*/
+            />
+          </Col>
+        ))}
 
-    {/* Render a single + button in the next available slot if there's space */}
-    {/* {playlists.length < MAX_PLAYLISTS && (
+        {/* Render a single + button in the next available slot if there's space */}
+        {/* {playlists.length < MAX_PLAYLISTS && (
       <Col span={4}>
         <Card
           hoverable
@@ -124,8 +128,8 @@ const FavouritePlayListRow: React.FC<FavoritePlaylistRowProps> = ({
         </Card>
       </Col>
     )} */}
-    </Row>
-  </div>
+      </Row>
+    </div>
   );
 };
 

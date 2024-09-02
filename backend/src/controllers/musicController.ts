@@ -241,8 +241,8 @@ export const handleSpotifySearch = async (req: Request, res: Response) => {
 
 export const handleSpotifyPlaylistSearch = async (req: Request, res: Response) => {
   // Extract the access token from the Authorization header
-  const authHeader = req.headers.authorization;
-  const accessToken = authHeader?.split(' ')[1]; 
+
+  const accessToken = req.user?.spotifyToken?.access_token
 
   if (!accessToken) {
     return res.status(401).json({ error: 'Access token is missing' });
