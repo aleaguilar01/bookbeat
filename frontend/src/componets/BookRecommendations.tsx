@@ -4,6 +4,7 @@ import Loading from "./Loading";
 import { useRecommendedBooks } from "../hooks/useRecommendedBooks";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { EffectCards } from "swiper/modules";
+const emptyStateUrl = new URL("../../empty-state-v3.jpg", import.meta.url).href;
 
 // Import Swiper styles
 import "swiper/css";
@@ -59,7 +60,10 @@ const BookRecommendations: FC<BookRecommendationsProps> = () => {
           ))}
         </Swiper>
       ) : (
-        <Empty>Please add more books to get a recommendation</Empty>
+        <Empty
+          image={emptyStateUrl}
+          description="Please add more books to get a recommendation"
+        />
       )}
       <BookModal
         book={selectedBook}

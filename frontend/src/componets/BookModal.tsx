@@ -1,5 +1,4 @@
-import Rating from "./Rating";
-import { Modal, Image, Flex, Typography, Space } from "antd";
+import { Modal, Image, Flex, Typography, Space, Rate } from "antd";
 import { FC, useState } from "react";
 import { useHandleBooks } from "../hooks/useHandleBooks";
 import { IBook } from "../context/books-context";
@@ -68,7 +67,7 @@ const BookModal: FC<IBookModalProps> = ({
           />
           <Flex vertical gap={16} style={{ width: 350 }}>
             <Text italic>{book.author}</Text>
-            <Rating rating={book.rating || 0} isEditable={false} />
+            <Rate value={book.rating || 0} disabled />
             <Text>First published: {book.publishedYear}</Text>
             <Text>{book.numberOfPages} pages</Text>
             <Text>{book.firstSentence || alternativeText}</Text>

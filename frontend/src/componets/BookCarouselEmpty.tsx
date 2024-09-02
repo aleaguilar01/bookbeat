@@ -1,14 +1,12 @@
-import { Empty, Typography } from "antd";
+import { Empty } from "antd";
 const emptyStateUrl = new URL("../../empty-state.png", import.meta.url).href;
-
-const { Text } = Typography;
 
 const BookCarouselEmpty = () => {
   return (
     <Empty
       image={emptyStateUrl}
       imageStyle={{ height: 300 }}
-      description={<Text>No Fav Books Yet!</Text>}
+      description="No Fav Books Yet!"
     >
       {/* <Button type="primary">Add Books</Button> */}
     </Empty>

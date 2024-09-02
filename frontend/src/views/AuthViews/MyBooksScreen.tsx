@@ -7,6 +7,7 @@ import {
 } from "react";
 import {
   Button,
+  Empty,
   Flex,
   Input,
   List,
@@ -27,6 +28,7 @@ import { useBook } from "../../context/books-context";
 import { useHandleBooks } from "../../hooks/useHandleBooks";
 import { Colors, DEFAULT_READING_STATUS } from "../../constants";
 import { Link } from "react-router-dom";
+const emptyStateUrl = new URL("../../../empty-state-v4.jpg", import.meta.url).href;
 
 const { Title } = Typography;
 const extraBookOptions = [
@@ -91,6 +93,9 @@ const MyBooksScreen: FC = () => {
         loading={isLoading || isProcessing}
         itemLayout="vertical"
         size="large"
+        locale={{
+          emptyText: <Empty image={emptyStateUrl} description="Start searching for your books!"/>
+        }}
         header={
           <Flex justify="space-around" align="center">
             <Title level={2}>My Books</Title>
