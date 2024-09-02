@@ -218,7 +218,7 @@ export const getRecommendedBooks = async (req: Request, res: Response) => {
       },
     });
 
-    if(userBooks.length === 0){
+    if(userBooks.length < 4){
       return res.send([])
     }
 

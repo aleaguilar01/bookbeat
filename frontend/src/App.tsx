@@ -14,7 +14,7 @@ function App() {
     <ConfigProvider
       theme={{
         token: {
-          fontFamily: "Slminoel",
+          fontFamily: "BangTamvan",
           fontSize: 18,
           colorPrimary: "#FF8343",
           // colorFillSecondary: "#179BAE",
