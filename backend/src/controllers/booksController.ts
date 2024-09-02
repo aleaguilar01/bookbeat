@@ -62,9 +62,13 @@ export const createBook = async (req: Request, res: Response) => {
           numberOfPages: data.numberOfPages,
           firstSentence: description,
           imageUrl: data.imageUrl,
-          genres: {
-            connect: genres.map((id) => ({ id })),
-          },
+          ...(genres && genres.length > 0
+            ? {
+                genres: {
+                  connect: genres.map((id) => ({ id })),
+                },
+              }
+            : {}),
         },
       });
     } catch (error) {
@@ -121,12 +125,10 @@ export const getMyBooks = async (req: Request, res: Response) => {
 export const getRelatedBooks = async (req: Request, res: Response) => {
   const { isbn } = req.body;
 
-  if(!isbn || isbn === "") {
-    return res.status(400).send("No ISBN provided")
+  if (!isbn || isbn === "") {
+    return res.status(400).send("No ISBN provided");
   }
-  const data = await redisClient.get(
-    `related-${isbn}`
-  );
+  const data = await redisClient.get(`related-${isbn}`);
   if (data !== null) {
     return res.json(JSON.parse(data));
   }
@@ -134,19 +136,23 @@ export const getRelatedBooks = async (req: Request, res: Response) => {
   const myBook = await prisma.book.findUnique({
     where: { isbn },
     include: {
-      relatedBooks: true
-    }
+      relatedBooks: true,
+    },
   });
 
   if (!myBook) {
     return res.status(404).send("No Book Found to Update");
   }
 
-  if(myBook.relatedBooks.length > 0){
-    await redisClient.setEx(`related-${isbn}`, 3600, JSON.stringify(myBook.relatedBooks))
-    return res.send(myBook.relatedBooks)
+  if (myBook.relatedBooks.length > 0) {
+    await redisClient.setEx(
+      `related-${isbn}`,
+      3600,
+      JSON.stringify(myBook.relatedBooks)
+    );
+    return res.send(myBook.relatedBooks);
   }
-  
+
   const aiRelatedBooks = await getAiRelatedBooks(myBook.title, myBook.author);
   const relatedBooks = await findAndCreateBooks(aiRelatedBooks);
 
@@ -164,7 +170,7 @@ export const getRelatedBooks = async (req: Request, res: Response) => {
   });
 
   const response = await Promise.all(promises);
-  await redisClient.setEx(`related-${isbn}`, 3600, JSON.stringify(response))
+  await redisClient.setEx(`related-${isbn}`, 3600, JSON.stringify(response));
   return res.send(response);
 };
 
@@ -218,8 +224,8 @@ export const getRecommendedBooks = async (req: Request, res: Response) => {
       },
     });
 
-    if(userBooks.length < 4){
-      return res.send([])
+    if (userBooks.length < 4) {
+      return res.send([]);
     }
 
     // flattenUserBooks

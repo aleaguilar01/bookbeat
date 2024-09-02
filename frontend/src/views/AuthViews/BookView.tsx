@@ -25,6 +25,7 @@ import {
 import { IBook, useBook } from "../../context/books-context";
 import { Colors, DEFAULT_READING_STATUS } from "../../constants";
 import { useHandleBooks } from "../../hooks/useHandleBooks";
+import BookModal from "../../componets/BookModal";
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -33,6 +34,7 @@ const BookPage = () => {
   const navigate = useNavigate();
   const { myBooks } = useBook();
   const [relatedBooks, setRelatedBooks] = useState<Array<IBook>>([]);
+  const [selectedRelatedBook, setSelectedRelatedBook] = useState<IBook>();
   const {
     updateIsFavorite,
     updateRating,
@@ -50,7 +52,7 @@ const BookPage = () => {
     if (book && !isLoading && relatedBooks.length === 0) {
       getRelatedBooks(book.isbn).then((books) => {
         const filteredBooks = books
-          .filter((book) => book.imageUrl && book.imageUrl !== '')
+          .filter((book) => book.imageUrl && book.imageUrl !== "")
           .slice(0, 3);
         setRelatedBooks(filteredBooks);
       });
@@ -58,7 +60,7 @@ const BookPage = () => {
   }, [book, relatedBooks, isLoading]);
 
   const handleDeleteBook = () => {
-    deleteBook(id)
+    deleteBook(id);
   };
 
   const relatedBookStyles: Record<string, CSSProperties> = {
@@ -113,7 +115,7 @@ const BookPage = () => {
       <Button
         icon={<ArrowLeftOutlined />}
         onClick={() => navigate(-1)}
-        style={{ marginBottom: "16px",  marginRight: "8px" }}
+        style={{ marginBottom: "16px", marginRight: "8px" }}
       >
         Back
       </Button>
@@ -124,8 +126,8 @@ const BookPage = () => {
         okText="Yes"
         cancelText="No"
       >
-        <Button 
-          icon={<DeleteOutlined />} 
+        <Button
+          icon={<DeleteOutlined />}
           danger
           style={{ marginBottom: "16px" }}
         >
@@ -261,7 +263,9 @@ const BookPage = () => {
                   flexDirection: "column",
                 }}
                 cover={
-                  <div style={{ ...relatedBookStyles.imageContainer, height: 180 }}>
+                  <div
+                    style={{ ...relatedBookStyles.imageContainer, height: 180 }}
+                  >
                     <img
                       alt={item.title}
                       src={item.imageUrl}
@@ -269,7 +273,9 @@ const BookPage = () => {
                     />
                   </div>
                 }
-                onClick={() => navigate(`/books/${item.id}`)}
+                onClick={() => {
+                  setSelectedRelatedBook(item);
+                }}
               >
                 <Card.Meta
                   title={
@@ -290,6 +296,10 @@ const BookPage = () => {
           )}
         />
       </Card>
+      <BookModal
+        book={selectedRelatedBook}
+        onClose={() => setSelectedRelatedBook(undefined)}
+      />
     </div>
   );
 };

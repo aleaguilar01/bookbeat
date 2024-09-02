@@ -69,7 +69,7 @@ export const useHandleBooks = () => {
       .then(() => {
         refetch();
         message.success("Book deleted successfully");
-        navigate("/");
+        navigate("/books");
       })
       .catch(() => {
         message.error("Something went wrong, please try again later!");
