@@ -21,6 +21,7 @@ model User {
 
 enum Provider {
   GOOGLE
+  SPOTIFY
 }
 
 model Playlist {

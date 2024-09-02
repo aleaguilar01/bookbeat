@@ -67,8 +67,9 @@ export const userAuth = async (req: Request, res: Response) => {
         user = await prisma.user.create({
           data: {
             email: data.email,
-            provider: "GOOGLE",
+            provider: "SPOTIFY",
             providerId: data.id,
+            ...(data.images?.length > 0 ? {profilePicture: data.images[0].url}: {}),
           },
         });
       }
@@ -82,6 +83,7 @@ export const userAuth = async (req: Request, res: Response) => {
       // generate a token -> in our middleware to validate that the user is able to use our app
       return res.send({
         user: {
+          profilePicture: user.profilePicture,
           email: user.email,
           token: token,
           name: data.display_name,

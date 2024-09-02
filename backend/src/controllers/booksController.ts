@@ -218,6 +218,10 @@ export const getRecommendedBooks = async (req: Request, res: Response) => {
       },
     });
 
+    if(userBooks.length === 0){
+      return res.send([])
+    }
+
     // flattenUserBooks
     const flattenedBooks = getFlattenedBooks(userBooks);
     // scoring
