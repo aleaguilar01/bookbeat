@@ -1,10 +1,11 @@
 import { ChangeEventHandler, FC, useMemo, useState } from "react";
 import { Input, List, Rate, Select, Space, Typography, Card, Tag, Tooltip, Divider, Row, Col, Popconfirm } from "antd";
 import { CalendarOutlined, BookOutlined, HeartOutlined, HeartFilled, SearchOutlined, MessageOutlined, StarOutlined, DeleteOutlined } from "@ant-design/icons";
-import { useBook } from "../../context/books-context";
 import { useHandleBooks } from "../../hooks/useHandleBooks";
 import { Colors, DEFAULT_READING_STATUS } from "../../constants";
 import { Link } from "react-router-dom";
+import BookCommentModal from "../../componets/BookCommentModal";
+import { IBook, useBook } from "../../context/books-context";
 
 const { Title, Text, Paragraph } = Typography;
 const { Option } = Select;
@@ -21,7 +22,8 @@ const MyBooksScreen: FC = () => {
   const { isLoading, myBooks } = useBook();
   const [bookStatusFilter, setBookStatusFilter] = useState("all");
   const [searchContent, setSearchContent] = useState("");
-
+  const [selectedBook, setSelectedBook] = useState<IBook| undefined>();
+  
   const handleSelectStatus = (value) => setBookStatusFilter(value);
   const handleSearchContent: ChangeEventHandler<HTMLInputElement> = (event) => setSearchContent(event.currentTarget.value)
 
@@ -91,7 +93,7 @@ const MyBooksScreen: FC = () => {
                           <Tag icon={<StarOutlined />} color={Colors.primary}>Avg: {item.rating?.toFixed(2) || 'N/A'}</Tag>
                           <Tag icon={<CalendarOutlined />}>{item.publishedYear}</Tag>
                           <Tag icon={<BookOutlined />}>{item.numberOfPages || 0} pages</Tag>
-                          <Tag icon={<MessageOutlined />}>{item.comments || 0} comments</Tag>
+                          <Tag icon={<MessageOutlined />} onClick={()=>setSelectedBook(item)}>{item.comments || 0} comments</Tag>
                         </Space>
                         <Paragraph
                           ellipsis={{
@@ -179,6 +181,7 @@ const MyBooksScreen: FC = () => {
           )}
         />
       </Space>
+      <BookCommentModal book={selectedBook} onClose={() => setSelectedBook(undefined)} />
     </Card>
   );
 };

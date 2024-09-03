@@ -62,6 +62,17 @@ export const useHandleBooks = () => {
         setIsLoading(false);
       });
   };
+
+  const createComment = async (comment: String, bookId: String) => {
+    console.log (comment, bookId)
+    setIsLoading(true);
+    api
+      .post("book/comment", {comment,bookId})
+      .then(() => refetch())
+      .catch(() => {
+        setIsLoading(false);
+      });
+  };
   const deleteBook = async (id: string) => {
     setIsLoading(true);
     return api
@@ -87,6 +98,7 @@ export const useHandleBooks = () => {
     createBook,
     getRelatedBooks,
     isLoading,
+    createComment,
     deleteBook,
   };
 };

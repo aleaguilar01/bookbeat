@@ -126,6 +126,7 @@ export const getMyBooks = async (req: Request, res: Response) => {
           include: {
             genres: true,
             relatedBooks: true,
+            bookComments: true
           },
         },
       },
@@ -353,3 +354,17 @@ const findAndCreateBooks = async (
   }
   return [...existingBooks, ...createdBooks];
 };
+
+export const createBookComment = async (req: Request, res: Response) => {
+  const data = req.body;
+  console.log (req.body)
+  await prisma.bookComment.create({
+    data: {
+      comment: data.comment, book: {connect: {isbn: data.bookId}},
+      user : {connect: {id: req.user!.userId}}
+    }
+  })
+  return res.send({});
+}
+
+
