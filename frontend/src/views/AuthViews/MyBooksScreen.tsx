@@ -93,7 +93,7 @@ const MyBooksScreen: FC = () => {
                           <Tag icon={<StarOutlined />} color={Colors.primary}>Avg: {item.rating?.toFixed(2) || 'N/A'}</Tag>
                           <Tag icon={<CalendarOutlined />}>{item.publishedYear}</Tag>
                           <Tag icon={<BookOutlined />}>{item.numberOfPages || 0} pages</Tag>
-                          <Tag icon={<MessageOutlined />} onClick={()=>setSelectedBook(item)}>{item.comments || 0} comments</Tag>
+                          <Tag icon={<MessageOutlined />} onClick={()=>setSelectedBook(item)} style={{cursor: "pointer"}}>{item.comments || 0} comments</Tag>
                         </Space>
                         <Paragraph
                           ellipsis={{
