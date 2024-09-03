@@ -17,6 +17,25 @@ type BookWithGenre = Prisma.BookGetPayload<{
   };
 }>;
 
+export const deleteBook = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  // validate book belongs to user
+  try {
+    await prisma.userBook.findUniqueOrThrow({
+      where: {
+        id,
+        userId: req.user?.userId,
+      },
+    });
+    await prisma.userBook.delete({
+      where: { id },
+    });
+    return res.send({ id });
+  } catch (err) {
+    console.error(err, id);
+    res.status(500).send("Error ocurred while deleting book");
+  }
+};
 export const getBook = async (req: Request, res: Response) => {
   const title = req.params.title;
   try {

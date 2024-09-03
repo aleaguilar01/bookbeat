@@ -65,13 +65,14 @@ export const useHandleBooks = () => {
   const deleteBook = async (id: string) => {
     setIsLoading(true);
     return api
-      .delete("/book/", { params: { id } })
+      .delete(`/book/${id}`)
       .then(() => {
         refetch();
         message.success("Book deleted successfully");
         navigate("/books");
       })
-      .catch(() => {
+      .catch((err) => {
+        console.error(err)
         message.error("Something went wrong, please try again later!");
       })
       .finally(() => {
