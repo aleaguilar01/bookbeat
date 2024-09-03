@@ -60,6 +60,17 @@ export const useHandleBooks = () => {
       });
   };
 
+  const createComment = async (comment: String, bookId: String) => {
+    console.log (comment, bookId)
+    setIsLoading(true);
+    api
+      .post("book/comment", {comment,bookId})
+      .then(() => refetch())
+      .catch(() => {
+        setIsLoading(false);
+      });
+  };
+
   return {
     updateIsFavorite,
     updateReadingStatus,
@@ -67,5 +78,6 @@ export const useHandleBooks = () => {
     createBook,
     getRelatedBooks,
     isLoading,
+    createComment,
   };
 };

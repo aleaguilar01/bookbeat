@@ -13,10 +13,11 @@ model User {
   providerId     String?
   email          String     @unique
   profilePicture String?
-  password       String?
-  createdAt      DateTime   @default(now())
-  updatedAt      DateTime   @updatedAt
-  userbook       UserBook[]
+  password String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  userbook UserBook[]
+  bookComments BookComment[]
 }
 
 enum Provider {
@@ -87,9 +88,21 @@ model Book {
   publishedYear Int?
   numberOfPages Int?
   firstSentence String?
-  imageUrl      String?
-  users         UserBook[]
-  genres        BookGenres[] @relation("BookToGenre")
+  imageUrl String?
+  users UserBook[]
+  bookComments BookComment[]
+ genres        BookGenres[] @relation("BookToGenre")
   relatedBooks  Book[]       @relation("RelatedBooks")
   relatedTo     Book[]       @relation("RelatedBooks")
 }
+
+
+model BookComment {
+  id String @id @default(uuid())
+  user User @relation(fields: [userId], references: [id])
+  userId String
+  book Book @relation(fields: [bookId], references: [isbn])
+  bookId String
+  comment String
+}
+  
