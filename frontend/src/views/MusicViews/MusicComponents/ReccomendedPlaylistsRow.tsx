@@ -33,7 +33,7 @@ const ReccomendedPlayListRow: React.FC<ReccomendedPlaylistRowProps> = ({
       const playlists = await fetchPlaylistsByBook(bookId);
       // Transform the data to include only required fields
 
-      console.log("Transformed playlists:", playlists);
+      // console.log("Transformed playlists:", playlists);
       setFetchedPlaylists(playlists);
     } catch (error) {
       console.error("Error fetching playlists:", error);
@@ -58,7 +58,7 @@ const ReccomendedPlayListRow: React.FC<ReccomendedPlaylistRowProps> = ({
     for (const playlist of reccomendedCardData) {
       // Call createPlaylist to add the playlist to the database
       try {
-        console.log("Creating playlist with data:", playlist); // Add this line
+        // console.log("Creating playlist with data:", playlist); // Add this line
         await createPlaylist({
           id: playlist.spotifyId,
           playlist: playlist.playlist,

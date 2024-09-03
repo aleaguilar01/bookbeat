@@ -56,7 +56,7 @@ export const usePlaylistSearch = () => {
         const data: PlaylistSearchResponse = await response.json();
         // console.log('this is the data',data);
 
-        console.log("Playlist search results in usePlaylistSearch:", data);
+        // console.log("Playlist search results in usePlaylistSearch:", data);
 
         setPlaylistSearchResults(
           data.playlists.items.map((playlist: any) => {
@@ -70,10 +70,10 @@ export const usePlaylistSearch = () => {
           })
         );
 
-        console.log(
-          "playlist search results inside usePlaylist",
-          playlistSearchResults
-        );
+        // console.log(
+        //   "playlist search results inside usePlaylist",
+        //   playlistSearchResults
+        // );
       } catch (playlistSearchError) {
         setError((playlistSearchError as Error).message);
       }

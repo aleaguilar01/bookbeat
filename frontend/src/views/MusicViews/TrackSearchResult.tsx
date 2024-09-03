@@ -4,7 +4,7 @@ export default function TrackSearchResult({ track, chooseTrack, isBookPage }) {
   function handlePlay() {
     chooseTrack(track);
   }
-  console.log(track);
+  // console.log(track);
 
   return (
     <div

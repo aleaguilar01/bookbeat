@@ -91,7 +91,7 @@ const TestPage: FC<TestPageProps> = ({
 
         const data: SearchResponse = await response.json();
 
-        console.log(data);
+        // console.log(data);
 
         setSearchResults(
           data.tracks.items.map((track) => {

@@ -13,7 +13,7 @@ Spotify playlists to go with the mood of Steinbeck's book Of Mice and Men? Maxim
 export const aiPlaylistReccomendations = async (req: Request, res: Response) => {
   try {
     const { book } = req.body;
-    console.log('Ai receiving request', book);
+    // console.log('Ai receiving request', book);
 
     // Create a single message based on the book title
     const userMessage = `Can you recommend Spotify playlists to go with the mood of the book ${book}?`;
@@ -30,7 +30,7 @@ export const aiPlaylistReccomendations = async (req: Request, res: Response) => 
       ],
     });
     const msg = (response.content[0] as TextBlock).text as string
-    console.log('Ai giving response', msg)
+    // console.log('Ai giving response', msg)
 
     res.send(msg);
 
