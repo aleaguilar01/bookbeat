@@ -17,6 +17,7 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   userbook UserBook[]
+  bookComments BookComment[]
 }
 enum Provider {
   GOOGLE
@@ -62,5 +63,14 @@ model Book {
   firstSentence String?
   imageUrl String?
   users UserBook[]
+  bookComments BookComment[]
 }
 
+model BookComment {
+  id String @id @default(uuid())
+  user User @relation(fields: [userId], references: [id])
+  userId String
+  book Book @relation(fields: [bookId], references: [isbn])
+  bookId String
+  comment String
+}

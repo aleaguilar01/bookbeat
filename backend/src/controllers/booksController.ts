@@ -74,12 +74,20 @@ export const getMyBooks = async (req: Request, res: Response) => {
       userId: req.user!.userId,
     },
     include: {
-      book: true,
+      book: {
+        include: {
+          bookComments: true
+        }
+      },
+      
     },
     orderBy: {
       updatedAt: 'desc'
     }
   });
+
+  console.log (books)
+
   const flattenedBooks = books.map(({ book, rating, ...rest }) => {
     return {
       myRating: rating,
@@ -87,6 +95,9 @@ export const getMyBooks = async (req: Request, res: Response) => {
       ...rest,
     };
   });
+
+  console.log (flattenedBooks)
+
   return res.send(flattenedBooks);
 };
 
@@ -123,3 +134,17 @@ export const updateMyBooks = async (req: Request, res: Response) => {
 
   return res.send({});
 };
+
+export const createBookComment = async (req: Request, res: Response) => {
+  const data = req.body;
+  console.log (req.body)
+  await prisma.bookComment.create({
+    data: {
+      comment: data.comment, book: {connect: {isbn: data.bookId}},
+      user : {connect: {id: req.user!.userId}}
+    }
+  })
+  return res.send({});
+}
+
+

@@ -9,7 +9,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "prisma migrate deploy && ts-node-dev src/server.ts",
-    "generate:client": "prisma generate",
+    "generate:client": "prisma generate", 
     "start:redis": "docker compose up -d",
     "prisma:migrate": "prisma migrate dev --name"
   },

@@ -9,7 +9,8 @@ import {
   HeartFilled,
 } from "@ant-design/icons";
 import Rating from "../../componets/Rating";
-import { useBook } from "../../context/books-context";
+import BookCommentModal from "../../componets/BookCommentModal";
+import { IBook, useBook } from "../../context/books-context";
 import { useHandleBooks } from "../../hooks/useHandleBooks";
 
 const { Title } = Typography;
@@ -54,6 +55,7 @@ const BookScreen = () => {
   } = useHandleBooks();
   const { isLoading, myBooks, selectCurrentBook } = useBook();
   const [bookStatusFilter, setBookStatusFilter] = useState("all");
+  const [selectedBook, setSelectedBook] = useState<IBook| undefined>();
 
   const [searchContent, setSearchContent] = useState("");
 
@@ -141,11 +143,14 @@ const BookScreen = () => {
                 text={item.publishedYear}
                 key="list-vertical-like-o"
               />,
+              <Button  onClick={()=>{setSelectedBook(item)}}>
               <IconText
+             
                 icon={MessageOutlined}
                 text={item.comments || 0}
                 key="list-vertical-message"
-              />,
+              />
+              </Button>
             ]}
             extra={
               <img
@@ -209,6 +214,7 @@ const BookScreen = () => {
           </List.Item>
         )}
       />
+      <BookCommentModal book={selectedBook} onClose={() => setSelectedBook(undefined)} />
     </>
   );
 };
