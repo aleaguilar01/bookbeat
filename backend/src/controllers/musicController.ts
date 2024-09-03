@@ -270,7 +270,7 @@ export const handleSpotifyPlaylistSearch = async (req: Request, res: Response) =
     });
 
     const searchResults = response.data;
-    console.log('Response from searching playlists', searchResults);
+    // console.log('Response from searching playlists', searchResults);
 
     
     
@@ -310,14 +310,14 @@ export const handleSpotifyPlaylistSearch = async (req: Request, res: Response) =
 
 export const createPlaylist = async (req: Request, res: Response) => {
   const data = req.body;
-  console.log("Received request data in createPlaylist:", data);
+  // console.log("Received request data in createPlaylist:", data);
 
   let playlist = await prisma.playlist.findUnique({ where: { playlistId: data.id } });
-  console.log("(createPlaylist) Found playlist in database:", playlist);
+  // console.log("(createPlaylist) Found playlist in database:", playlist);
 
   if (!playlist) { 
     try {
-      console.log("Playlist not found, creating a new one...");
+      // console.log("Playlist not found, creating a new one...");
       playlist = await prisma.playlist.create({
         data: {
           playlistId: data.id,
@@ -327,20 +327,20 @@ export const createPlaylist = async (req: Request, res: Response) => {
           uri: data.uri,
         },
       });
-      console.log("Created new playlist:", playlist);
+      // console.log("Created new playlist:", playlist);
     } catch (error) {
       console.error("Error while creating the playlist:", error);
       return res.status(500).send("Error occurred while creating the playlist.");
     }
   } else {
-    console.log("(createPlaylist) Using existing playlist:", playlist);
+    // console.log("(createPlaylist) Using existing playlist:", playlist);
   }
 
   try {
 
     let userPlaylist = await prisma.userBookPlaylist.findUnique({ where: { userBookPlaylistIdentifier: {playlistId: data.id, userBookId: data.userBookId} } });
 
-    console.log("Creating UserBookPlaylist...");
+    // console.log("Creating UserBookPlaylist...");
     if (userPlaylist) return res.send(userPlaylist)
 
     const userBookPlaylist = await prisma.userBookPlaylist.create({
@@ -358,7 +358,7 @@ export const createPlaylist = async (req: Request, res: Response) => {
         isFavorite: false,
       },
     });
-    console.log("Successfully created UserBookPlaylist:", userBookPlaylist);
+    // console.log("Successfully created UserBookPlaylist:", userBookPlaylist);
     res.send(userBookPlaylist);
   } catch (error) {
     console.error("Error while creating UserBookPlaylist:", error);
@@ -371,7 +371,7 @@ export const updateMyPlaylists = async (req: Request, res: Response) => {
   const data = req.body;
 
   // Log the incoming request data
-  console.log("Request Data in updateMyPlaylists:", data);
+  // console.log("Request Data in updateMyPlaylists:", data);
 
   // Validate that "isFavorite" exists in the request body
   if (!Object(data).hasOwnProperty("isFavorite")) {
@@ -380,7 +380,7 @@ export const updateMyPlaylists = async (req: Request, res: Response) => {
 
   try {
     // Log that you're about to find the userBookPlaylist
-    console.log("(updateMyPlaylists) Finding UserBookPlaylist with id:", data.id, "and userId:", req.user?.userId);
+    // console.log("(updateMyPlaylists) Finding UserBookPlaylist with id:", data.id, "and userId:", req.user?.userId);
 
     // Validate that the playlist belongs to the user and exists
     const userBookPlaylist = await prisma.userBookPlaylist.findFirstOrThrow({
@@ -406,7 +406,7 @@ export const updateMyPlaylists = async (req: Request, res: Response) => {
     });
 
     // Log the successful update
-    console.log("Updated UserBookPlaylist:", updatedUserBookPlaylist);
+    // console.log("Updated UserBookPlaylist:", updatedUserBookPlaylist);
 
     // Send a response with the updated record
     return res.send({ updatedUserBookPlaylist });
@@ -422,7 +422,7 @@ export const getFavoritedPlaylistsByBook = async (req: Request, res: Response) =
   const { bookId } = req.params; // Assuming the bookId is passed as a URL parameter
 
   // Log the received bookId
-  console.log("Fetching favorited playlists for bookId:", bookId);
+  // console.log("Fetching favorited playlists for bookId:", bookId);
 
   try {
     // Fetch the favorited playlists associated with the specified book
@@ -437,7 +437,7 @@ export const getFavoritedPlaylistsByBook = async (req: Request, res: Response) =
     });
 
     // Log the fetched playlists
-    console.log("Fetched favorited playlists:", favoritedPlaylists);
+    // console.log("Fetched favorited playlists:", favoritedPlaylists);
 
     // Send the fetched playlists as the response
     return res.json(favoritedPlaylists.map(({playlist, ...rest}) => ({...playlist, ...rest})));
@@ -453,7 +453,7 @@ export const getPlaylistsByBook = async (req: Request, res: Response) => {
   const { bookId } = req.params; // Assuming the bookId is passed as a URL parameter
 
   // Log the received bookId
-  console.log("MusicController- Fetching playlists for bookId:", bookId);
+  // console.log("MusicController- Fetching playlists for bookId:", bookId);
 
   try {
     // Fetch the playlists associated with the specified book without filtering by favorite status
@@ -468,7 +468,7 @@ export const getPlaylistsByBook = async (req: Request, res: Response) => {
     });
 
     // Log the fetched playlists
-    console.log("MusicController- Fetched playlists:", playlists);
+    // console.log("MusicController- Fetched playlists:", playlists);
 
 
     /*

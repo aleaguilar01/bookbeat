@@ -18,7 +18,7 @@ const PlaylistSearchPage: FC<PlaylistSearchPageProps> = ( {playlistSearch, setPl
     getRecommendations(`${title} by ${author ? author: "unknown"}`);
   }, []); 
 
-  console.log('testing reccomendations response', recommendations);
+  // console.log('testing reccomendations response', recommendations);
   
   useEffect(() => {
     if (recommendations && recommendations.length > 0) {

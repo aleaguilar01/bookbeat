@@ -43,7 +43,7 @@ type FavouritePlaylistCardProps = {
 
 
 const FavouritePlaylistCard: React.FC<FavouritePlaylistCardProps> = ({ playlist, choosePlaylist, updatePlaylistIsFavorite, bookId }) => {
-  console.log(playlist, 'playlist log')
+  // console.log(playlist, 'playlist log')
 
   const handleFavoriteToggle = async () => {
     try {

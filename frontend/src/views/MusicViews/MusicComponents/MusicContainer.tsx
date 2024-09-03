@@ -24,10 +24,10 @@ const MusicContainer: FC<MusicContainerProps> = ({
   title,
   isBookPage,
 }) => {
-  console.log(
-    "playlist search results inside music container",
-    playlistSearchResults
-  );
+  // console.log(
+  //   "playlist search results inside music container",
+  //   playlistSearchResults
+  // );
   const {
     updatePlaylistIsFavorite,
     createPlaylist,
