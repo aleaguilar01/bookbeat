@@ -23,10 +23,11 @@ import {
   HeartOutlined,
   HeartFilled,
 } from "@ant-design/icons";
-import { useBook } from "../../context/books-context";
 import { useHandleBooks } from "../../hooks/useHandleBooks";
 import { Colors, DEFAULT_READING_STATUS } from "../../constants";
 import { Link } from "react-router-dom";
+import BookCommentModal from "../../componets/BookCommentModal";
+import { IBook, useBook } from "../../context/books-context";
 
 const { Title } = Typography;
 const extraBookOptions = [
@@ -50,6 +51,8 @@ const MyBooksScreen: FC = () => {
   const { isLoading, myBooks } = useBook();
   const [bookStatusFilter, setBookStatusFilter] = useState("all");
   const [searchContent, setSearchContent] = useState("");
+  const [selectedBook, setSelectedBook] = useState<IBook| undefined>();
+
 
   const IconText = ({ icon, text }: { icon: FC; text: string | number }) => (
     <Space>
@@ -129,11 +132,13 @@ const MyBooksScreen: FC = () => {
                 text={item.publishedYear}
                 key="list-vertical-like-o"
               />,
+
+              <Button  onClick={()=>{setSelectedBook(item)}}>
               <IconText
                 icon={MessageOutlined}
                 text={item.comments || 0}
                 key="list-vertical-message"
-              />,
+              /> </Button>
             ]}
             extra={
               <Link to={`/books/${item.id}`}>
@@ -193,6 +198,7 @@ const MyBooksScreen: FC = () => {
           </List.Item>
         )}
       />
+       <BookCommentModal book={selectedBook} onClose={() => setSelectedBook(undefined)} />
     </>
   );
 };
