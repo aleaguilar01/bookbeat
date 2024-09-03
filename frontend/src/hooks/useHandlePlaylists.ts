@@ -25,7 +25,6 @@ export interface IPlaylist {
 }
 export const useHandlePlaylists = () => {
 
-  const { refetch } = usePlaylist(); // Hook to access Playlist context
   const [isLoading, setIsLoading] = useState(false); // State for loading indicator
   const [fetchedFavoritePlaylists, setFetchedFavoritePlaylists] = useState([]);
   const api = useApi(); // Custom hook for API calls
@@ -46,9 +45,8 @@ export const useHandlePlaylists = () => {
   // Function to create a new playlist
   const createPlaylist = async (args: CreatePlaylistArgs) => {
     setIsLoading(true);
-    api
+    return await api
       .post("music/my-playlists", args) // API call to create a playlist
-      .then(() => refetch())
       .catch(() => {
         setIsLoading(false);
       });
@@ -66,32 +64,6 @@ export const useHandlePlaylists = () => {
       setIsLoading(false);
     }
   };
-
-//   // Function to fetch playlists by book
-// const fetchPlaylistsByBook = async (bookId: string) => {
-//   setIsLoading(true); // Set loading state to true when starting the request
-//   try {
-//     console.log(`Fetching playlists for bookId: ${bookId}`);
-//     const response = await api.get(`/music/my-playlists/${bookId}`); // API call to get playlists by book
-    
-//     // Check for non-200 status codes
-//     if (!response.status.toString().startsWith('2')) {
-//       console.error(`API Error: Status ${response.status}`);
-//       return []; // Return an empty array on error
-//     }
-    
-//     console.log('Fetched playlists:', response.data);
-//     return response.data; // Return the fetched playlists
-//   } catch (error) {
-//     console.error("Error fetching playlists by book:", error);
-//     return []; // Return an empty array on error
-//   } finally {
-//     setIsLoading(false); // Set loading state to false when the request completes
-//   }
-// };
-
-
-  
 
   // Function to fetch playlists by book
   const fetchFavoritePlaylistsByBook = async (bookId: string) => {

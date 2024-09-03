@@ -1,9 +1,9 @@
 import { Row, Col, Typography } from "antd";
-import ReccomendedPlaylistCard from "./ReccomendedPlaylistsCard";
+import ReccomendedPlaylistCard, { BBPlaylist } from "./ReccomendedPlaylistsCard";
 import "../MusicStyles/PlaylistRow.styles.css";
 import { useState, useEffect } from "react";
+import { SPPlaylist } from "../../../hooks/usePlaylistSearch";
 
-const { Title } = Typography;
 
 interface ReccomendedPlaylistRowProps {
   playlistSearchResults: any;
@@ -24,83 +24,59 @@ const ReccomendedPlayListRow: React.FC<ReccomendedPlaylistRowProps> = ({
   playlistSearchResults,
   choosePlaylist,
   bookId,
-  title,
 }) => {
-  const [reccomendedCardData, setReccomendedCardData] = useState([]);
-  const [fetchedPlaylists, setFetchedPlaylists] = useState([]);
+
+  const [fetchedPlaylists, setFetchedPlaylists] = useState<Array<BBPlaylist>>([]);
+
+  const fetchData = async () => {
+    try {
+      const playlists = await fetchPlaylistsByBook(bookId);
+      // Transform the data to include only required fields
+
+      console.log("Transformed playlists:", playlists);
+      setFetchedPlaylists(playlists);
+    } catch (error) {
+      console.error("Error fetching playlists:", error);
+    }
+  };
 
   /// Fecth Playlist By Book
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const playlists = await fetchPlaylistsByBook(bookId);
-        // Transform the data to include only required fields
-
-        console.log("Transformed playlists:", playlists);
-        setFetchedPlaylists(playlists);
-      } catch (error) {
-        console.error("Error fetching playlists:", error);
-      }
-    };
-
     fetchData();
   }, []);
 
+
   useEffect(() => {
-    // Consolidate both fetchedPlaylists and playlistSearchResults
-    if (fetchedPlaylists) {
-      const allPlaylists = [...fetchedPlaylists, ...playlistSearchResults];
-
-      // Remove duplicates based on 'uri'
-      const uniquePlaylists = Array.from(
-        new Map(
-          allPlaylists.map((playlist) => [playlist.uri, playlist])
-        ).values()
-      );
-
-      setReccomendedCardData(uniquePlaylists);
+    if(playlistSearchResults && playlistSearchResults.length >0){
+      addPlaylistsToDB(playlistSearchResults);
     }
-  }, [fetchedPlaylists, playlistSearchResults]);
+   
+  }, [playlistSearchResults]);
 
-  useEffect(() => {
-    addPlaylistsToDB(reccomendedCardData);
-  }, [reccomendedCardData]);
+  const addPlaylistsToDB = async (reccomendedCardData: Array<SPPlaylist>) => {
 
-  const addPlaylistsToDB = async (reccomendedCardData) => {
     for (const playlist of reccomendedCardData) {
       // Call createPlaylist to add the playlist to the database
       try {
         console.log("Creating playlist with data:", playlist); // Add this line
         await createPlaylist({
-          id: playlist.id,
+          id: playlist.spotifyId,
           playlist: playlist.playlist,
           description: playlist.description,
           uri: playlist.uri,
           image: playlist.image,
           userBookId: bookId,
-        });
-        console.log("createPlaylist called with this data", playlist); // Update this line
-        //console.log('fetchPlaylistsByBook function',fetchPlaylistsByBook("6059c1ea-815f-4181-9a06-81a17e465776"));
+        }).then(()=> fetchData());
       } catch (error) {
         console.error("Error adding playlist to database:", error);
       }
     }
   };
 
-  const handleFavoriteChange = (playlistId: string, isFavorite: boolean) => {
-    setReccomendedCardData((prevData) =>
-      prevData.map((playlist) =>
-        playlist.id === playlistId ? { ...playlist, isFavorite } : playlist
-      )
-    );
-  };
-
-  console.log("This is the reccomended card data", reccomendedCardData);
-
   // Limit the number of playlists rendered to MAX_PLAYLISTS
   const MAX_PLAYLISTS = 3;
 
-  const displayedPlaylists = reccomendedCardData.slice(0, MAX_PLAYLISTS);
+  const displayedPlaylists = fetchedPlaylists.slice(0, MAX_PLAYLISTS);
   return (
     <Row gutter={[16, 16]} justify="start">
       {displayedPlaylists.map((playlist) => (
@@ -109,8 +85,8 @@ const ReccomendedPlayListRow: React.FC<ReccomendedPlaylistRowProps> = ({
             updatePlaylistIsFavorite={updatePlaylistIsFavorite}
             playlist={playlist}
             choosePlaylist={choosePlaylist}
-            onFavoriteChange={handleFavoriteChange}
             bookId={bookId}
+            refetch={fetchData}
           />
         </Col>
       ))}
