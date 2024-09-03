@@ -22,12 +22,7 @@ export const useHandleBooks = () => {
     setIsLoading(true);
     api
       .put("/book", { id, myRating })
-      .then(() => {
-        refetch();
-      })
-      .catch(() => {
-        setIsLoading(false);
-      })
+      .then(() => refetch())
       .finally(() => setIsLoading(false));
   };
   const updateIsFavorite = (isFavorite: boolean, id: string) => {
@@ -35,9 +30,6 @@ export const useHandleBooks = () => {
     api
       .put("/book", { id, isFavorite })
       .then(() => refetch())
-      .catch(() => {
-        setIsLoading(false);
-      })
       .finally(() => setIsLoading(false));
   };
   const updateReadingStatus = (readingStatus: string, id: string) => {
@@ -45,9 +37,6 @@ export const useHandleBooks = () => {
     api
       .put("/book", { id, readingStatus })
       .then(() => refetch())
-      .catch(() => {
-        setIsLoading(false);
-      })
       .finally(() => setIsLoading(false));
   };
 
@@ -56,7 +45,17 @@ export const useHandleBooks = () => {
     api
       .post("book", args)
       .then(() => refetch())
-      .catch(() => {
+      .finally(() => {
+        setIsLoading(false);
+      });
+  };
+
+  const getRelatedBooks = async (isbn: string) => {
+    setIsLoading(true);
+    return api
+      .post("/book/related", { isbn })
+      .then((res) => res.data)
+      .finally(() => {
         setIsLoading(false);
       });
   };
@@ -77,6 +76,7 @@ export const useHandleBooks = () => {
     updateReadingStatus,
     updateRating,
     createBook,
+    getRelatedBooks,
     isLoading,
     createComment,
   };

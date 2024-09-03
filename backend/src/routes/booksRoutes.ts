@@ -4,6 +4,8 @@ import {
   createBook,
   getMyBooks,
   updateMyBooks,
+  getRecommendedBooks,
+  getRelatedBooks
   createBookComment
 } from "../controllers/booksController";
 
@@ -14,6 +16,8 @@ router.get("/:title", getBook);
 router.post("/", createBook);
 router.get("/", getMyBooks);
 router.put("/", updateMyBooks);
+router.post("/recommendations", getRecommendedBooks);
+router.post("/related", getRelatedBooks);
 router.post("/comment", createBookComment);
 
 export default router;

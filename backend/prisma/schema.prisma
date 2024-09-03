@@ -8,10 +8,10 @@ datasource db {
 }
 
 model User {
-  id String @id @default(uuid())
-  provider Provider?
-  providerId String?
-  email String @unique
+  id             String     @id @default(uuid())
+  provider       Provider?
+  providerId     String?
+  email          String     @unique
   profilePicture String?
   password String?
   createdAt DateTime @default(now())
@@ -19,32 +19,51 @@ model User {
   userbook UserBook[]
   bookComments BookComment[]
 }
+
 enum Provider {
   GOOGLE
 }
 
 model Playlist {
   id String @id @default(uuid())
-  name String
-  picture String?
+  playlistId String @unique
+  playlist String
+  image String?
   description String? @db.Text
-  userbook UserBook @relation(fields: [id], references: [id])
+  uri String
+  createdAt   DateTime?         @default(now())
+  updatedAt   DateTime?         @updatedAt
+  
+  userBooks   UserBookPlaylist[]
+}
+
+model UserBookPlaylist {
+  id String @id @default(uuid())
+  userBook UserBook @relation(fields: [userBookId], references: [id])
+  userBookId String
+  playlist Playlist @relation(fields: [playlistId], references: [id])
+  playlistId String
+  isFavorite Boolean @default(false)
+  @@unique([playlistId, userBookId], name: "userBookPlaylistIdentifier")
+  createdAt   DateTime?     @default(now())
+  updatedAt   DateTime?     @updatedAt
 }
 
 model UserBook {
-  id String @id @default(uuid())
-  user User @relation(fields: [userId], references: [id])
-  userId String
-  book Book @relation(fields: [bookId], references: [isbn])
-  bookId String
+  id            String        @id @default(uuid())
+  user          User          @relation(fields: [userId], references: [id])
+  userId        String
+  book          Book          @relation(fields: [bookId], references: [isbn])
+  bookId        String
   readingStatus ReadingStatus @default(WANT_TO_READ)
-  playlist Playlist? 
-  playlistId String?
-  rating Int?
+  rating Float?
   isFavorite Boolean? @default(false)
   createdAt DateTime? @default(now())
   updatedAt DateTime? @updatedAt
+
+  playlists UserBookPlaylist[] // Create relationship with join table
 }
+
 enum ReadingStatus {
   WANT_TO_READ
   READING
@@ -53,18 +72,30 @@ enum ReadingStatus {
   DID_NOT_FINISH
 }
 
+model BookGenres {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  books     Book[]   @relation("BookToGenre")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 model Book {
-  isbn String @id
-  title String
-  author String
-  rating Float?
+  isbn          String       @id
+  title         String
+  author        String
+  rating        Float?
   publishedYear Int?
   numberOfPages Int?
   firstSentence String?
   imageUrl String?
   users UserBook[]
   bookComments BookComment[]
+ genres        BookGenres[] @relation("BookToGenre")
+  relatedBooks  Book[]       @relation("RelatedBooks")
+  relatedTo     Book[]       @relation("RelatedBooks")
 }
+
 
 model BookComment {
   id String @id @default(uuid())
@@ -74,3 +105,4 @@ model BookComment {
   bookId String
   comment String
 }
+  

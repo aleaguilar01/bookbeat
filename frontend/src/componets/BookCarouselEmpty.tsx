@@ -1,5 +1,5 @@
 import { Empty, Typography } from "antd";
-const emptyStateUrl = new URL("../../empty-state.jpg", import.meta.url).href;
+const emptyStateUrl = new URL("../../empty-state.png", import.meta.url).href;
 
 const { Text } = Typography;
 
