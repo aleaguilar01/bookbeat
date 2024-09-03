@@ -271,6 +271,8 @@ export const handleSpotifyPlaylistSearch = async (req: Request, res: Response) =
 
     const searchResults = response.data;
     console.log('Response from searching playlists', searchResults);
+
+    
     
     // Return search results as JSON
     return res.json(searchResults);

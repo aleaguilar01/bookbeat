@@ -6,23 +6,25 @@ interface PlaylistImage {
   height: number;
 }
 
-interface Playlist {
+export interface SPPlaylist {
   playlist: string;
   description: string;
   image: PlaylistImage[];
   uri: string;
+  spotifyId: string;
+  isFavorite?: boolean
 }
 
 interface PlaylistSearchResponse {
   playlists: {
-    items: Playlist[];
+    items: SPPlaylist[];
   };
 }
 
 export const usePlaylistSearch = () => {
   const [playlistSearch, setPlaylistSearch] = useState("");
   const [playlistSearchResults, setPlaylistSearchResults] = useState<
-    Playlist[]
+  SPPlaylist[]
   >([]);
   const [playlistSearchError, setError] = useState<string | null>(null);
   const { user } = useAuth();
@@ -59,7 +61,7 @@ export const usePlaylistSearch = () => {
         setPlaylistSearchResults(
           data.playlists.items.map((playlist: any) => {
             return {
-              id: playlist.id,
+              spotifyId: playlist.id,
               playlist: playlist.name,
               description: playlist.description,
               uri: playlist.uri,

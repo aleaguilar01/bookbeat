@@ -3,12 +3,10 @@ import React from 'react'
 import { Card, Row, Col, Button, Typography } from 'antd';
 import { CloseCircleOutlined, HeartFilled, HeartOutlined } from '@ant-design/icons';
 import '../MusicStyles/PlaylistCard.styles.css'
-import FavIcon from './FavIcon';
-import { useHandlePlaylists } from '../../../hooks/useHandlePlaylists';
 
 
 
-type Playlist = {
+export type BBPlaylist = {
   id: string;
   playlist: string;
   description: string;
@@ -18,21 +16,20 @@ type Playlist = {
 };
 
 type ReccomendedPlaylistCardProps = {
-  playlist: Playlist;
+  playlist: BBPlaylist;
   choosePlaylist: any
-  onFavoriteChange: (playlistId: string, isFavorite: boolean) => void;
   bookId: string
   updatePlaylistIsFavorite: Function
+  refetch: VoidFunction
 };
 
 
-const ReccomendedPlaylistCard: React.FC<ReccomendedPlaylistCardProps> = ({ playlist, choosePlaylist, onFavoriteChange, updatePlaylistIsFavorite, bookId }) => {
+const ReccomendedPlaylistCard: React.FC<ReccomendedPlaylistCardProps> = ({ playlist, choosePlaylist, updatePlaylistIsFavorite, bookId, refetch }) => {
   
 
   const handleFavoriteToggle = async () => {
     try {
-      await updatePlaylistIsFavorite(!playlist.isFavorite, playlist.id, bookId);
-      // onFavoriteChange(playlist.id, !playlist.isFavorite); // Notify parent component about the change
+      await updatePlaylistIsFavorite(!playlist.isFavorite, playlist.id, bookId).then(()=> refetch())
     } catch (error) {
       console.error('Error updating favorite status:', error);
     }
