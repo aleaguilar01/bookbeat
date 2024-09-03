@@ -5,7 +5,7 @@ import {
   getMyBooks,
   updateMyBooks,
   getRecommendedBooks,
-  getRelatedBooks
+  getRelatedBooks,
   createBookComment
 } from "../controllers/booksController";
 
