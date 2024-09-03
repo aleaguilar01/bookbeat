@@ -12,6 +12,7 @@ import {
   Image,
   Button,
   Select,
+  Popconfirm,
 } from "antd";
 import {
   HeartFilled,
@@ -19,11 +20,13 @@ import {
   ClockCircleOutlined,
   BookOutlined,
   ArrowLeftOutlined,
+  DeleteOutlined,
 } from "@ant-design/icons";
 import { IBook, useBook } from "../../context/books-context";
 import { Colors, DEFAULT_READING_STATUS } from "../../constants";
 import { useHandleBooks } from "../../hooks/useHandleBooks";
 import TestPage from "../MusicViews/TestPage";
+import BookModal from "../../componets/BookModal";
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -32,12 +35,14 @@ const BookPage = () => {
   const navigate = useNavigate();
   const { myBooks } = useBook();
   const [relatedBooks, setRelatedBooks] = useState<Array<IBook>>([]);
+  const [selectedRelatedBook, setSelectedRelatedBook] = useState<IBook>();
   const {
     updateIsFavorite,
     updateRating,
     updateReadingStatus,
     getRelatedBooks,
     isLoading,
+    deleteBook,
   } = useHandleBooks();
   const book = useMemo(
     () => myBooks.find((book) => book.id === id),
@@ -46,11 +51,19 @@ const BookPage = () => {
 
   useEffect(() => {
     if (book && !isLoading && relatedBooks.length === 0) {
-      getRelatedBooks(book.isbn).then(setRelatedBooks);
+      getRelatedBooks(book.isbn).then((books) => {
+        const filteredBooks = books
+          .filter((book) => book.imageUrl && book.imageUrl !== "")
+          .slice(0, 3);
+        setRelatedBooks(filteredBooks);
+      });
     }
   }, [book, relatedBooks, isLoading]);
 
-  console.log(relatedBooks);
+  const handleDeleteBook = () => {
+    deleteBook(id);
+  };
+
   const relatedBookStyles: Record<string, CSSProperties> = {
     card: {
       height: "100%",
@@ -103,10 +116,25 @@ const BookPage = () => {
       <Button
         icon={<ArrowLeftOutlined />}
         onClick={() => navigate(-1)}
-        style={{ marginBottom: "16px" }}
+        style={{ marginBottom: "16px", marginRight: "8px" }}
       >
         Back
       </Button>
+      <Popconfirm
+        title="Delete this book"
+        description="Are you sure you want to delete this book? This action cannot be undone."
+        onConfirm={handleDeleteBook}
+        okText="Yes"
+        cancelText="No"
+      >
+        <Button
+          icon={<DeleteOutlined />}
+          danger
+          style={{ marginBottom: "16px" }}
+        >
+          Delete Book
+        </Button>
+      </Popconfirm>
 
       <Card
         style={{
@@ -148,7 +176,7 @@ const BookPage = () => {
             <div style={{ marginBottom: "16px" }}>
               <Text>Status:</Text>
               <Select
-                style={{ width: 150, marginLeft: "8px" }}
+                style={{ width: 225, marginLeft: "8px" }}
                 optionFilterProp="label"
                 onChange={(value: string) => {
                   updateReadingStatus(value, id);
@@ -234,14 +262,17 @@ const BookPage = () => {
             <List.Item>
               <Card
                 hoverable
-                style={relatedBookStyles.card}
+                style={{ ...relatedBookStyles.card, width: 200 }}
                 bodyStyle={{
+                  padding: "8px",
                   flex: 1,
                   display: "flex",
                   flexDirection: "column",
                 }}
                 cover={
-                  <div style={relatedBookStyles.imageContainer}>
+                  <div
+                    style={{ ...relatedBookStyles.imageContainer, height: 180 }}
+                  >
                     <img
                       alt={item.title}
                       src={item.imageUrl}
@@ -249,7 +280,9 @@ const BookPage = () => {
                     />
                   </div>
                 }
-                onClick={() => navigate(`/books/${item.id}`)}
+                onClick={() => {
+                  setSelectedRelatedBook(item);
+                }}
               >
                 <Card.Meta
                   title={
@@ -270,6 +303,10 @@ const BookPage = () => {
           )}
         />
       </Card>
+      <BookModal
+        book={selectedRelatedBook}
+        onClose={() => setSelectedRelatedBook(undefined)}
+      />
     </div>
   );
 };

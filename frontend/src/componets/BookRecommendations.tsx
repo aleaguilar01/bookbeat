@@ -1,9 +1,10 @@
 import { FC, useState } from "react";
-import { Flex, Typography } from "antd";
+import { Empty, Flex, Typography } from "antd";
 import Loading from "./Loading";
 import { useRecommendedBooks } from "../hooks/useRecommendedBooks";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { EffectCards } from "swiper/modules";
+const emptyStateUrl = new URL("../../empty-state-v3.jpg", import.meta.url).href;
 
 // Import Swiper styles
 import "swiper/css";
@@ -20,10 +21,18 @@ const BookRecommendations: FC<BookRecommendationsProps> = () => {
   const [selectedBook, setSelectedBook] = useState<IBook>(undefined);
 
   return (
-    <Flex vertical style={{ borderRadius: 20, marginTop: 80, minHeight: 300, position: "relative" }}>
-      <Title level={3}>Book Recommendations</Title>
+    <Flex
+      vertical
+      style={{
+        borderRadius: 20,
+        marginTop: 80,
+        minHeight: 300,
+        position: "relative",
+      }}
+    >
+      <Title level={3}>Recommendations</Title>
       {isLoading && <Loading />}
-      {recommendedBooks && (
+      {recommendedBooks.length > 0 ? (
         <Swiper
           effect={"cards"}
           key="recommended-swiper"
@@ -50,6 +59,11 @@ const BookRecommendations: FC<BookRecommendationsProps> = () => {
             </SwiperSlide>
           ))}
         </Swiper>
+      ) : (
+        <Empty
+          image={emptyStateUrl}
+          description="Please add more books to get a recommendation"
+        />
       )}
       <BookModal
         book={selectedBook}

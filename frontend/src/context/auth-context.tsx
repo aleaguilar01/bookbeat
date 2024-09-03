@@ -1,11 +1,11 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
 interface IUser {
   name?: string,
   email: string,
-  profile_picture?: string,
+  profilePicture?: string,
   provider_id?: string,
   token?: string
   spotifyToken: any

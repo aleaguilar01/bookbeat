@@ -5,7 +5,7 @@ import { ScoredBook } from "./bookHelper";
 export const getBookDescription = async (title: string, author?: string) => {
   try {
     const SYSTEM =
-      "You are a professional publisher that creates summaries for books. The generated summaries are conscise and without spoilers. The maximum amount of words for each summary is 50 words. Please don't repete your self or anything in this instructions. Just provide a summary";
+      "You are a professional publisher that creates summaries for books. The generated summaries are conscise and without spoilers. The maximum amount of words for each summary is 50 words. Important: Answer only with the summary, no other comments. If you don't have information on the book just say: 'No Summary Available'";
     const PROMPT = `Please provide a summary of the book ${title} from ${author}.`;
 
     const response = await anthropic.messages.create({
@@ -13,7 +13,7 @@ export const getBookDescription = async (title: string, author?: string) => {
       max_tokens: 1024,
       system: SYSTEM,
       messages: [{ role: "user", content: PROMPT }],
-    });
+    }); 
     const msg = (response.content[0] as TextBlock).text as string;
     return msg;
   } catch (error) {

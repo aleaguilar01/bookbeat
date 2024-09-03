@@ -1,7 +1,12 @@
-import { Button, Image } from "antd";
+import React from 'react';
+import { Button, Image, Typography, Layout } from 'antd';
 import { useAuth } from "../../context/auth-context";
 import { useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
+import { SpotifyOutlined, BookOutlined } from '@ant-design/icons';
+
+const { Title, Text } = Typography;
+const { Content } = Layout;
 
 const logoUrl = new URL("../../../logo.jpeg", import.meta.url).href;
 
@@ -13,11 +18,9 @@ const SCOPE: string =
 
 const LoginScreen = () => {
   const { login } = useAuth();
-
   let [searchParams, setSearchParams] = useSearchParams();
 
   useEffect(() => {
-    // Retrieving code from search params
     setSearchParams(window.location.hash);
   }, []);
 
@@ -32,27 +35,57 @@ const LoginScreen = () => {
     response_type: "code",
     scope: SCOPE,
     redirect_uri: REDIRECT_URI,
-    show_dialog: true, // set to true for testing
+    show_dialog: true,
   };
 
   const urlParams = new URLSearchParams(params as any);
-
   const auth_url: string = `${AUTH_URL}?${urlParams.toString()}`;
 
-  // Redirect the user to Spotify's authentication page
-
   return (
-    <div>
-      <Image src={logoUrl} alt="logo" style={{ height: 300 }} />
-      <Button
-        style={{ backgroundColor: "purple", color: "white" }}
-        href={auth_url}
-        shape="round"
-        size="large"
-      >
-        Login With Spotify
-      </Button>
-    </div>
+    <Layout style={{ minHeight: '100vh', background: 'linear-gradient(135deg, #1DB954 0%, #191414 100%)' }}>
+      <Content style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', padding: '50px 20px' }}>
+        <div style={{ 
+          background: 'rgba(255, 255, 255, 0.9)',
+          borderRadius: '15px',
+          padding: '40px',
+          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
+          textAlign: 'center',
+          maxWidth: '400px',
+          width: '100%'
+        }}>
+          <Image 
+            src={logoUrl} 
+            alt="logo" 
+            style={{ height: 120, marginBottom: '20px' }} 
+            preview={false}
+          />
+          <Title level={2} style={{ marginBottom: '20px', color: '#191414' }}>
+            <BookOutlined /> BookBeats
+          </Title>
+          <Text style={{ display: 'block', marginBottom: '30px', fontSize: '16px', color: '#666' }}>
+            Connect your Spotify account to start exploring books with matching tunes!
+          </Text>
+          <Button
+            type="primary"
+            href={auth_url}
+            icon={<SpotifyOutlined />}
+            size="large"
+            style={{ 
+              backgroundColor: '#1DB954',
+              borderColor: '#1DB954',
+              height: '50px',
+              fontSize: '18px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: '100%'
+            }}
+          >
+            Login With Spotify
+          </Button>
+        </div>
+      </Content>
+    </Layout>
   );
 };
 

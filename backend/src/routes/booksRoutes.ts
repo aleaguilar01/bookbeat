@@ -6,6 +6,7 @@ import {
   updateMyBooks,
   getRecommendedBooks,
   getRelatedBooks,
+  deleteBook,
   createBookComment
 } from "../controllers/booksController";
 
@@ -19,5 +20,6 @@ router.put("/", updateMyBooks);
 router.post("/recommendations", getRecommendedBooks);
 router.post("/related", getRelatedBooks);
 router.post("/comment", createBookComment);
+router.delete("/:id", deleteBook)
 
 export default router;

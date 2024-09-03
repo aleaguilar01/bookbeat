@@ -1,10 +1,11 @@
 import { FC, useState } from "react";
-import { Flex, List, Typography } from "antd";
+import { Empty, Flex, List, Typography } from "antd";
 import { PlayCircleOutlined } from "@ant-design/icons";
 
 import { IBook, useBook } from "../context/books-context";
 import BookModal from "./BookModal";
 import { Link } from "react-router-dom";
+const emptyStateUrl = new URL("../../empty-state-v2.jpg", import.meta.url).href;
 
 const { Title } = Typography;
 interface ActivityProps {}
@@ -23,6 +24,7 @@ const Activity: FC<ActivityProps> = () => {
         loading={isLoading}
         itemLayout="horizontal"
         dataSource={activeBooks}
+        locale={{ emptyText: <Empty image={emptyStateUrl}/> }}
         renderItem={(item) => (
           <List.Item
             key={item.id}

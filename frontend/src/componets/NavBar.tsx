@@ -1,4 +1,10 @@
-import { Button, Dropdown, Menu, Layout, Avatar } from "antd";
+import {
+  Button,
+  Dropdown,
+  Layout,
+  Avatar,
+  MenuProps,
+} from "antd";
 import { useAuth } from "../context/auth-context";
 const logoUrl = new URL("../../logo.jpeg", import.meta.url).href;
 import SearchBar from "./SearchBar";
@@ -20,17 +26,18 @@ const headerStyle: React.CSSProperties = {
 };
 
 const NavBar = () => {
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
 
-  const menu = (
-    <Menu>
-      <Menu.Item key="logout">
+  const items: MenuProps["items"] = [
+    {
+      label: (
         <Button type="link" onClick={logout}>
           Logout
         </Button>
-      </Menu.Item>
-    </Menu>
-  );
+      ),
+      key: "logout",
+    },
+  ];
 
   return (
     <Header style={headerStyle}>
@@ -56,9 +63,17 @@ const NavBar = () => {
           />
         </Link>
       </Button>
-      <Dropdown overlay={menu} trigger={['click']} placement="bottomRight">
-        <Button ghost style={{ padding: 0, margin: 0, height: 40, width: 40 }} shape="circle">
-          <Avatar size={40} icon={<UserOutlined />} />
+      <Dropdown menu={{items}} trigger={["click"]} placement="bottomRight">
+        <Button
+          ghost
+          style={{ padding: 0, margin: 0, height: 40, width: 40 }}
+          shape="circle"
+        >
+          {user.profilePicture ? (
+            <Avatar src={user.profilePicture} size={40} />
+          ) : (
+            <Avatar size={40} icon={<UserOutlined />} />
+          )}
         </Button>
       </Dropdown>
     </Header>
