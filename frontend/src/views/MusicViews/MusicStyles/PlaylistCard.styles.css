@@ -1,0 +1,80 @@
+
+.playlist-card .ant-card-body {
+  padding: 12px;
+  position: relative;
+  
+}
+.image-container {
+  position: relative; /* Position relative to enable absolute positioning of the button */
+}
+
+.card-image {
+  width: 100%;
+  height: 120px; /* Adjust as needed */
+  object-fit: cover; 
+}
+
+.ant-card-meta-title {
+  margin-bottom: 0px !important;
+}
+
+.playlist-card-title-text {
+  display: -webkit-box;
+  -webkit-line-clamp: 1; /* Number of lines to show */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-align: left;
+
+}
+.playlist-card-description-text {
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* Number of lines to show */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-align: left;
+
+} 
+
+.card-button {
+  position: absolute; /* Position button absolutely within the image container */
+  top: 16px; /* Adjust the distance from the bottom */
+  right: 16px; /* Adjust the distance from the right */
+  z-index: 10; /* Ensure the button is above other content */
+  background-color: #EEEEEE;
+
+}
+
+
+.card-button-delete {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  background-color: #EEEEEE;
+  color: red;
+  opacity: 0; /* Initially hidden */
+  transition: opacity 0.3s ease; /* Smooth transition effect */
+}
+
+.playlist-card:hover .card-button-delete {
+  opacity: 1; /* Show button on hover */
+}
+
+
+
+.delete-icon {
+  transform: scale(1.5); 
+}
+
+
+.heart-icon {
+  color: pink;
+  font-size: 24px;
+}
+
+.favorited .heart-icon {
+  color: red; /* Example for when it is favorited */
+}
+
+.not-favorited .heart-icon {
+  color: pink; /* Example for when it is not favorited */
+}

@@ -6,6 +6,10 @@ declare global {
       user?: {
         userId: string;
         email: string;
+        spotifyToken:{
+          access_token: string,
+          refresh_token: string,
+        }
       }
     }
   }
