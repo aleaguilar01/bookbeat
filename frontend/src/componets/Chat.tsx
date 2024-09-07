@@ -90,6 +90,7 @@ const Chat: FC = () => {
   };
 
   const handleChat = () => {
+    setIsListening(false)
     onChat(text);
     setText("");
   };
