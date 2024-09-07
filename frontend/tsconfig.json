@@ -20,6 +20,10 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src"],
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "src/speech-recognition.d.ts"
+  ],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
