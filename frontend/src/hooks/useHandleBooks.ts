@@ -69,10 +69,11 @@ export const useHandleBooks = () => {
     api
       .post("book/comment", {comment,bookId})
       .then(() => refetch())
-      .catch(() => {
+      .finally(()=>{
         setIsLoading(false);
       });
   };
+
   const deleteBook = async (id: string) => {
     setIsLoading(true);
     return api
@@ -87,7 +88,7 @@ export const useHandleBooks = () => {
         message.error("Something went wrong, please try again later!");
       })
       .finally(() => {
-        setIsLoading(false);
+        
       });
   };
 

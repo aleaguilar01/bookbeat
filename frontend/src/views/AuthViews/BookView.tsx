@@ -1,4 +1,4 @@
-import { CSSProperties, useEffect, useMemo, useState } from "react";
+import React, { CSSProperties, useEffect, useMemo, useState, useRef } from "react";
 import { useParams, useNavigate, Navigate } from "react-router-dom";
 import {
   Card,
@@ -13,6 +13,8 @@ import {
   Button,
   Select,
   Popconfirm,
+  Input,
+  Avatar,
 } from "antd";
 import {
   HeartFilled,
@@ -21,21 +23,25 @@ import {
   BookOutlined,
   ArrowLeftOutlined,
   DeleteOutlined,
+  CommentOutlined,
 } from "@ant-design/icons";
-import { IBook, useBook } from "../../context/books-context";
+import { IBook, IComment, useBook } from "../../context/books-context";
 import { Colors, DEFAULT_READING_STATUS } from "../../constants";
 import { useHandleBooks } from "../../hooks/useHandleBooks";
 import TestPage from "../MusicViews/TestPage";
 import BookModal from "../../componets/BookModal";
 
 const { Title, Text, Paragraph } = Typography;
+const { TextArea } = Input;
 
-const BookPage = () => {
+const COMMENTS_PER_PAGE = 4;
+
+const BookPage: React.FC = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { myBooks } = useBook();
   const [relatedBooks, setRelatedBooks] = useState<Array<IBook>>([]);
-  const [selectedRelatedBook, setSelectedRelatedBook] = useState<IBook>();
+  const [selectedRelatedBook, setSelectedRelatedBook] = useState<IBook | undefined>();
   const {
     updateIsFavorite,
     updateRating,
@@ -43,11 +49,15 @@ const BookPage = () => {
     getRelatedBooks,
     isLoading,
     deleteBook,
+    createComment,
   } = useHandleBooks();
-  const book = useMemo(
-    () => myBooks.find((book) => book.id === id),
-    [myBooks, id]
-  );
+
+  const book = useMemo(() => myBooks.find((book) => book.id === id), [myBooks, id]);
+
+  const [displayedComments, setDisplayedComments] = useState<IComment[]>([]);
+  const [startIndex, setStartIndex] = useState<number>(0);
+  const [newComment, setNewComment] = useState("");
+  const commentsContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (book && !isLoading && relatedBooks.length === 0) {
@@ -58,11 +68,51 @@ const BookPage = () => {
         setRelatedBooks(filteredBooks);
       });
     }
-  }, [book, relatedBooks, isLoading]);
+  }, [book, relatedBooks, isLoading, getRelatedBooks]);
+
+  useEffect(() => {
+    if (book?.bookComments) {
+      const totalComments = book.bookComments.length;
+      const newStartIndex = Math.max(0, totalComments - COMMENTS_PER_PAGE);
+      setStartIndex(newStartIndex);
+      setDisplayedComments(book.bookComments.slice(newStartIndex));
+    }
+  }, [book?.bookComments]);
 
   const handleDeleteBook = () => {
     deleteBook(id);
   };
+
+  const loadPreviousComments = () => {
+    if (book?.bookComments && commentsContainerRef.current) {
+      const container = commentsContainerRef.current;
+      const scrollPosition = container.scrollHeight - container.scrollTop;
+
+      const newStartIndex = Math.max(0, startIndex - COMMENTS_PER_PAGE);
+      setStartIndex(newStartIndex);
+      setDisplayedComments(book.bookComments.slice(newStartIndex));
+      
+      setTimeout(() => {
+        if (container) {
+          container.scrollTop = container.scrollHeight - scrollPosition;
+          
+          setTimeout(() => {
+            container.scrollTo({ top: 0, behavior: 'smooth' });
+          }, 100);
+        }
+      }, 0);
+    }
+  };
+
+  const handleAddComment = () => {
+    if (newComment.trim() && book) {
+      createComment(newComment, book.isbn).then(() => {
+        setNewComment("");
+      });
+    }
+  };
+
+  const hasMoreComments = book?.bookComments && startIndex > 0;
 
   const relatedBookStyles: Record<string, CSSProperties> = {
     card: {
@@ -106,13 +156,7 @@ const BookPage = () => {
   }
 
   return (
-    <div
-      style={{
-        padding: "32px",
-        backgroundColor: "#f0f2f5",
-        minHeight: "100vh",
-      }}
-    >
+    <div style={{ padding: "32px", backgroundColor: "#f0f2f5", minHeight: "100vh" }}>
       <Button
         icon={<ArrowLeftOutlined />}
         onClick={() => navigate(-1)}
@@ -127,11 +171,7 @@ const BookPage = () => {
         okText="Yes"
         cancelText="No"
       >
-        <Button
-          icon={<DeleteOutlined />}
-          danger
-          style={{ marginBottom: "16px" }}
-        >
+        <Button icon={<DeleteOutlined />} danger style={{ marginBottom: "16px" }}>
           Delete Book
         </Button>
       </Popconfirm>
@@ -179,7 +219,7 @@ const BookPage = () => {
                 style={{ width: 225, marginLeft: "8px" }}
                 optionFilterProp="label"
                 onChange={(value: string) => {
-                  updateReadingStatus(value, id);
+                  updateReadingStatus(value, id!);
                 }}
                 options={DEFAULT_READING_STATUS}
                 value={book.readingStatus}
@@ -187,21 +227,13 @@ const BookPage = () => {
               />
               {book.isFavorite ? (
                 <HeartFilled
-                  style={{
-                    color: "pink",
-                    fontSize: "21px",
-                    marginLeft: "16px",
-                  }}
-                  onClick={() => updateIsFavorite(false, id)}
+                  style={{ color: "pink", fontSize: "21px", marginLeft: "16px" }}
+                  onClick={() => updateIsFavorite(false, id!)}
                 />
               ) : (
                 <HeartOutlined
-                  style={{
-                    color: "pink",
-                    fontSize: "21px",
-                    marginLeft: "16px",
-                  }}
-                  onClick={() => updateIsFavorite(true, id)}
+                  style={{ color: "pink", fontSize: "21px", marginLeft: "16px" }}
+                  onClick={() => updateIsFavorite(true, id!)}
                 />
               )}
             </div>
@@ -211,7 +243,7 @@ const BookPage = () => {
                 allowHalf
                 defaultValue={book.myRating}
                 style={{ marginLeft: "8px", color: Colors.secondary }}
-                onChange={(val) => updateRating(val, id)}
+                onChange={(val) => updateRating(val, id!)}
               />
             </div>
             <div style={{ marginBottom: "16px" }}>
@@ -270,9 +302,7 @@ const BookPage = () => {
                   flexDirection: "column",
                 }}
                 cover={
-                  <div
-                    style={{ ...relatedBookStyles.imageContainer, height: 180 }}
-                  >
+                  <div style={{ ...relatedBookStyles.imageContainer, height: 180 }}>
                     <img
                       alt={item.title}
                       src={item.imageUrl}
@@ -285,12 +315,8 @@ const BookPage = () => {
                 }}
               >
                 <Card.Meta
-                  title={
-                    <div style={relatedBookStyles.title}>{item.title}</div>
-                  }
-                  description={
-                    <div style={relatedBookStyles.author}>{item.author}</div>
-                  }
+                  title={<div style={relatedBookStyles.title}>{item.title}</div>}
+                  description={<div style={relatedBookStyles.author}>{item.author}</div>}
                   style={{
                     flex: 1,
                     display: "flex",
@@ -302,6 +328,45 @@ const BookPage = () => {
             </List.Item>
           )}
         />
+
+<Divider orientation="left">Comments</Divider>
+        <div ref={commentsContainerRef} style={{ height: 300, overflowY: "auto", marginBottom: "20px" }}>
+          {hasMoreComments && (
+            <div style={{ textAlign: "center", margin: "20px 0" }}>
+              <Button onClick={loadPreviousComments}>Load Previous Comments</Button>
+            </div>
+          )}
+          <List
+            itemLayout="horizontal"
+            dataSource={displayedComments}
+            renderItem={(item: IComment) => (
+              <List.Item>
+                <List.Item.Meta
+                  avatar={<Avatar>{item.user.email[0].toUpperCase()}</Avatar>}
+                  title={item.user.email}
+                  description={item.comment}
+                />
+              </List.Item>
+            )}
+          />
+        </div>
+        <div style={{ marginBottom: "20px" }}>
+          <TextArea
+            value={newComment}
+            onChange={(e) => setNewComment(e.target.value)}
+            placeholder="Add a comment..."
+            autoSize={{ minRows: 2, maxRows: 6 }}
+            style={{ marginBottom: "10px" }}
+          />
+          <Button
+            type="primary"
+            icon={<CommentOutlined />}
+            onClick={handleAddComment}
+            disabled={!newComment.trim()}
+          >
+            Add Comment
+          </Button>
+        </div>
       </Card>
       <BookModal
         book={selectedRelatedBook}

@@ -15,8 +15,16 @@ export interface IBook extends IBookUser {
   createdAt: Date;
   genres?: Array<{ id: string; name: string }>;
   relatedBooks?: Array<Omit<IBook, "relatedBooks">>;
+  bookComments?: Array<IComment>
 }
 
+export interface IComment {
+  user: {
+    email: string
+  };
+  id: string;
+  comment: string;
+}
 export interface IBookUser {
   isFavorite?: boolean;
   readingStatus: string;

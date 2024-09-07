@@ -112,6 +112,9 @@ export const createBook = async (req: Request, res: Response) => {
     },
   });
 
+  // deleting cached recommended to get new recommendations
+  await redisClient.DEL(`recommended-${req.user?.userId}}`)
+
   res.send(userBook);
 };
 
@@ -126,7 +129,15 @@ export const getMyBooks = async (req: Request, res: Response) => {
           include: {
             genres: true,
             relatedBooks: true,
-            bookComments: true
+            bookComments: {
+              include: {
+                user: {
+                  select: {
+                    email: true
+                  }
+                }
+              }
+            }
           },
         },
       },
@@ -232,7 +243,7 @@ export const getRecommendedBooks = async (req: Request, res: Response) => {
   const { currentRecommendations } = req.body;
   try {
     const data = await redisClient.get(
-      `recommended-${req.user?.userId}-${currentRecommendations?.length || 0}`
+      `recommended-${req.user?.userId}}`
     );
     if (data !== null) {
       return res.json(JSON.parse(data));
@@ -261,7 +272,7 @@ export const getRecommendedBooks = async (req: Request, res: Response) => {
     );
 
     await redisClient.setEx(
-      `recommended-${req.user?.userId}-${currentRecommendations?.length || 0}`,
+      `recommended-${req.user?.userId}`,
       3600,
       JSON.stringify(mergedBooks)
     );
