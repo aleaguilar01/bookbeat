@@ -16,6 +16,8 @@ const { TextArea } = Input;
 const { Paragraph } = Typography;
 const { Option } = Select;
 
+const MAX_CHUNK_LENGTH = 200; // Maximum length of each chunk to be spoken
+
 const Chat: FC = () => {
   const { conversation, isLoading, onChat, avatarUrl } = useChat();
   const [text, setText] = useState("");
@@ -27,6 +29,10 @@ const Chat: FC = () => {
 
   const recognitionRef = useRef<SpeechRecognition | null>(null);
   const speechSynthesisRef = useRef<SpeechSynthesis | null>(null);
+  const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
+  const interimTranscriptRef = useRef<string>("");
+  const speakQueueRef = useRef<string[]>([]);
+  const conversationContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if ("SpeechRecognition" in window || "webkitSpeechRecognition" in window) {
@@ -38,14 +44,31 @@ const Chat: FC = () => {
       recognitionRef.current.interimResults = true;
 
       recognitionRef.current.onresult = (event: SpeechRecognitionEvent) => {
-        const transcript = Array.from(event.results)
-          .map((result) => result[0].transcript)
-          .join("");
-        setText(transcript);
+        let finalTranscript = '';
+        let interimTranscript = '';
+        // @ts-ignore
+        for (let i = event.resultIndex; i < event.results.length; ++i) {
+          if (event.results[i].isFinal) {
+            finalTranscript += event.results[i][0].transcript;
+          } else {
+            interimTranscript += event.results[i][0].transcript;
+          }
+        }
+
+        if (finalTranscript !== '') {
+          setText((prevText) => prevText + finalTranscript + ' ');
+          interimTranscriptRef.current = '';
+        } else {
+          interimTranscriptRef.current = interimTranscript;
+        }
       };
 
       recognitionRef.current.onerror = (event: ErrorEvent) => {
         console.error("Speech recognition error", event.error);
+        setIsListening(false);
+      };
+
+      recognitionRef.current.onend = () => {
         setIsListening(false);
       };
     }
@@ -57,7 +80,10 @@ const Chat: FC = () => {
       const loadVoices = () => {
         const availableVoices = speechSynthesisRef.current!.getVoices();
         setVoices(availableVoices);
-        if (availableVoices.length > 0) {
+        const googleUSVoice = availableVoices.find(voice => voice.name === "Google US English");
+        if (googleUSVoice) {
+          setSelectedVoice(googleUSVoice);
+        } else if (availableVoices.length > 0) {
           setSelectedVoice(availableVoices[0]);
         }
       };
@@ -83,16 +109,27 @@ const Chat: FC = () => {
     if (lastMessage && lastMessage.role === "assistant" && !isMuted) {
       speakMessage(lastMessage.content);
     }
+    scrollToBottom();
   }, [conversation, isMuted]);
+
+  const scrollToBottom = () => {
+    if (conversationContainerRef.current) {
+      conversationContainerRef.current.scrollTop = conversationContainerRef.current.scrollHeight;
+    }
+  };
 
   const handleText: ChangeEventHandler<HTMLTextAreaElement> = (event) => {
     setText(event.currentTarget.value);
   };
 
   const handleChat = () => {
-    setIsListening(false)
+    setIsListening(false);
+    if (recognitionRef.current) {
+      recognitionRef.current.stop();
+    }
     onChat(text);
     setText("");
+    interimTranscriptRef.current = "";
   };
 
   const toggleListening = () => {
@@ -105,8 +142,56 @@ const Chat: FC = () => {
       recognitionRef.current.stop();
     } else {
       recognitionRef.current.start();
+      setText(""); // Clear the text when starting to listen
+      interimTranscriptRef.current = "";
     }
     setIsListening(!isListening);
+  };
+
+  const splitTextIntoChunks = (text: string): string[] => {
+    const words = text.split(' ');
+    const chunks: string[] = [];
+    let currentChunk = '';
+
+    for (const word of words) {
+      if ((currentChunk + ' ' + word).length <= MAX_CHUNK_LENGTH) {
+        currentChunk += (currentChunk ? ' ' : '') + word;
+      } else {
+        chunks.push(currentChunk);
+        currentChunk = word;
+      }
+    }
+
+    if (currentChunk) {
+      chunks.push(currentChunk);
+    }
+
+    return chunks;
+  };
+
+  const speakNextChunk = () => {
+    if (speakQueueRef.current.length === 0) {
+      setIsSpeaking(false);
+      return;
+    }
+
+    const chunk = speakQueueRef.current.shift()!;
+    utteranceRef.current = new SpeechSynthesisUtterance(chunk);
+    
+    if (selectedVoice) {
+      utteranceRef.current.voice = selectedVoice;
+    }
+
+    utteranceRef.current.onend = () => {
+      speakNextChunk();
+    };
+
+    utteranceRef.current.onerror = (event) => {
+      console.error("Speech synthesis error", event);
+      setIsSpeaking(false);
+    };
+
+    speechSynthesisRef.current!.speak(utteranceRef.current);
   };
 
   const speakMessage = (message: string) => {
@@ -115,13 +200,15 @@ const Chat: FC = () => {
       return;
     }
 
-    const utterance = new SpeechSynthesisUtterance(message);
-    if (selectedVoice) {
-      utterance.voice = selectedVoice;
-    }
-    utterance.onstart = () => setIsSpeaking(true);
-    utterance.onend = () => setIsSpeaking(false);
-    speechSynthesisRef.current.speak(utterance);
+    // Cancel any ongoing speech
+    speechSynthesisRef.current.cancel();
+
+    // Split the message into chunks
+    const chunks = splitTextIntoChunks(message);
+    speakQueueRef.current = chunks;
+
+    setIsSpeaking(true);
+    speakNextChunk();
   };
 
   const toggleMute = () => {
@@ -129,6 +216,7 @@ const Chat: FC = () => {
     if (speechSynthesisRef.current && isSpeaking) {
       speechSynthesisRef.current.cancel();
       setIsSpeaking(false);
+      speakQueueRef.current = [];
     }
   };
 
@@ -162,6 +250,7 @@ const Chat: FC = () => {
     >
       <Flex
         vertical
+        ref={conversationContainerRef}
         style={{
           flexGrow: 1,
           overflowY: "auto",
@@ -223,7 +312,7 @@ const Chat: FC = () => {
       >
         <TextArea
           placeholder="Type your message..."
-          value={text}
+          value={text + interimTranscriptRef.current}
           onChange={handleText}
           style={{
             resize: "none",
@@ -243,7 +332,11 @@ const Chat: FC = () => {
             <Button
               onClick={toggleListening}
               icon={isListening ? <AudioMutedOutlined /> : <AudioOutlined />}
-              style={{ marginRight: 8 }}
+              style={{ 
+                marginRight: 8, 
+                backgroundColor: isListening ? Colors.primary : undefined,
+                color: isListening ? 'white' : undefined
+              }}
             />
             <Switch
               checkedChildren={<SoundOutlined />}
@@ -269,7 +362,7 @@ const Chat: FC = () => {
             type="primary"
             onClick={handleChat}
             icon={<SendOutlined />}
-            disabled={!text.trim()}
+            disabled={!text.trim() && !interimTranscriptRef.current.trim()}
           />
         </Flex>
       </Flex>
