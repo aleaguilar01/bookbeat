@@ -1,4 +1,11 @@
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import {
+  createContext,
+  FC,
+  PropsWithChildren,
+  useContext,
+  useEffect,
+  useState,
+} from 'react';
 import { useApi } from "../hooks/useApi";
 
 // Define the Playlist interface
@@ -9,43 +16,60 @@ export interface IPlaylist {
   image?: string;
   description?: string;
   uri: string;
+  createdAt: Date;
+  updatedAt: Date;
   isFavorite: boolean;
 }
 
 // Define the context interface
 interface IPlaylistContext {
-  playlists: Array<IPlaylist>;
+  favoritePlaylists: Array<IPlaylist>;
+  recommendedPlaylists: Array<IPlaylist>;
   isLoading: boolean;
   refetch: VoidFunction;
-  currentBookPlaylists?: Array<IPlaylist>;
-  selectCurrentBookPlaylists: (bookId?: string) => void;
+  handleFavoriteToggle: (isFavorite: boolean, id: string) => void;
 }
 
 const PlaylistContext = createContext<IPlaylistContext>({
-  playlists: [],
+  favoritePlaylists: [],
+  recommendedPlaylists: [],
   isLoading: false,
   refetch: () => {},
-  currentBookPlaylists: undefined,
-  selectCurrentBookPlaylists: () => {},
+  handleFavoriteToggle: () => {},
 });
 
-const PlaylistProvider = ({ children }) => {
+const PlaylistProvider: FC<PropsWithChildren<{ bookId: string }>> = ({
+  bookId,
+  children,
+}) => {
     // State to hold the current book ID and playlists
-  const [currentBookId, setCurrentBookId] = useState<string>();
   const [isLoading, setIsLoading] = useState(false);
-  const [playlists, setPlaylists] = useState<Array<IPlaylist>>([]);
-
+  const [favoritePlaylists, setFavoritePlaylists] = useState<Array<IPlaylist>>(
+    []
+  );
+  const [recommendedPlaylists, setRecommendedPlaylists] = useState<
+    Array<IPlaylist>
+  >([]);
   const api = useApi();
 
     // Function to fetch playlists based on the current book ID
-  const fetchData = async () => {
-    if (!currentBookId) return;
-    
+  const fetchBookPlaylists = async () => {
+    setIsLoading(true);
+    api.get(`/music/my-playlists/${bookId}`)
+    .then((res)=>{
+      setFavoritePlaylists(res.data.filter((p: IPlaylist) => p.isFavorite))
+    })
+    .finally(() => {
+      setIsLoading(false);
+    });
+  };
+
+  const fetchRecommendedPlaylist = async () => {
     setIsLoading(true);
     api
-      .get(`/playlists/favorites/${currentBookId}`) // Fetch data from API
+      .get(`/music/recommended-playlists/${bookId}`)
       .then((res) => {
-        setPlaylists(res.data); // Update state with fetched playlist
+        setRecommendedPlaylists(res.data); // Update state with fetched playlist
       })
       .finally(() => {
         setIsLoading(false);
@@ -54,30 +78,32 @@ const PlaylistProvider = ({ children }) => {
 
     // Fetch data whenever the current book ID changes
   useEffect(() => {
-    if (currentBookId) {
-      fetchData();
+    if (bookId) {
+      fetchRecommendedPlaylist();
+      fetchBookPlaylists();
     }
-  }, [currentBookId]);
+  }, [bookId]);
 
-    // Function to refetch playlists data
-  const refetch = () => {
-    fetchData();
+  const handleFavoriteToggle = async (isFavorite: boolean, id: string) => {
+    try {
+      setIsLoading(true);
+      await api.put('music/my-playlists', { id, isFavorite, bookId });
+      fetchBookPlaylists();
+    } catch (error) {
+      console.error('Error updating favorite status:', error);
+    } finally {
+      setIsLoading(false);
+    }
   };
-
-    // Memoize current book playlists to avoid unnecessary recalculations
-  const currentBookPlaylists = useMemo(() => {
-    if (!currentBookId) return undefined;
-    return playlists; // Assuming playlists are already filtered by bookId in API
-  }, [currentBookId, playlists]);
 
   return (
     <PlaylistContext.Provider
       value={{
         isLoading,
-        playlists,
-        refetch,
-        currentBookPlaylists,
-        selectCurrentBookPlaylists: (bookId?: string) => setCurrentBookId(bookId),
+        favoritePlaylists,
+        refetch: fetchBookPlaylists,
+        recommendedPlaylists,
+        handleFavoriteToggle,
       }}
     >
       {children} {/* Render children components with the context */}
@@ -90,4 +116,16 @@ export const usePlaylist = () => {
   return useContext(PlaylistContext);
 };
 
+export const withPlaylistProvider = <T extends { bookId: string }>(
+  Component: React.ComponentType<T>
+) => {
+  return (props: T) => {
+    const { bookId } = props;
+    return (
+      <PlaylistProvider bookId={bookId}>
+        <Component {...props} />
+      </PlaylistProvider>
+    );
+  };
+};
 export default PlaylistProvider;

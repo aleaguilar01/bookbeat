@@ -28,8 +28,8 @@ import {
 import { IBook, IComment, useBook } from "../../context/books-context";
 import { Colors, DEFAULT_READING_STATUS } from "../../constants";
 import { useHandleBooks } from "../../hooks/useHandleBooks";
-import TestPage from "../MusicViews/TestPage";
 import BookModal from "../../componets/BookModal";
+import PlaylistContainer from "../MusicViews/MusicComponents/PlaylistContainer";
 
 const { Title, Text, Paragraph } = Typography;
 const { TextArea } = Input;
@@ -279,12 +279,7 @@ const BookPage: React.FC = () => {
           </Col>
         </Row>
         <Divider orientation="left">Music</Divider>
-        <TestPage
-          bookId={book.id}
-          title={book.title}
-          author={book.author}
-          isBookPage
-        />
+        <PlaylistContainer bookId={book.id} />
         <Divider orientation="left">Related Books</Divider>
         <List
           grid={{ gutter: 16, column: 3 }}

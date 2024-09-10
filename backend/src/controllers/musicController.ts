@@ -5,6 +5,7 @@ import axios from 'axios';
 import dotenv from "dotenv";
 import { redisClient } from "../lib/redisClient";
 import { prisma } from "../lib/prismaClient";
+import { getPlaylistsRecommendations } from '../utils/aiHelper';
 
 dotenv.config();
 
@@ -83,34 +84,6 @@ export const handleSpotifyRefreshToken = async (req: Request, res: Response) => 
 
 
 ///// Music Controllers /////
-
-
-// Handle the root path of /music.
-// Renders the home page with a login link.
-// export const getMusicHome = (req: Request, res: Response) => {
-//   console.log('Accessing /music route');  
-
-//   res.send("Welcome to my Spotify App <a href='/music/login'>Login With Spotify</a>");
-// };
-
-
-// export const getMusicRouteIndexPage = (req: Request, res: Response) => {
-//   console.log('Accessing /music/index-page route');  
-
-//   res.send(
-//     `BookBeat's Available Spotify Routes <br>
-//     <a href='http://localhost:3000/music/playlists'>Get User's Playlists</a> <br>
-//     <a href=''>Music Player N/A</a> <br>
-//     <a href=''>Reccomended Playlist N/A</a> <br>
-//     <a href=''>Your Playlists (for book) N/A</a> <br>
-//     <a href=''>Create Playlist N/A</a> <br>
-//     <a href=''>Adding Tracks to Playlist N/A</a>
-//     `
-//     );
-// };
-
-
-
 
 // Handle request for Spotify Playlists
 // Checks if the access token is valid and retrieves the user's playlists from Spotify.
@@ -234,6 +207,135 @@ export const handleSpotifySearch = async (req: Request, res: Response) => {
   }
 };
 
+export const handleRecommendedPlaylists = async (req: Request, res: Response) => {
+  const userId = req.user?.userId;
+  const accessToken = req.user?.spotifyToken?.access_token;
+  const refreshToken = req.user?.spotifyToken?.refresh_token;
+  const { bookId } = req.params;
+
+  if (!accessToken || !refreshToken) {
+    return res.status(401).json({ error: 'Spotify tokens are missing' });
+  }
+
+  if (!bookId) {
+    return res.status(400).json({ error: 'Book ID is required' });
+  }
+
+  const cacheKey = `recommended-playlist-${userId}-${bookId}`;
+
+  try {
+    // // Check Redis cache first
+    const cachedPlaylists = await redisClient.get(cacheKey);
+    if (cachedPlaylists) {
+      return res.json(JSON.parse(cachedPlaylists));
+    }
+
+    // Fetch the book of the user
+    const { book } = await prisma.userBook.findUniqueOrThrow({
+      where: { id: bookId },
+      include: { book: true },
+    });
+
+    const recommendations = await getPlaylistsRecommendations(book.title);
+    console.log('Recommendations:', recommendations);
+
+    // Function to fetch playlists from Spotify API
+    const fetchSpotifyPlaylists = async (token: string) => {
+      return Promise.all(recommendations.playlist.map(async (playlist: string) => {
+        try {
+          const response = await axios.get(`${API_BASE_URL}search`, {
+            headers: { Authorization: `Bearer ${token}` },
+            params: { q: playlist, type: 'playlist', limit: 1 }
+          });
+          return response.data.playlists.items[0];
+        } catch (error) {
+          if (axios.isAxiosError(error) && error.response?.status === 401) {
+            throw new Error('Token expired');
+          }
+          throw error;
+        }
+      }));
+    };
+
+    let spotifyPlaylists;
+    try {
+      spotifyPlaylists = await fetchSpotifyPlaylists(accessToken);
+    } catch (error: any) {
+      if (error.message === 'Token expired') {
+        // Attempt to refresh the token
+        // TODO: Implement refreshSpotifyToken function
+        const newToken = null // await refreshSpotifyToken(refreshToken);
+        if (!newToken) {
+          return res.status(401).json({ error: 'Spotify token expired', requiresReauth: true });
+        }
+        // Retry with new token
+        spotifyPlaylists = await fetchSpotifyPlaylists(newToken);
+      } else {
+        throw error;
+      }
+    }
+
+    // Process each Spotify playlist
+    const processedPlaylists = await Promise.all(spotifyPlaylists.map(async (spotifyPlaylist) => {
+      // Check if the playlist exists in the database
+      let bookBeatsPlaylist = await prisma.playlist.findUnique({
+        where: { playlistId: spotifyPlaylist.id }
+      });
+
+      // If the playlist doesn't exist, create it
+      if (!bookBeatsPlaylist) {
+        bookBeatsPlaylist = await prisma.playlist.create({
+          data: {
+            playlistId: spotifyPlaylist.id,
+            playlist: spotifyPlaylist.name,
+            image: spotifyPlaylist.images[0]?.url || '',
+            description: spotifyPlaylist.description || '',
+            uri: spotifyPlaylist.uri,
+          },
+        });
+      }
+
+      // Check if a UserBookPlaylist entry exists
+      let userBookPlaylist = await prisma.userBookPlaylist.findUnique({
+        where: {
+          userBookPlaylistIdentifier: {
+            playlistId: bookBeatsPlaylist.id,
+            userBookId: bookId
+          }
+        }, 
+        include: { playlist: true }
+      });
+
+      // If UserBookPlaylist doesn't exist, create it
+      if (!userBookPlaylist) {
+        userBookPlaylist = await prisma.userBookPlaylist.create({
+          data: {
+            userBook: { connect: { id: bookId } },
+            playlist: { connect: { id: bookBeatsPlaylist.id } },
+            isFavorite: false,
+          },
+          include: { playlist: true }
+        });
+      }
+      const {playlist, ...rest} = userBookPlaylist;
+      return {...playlist, ...rest}
+    }));
+
+    console.log('Processed playlists:', processedPlaylists);
+    
+    // // Cache the result in Redis
+    await redisClient.setEx(cacheKey, 60, JSON.stringify(processedPlaylists));
+
+    return res.json(processedPlaylists);
+
+  } catch (err) {
+    console.error('Error in handleRecommendedPlaylists:', err);
+    return res.status(500).json({
+      error: 'Failed to retrieve recommended playlists',
+      details: err instanceof Error ? err.message : 'An unknown error occurred'
+    });
+  }
+};
 
 // Handle Spotify Playlist Search
 

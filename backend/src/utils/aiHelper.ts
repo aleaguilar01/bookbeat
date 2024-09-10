@@ -118,3 +118,33 @@ export const getBookRecommendations = async (
     return [];
   }
 };
+
+export const getPlaylistsRecommendations = async (bookName: string) => {
+  try {
+    const SYSTEM = `You are a professional writer and musician with knowledge of all literature 
+  and music. You must respond to the book provided to you with three real spotify playlist 
+  reccomendations. You have to return real Spotify playlist names. Return only the response 
+  in JSON format with the following keys: playlist. Example: Can you recommend 
+  Spotify playlists to go with the mood of Steinbeck's book Of Mice and Men? Maximum 3
+  . Response { playlist: ["Dust Bowl Blues", "Melancholy Acoustic", "American Roots"]}`;
+    const PREFILL = '{ "playlist": ["';
+    // Create a single message based on the book title
+    const userMessage = `Can you recommend Spotify playlists to go with the mood of the book ${bookName}?`;
+
+    const response = await anthropic.messages.create({
+      model: 'claude-3-haiku-20240307',
+      max_tokens: 1024,
+      system: SYSTEM,
+      messages: [
+        { role: 'user', content: userMessage }, // Send the user's request
+        { role: 'assistant', content: PREFILL },
+      ],
+    });
+    const msg = (response.content[0] as TextBlock).text as string;
+    const jsonData = JSON.parse(PREFILL + msg);
+    return jsonData
+  } catch (err) {
+    console.error(err);
+    return [];
+  }
+};

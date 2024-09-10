@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { useAuth } from "../context/auth-context";
+import { useApi } from "./useApi";
+import { AxiosResponse } from "axios";
 
 interface PlaylistImage {
   url: string;
@@ -27,60 +28,37 @@ export const usePlaylistSearch = () => {
   SPPlaylist[]
   >([]);
   const [playlistSearchError, setError] = useState<string | null>(null);
-  const { user } = useAuth();
+  const api = useApi();
+
+  const fetchPlaylistSearchResults = async () => {
+      api.get<any, AxiosResponse<PlaylistSearchResponse>>(`music/playlist-search?search=${encodeURIComponent(
+          playlistSearch
+        )}`).then(response => {
+          if(response.status !== 200){
+            throw new Error("Failed to fetch search results");
+          }
+          if(response.data){
+            const mappedData = response.data.playlists.items.map((playlist: any) => {
+              return {
+                spotifyId: playlist.id,
+                playlist: playlist.name,
+                description: playlist.description,
+                uri: playlist.uri,
+                image: playlist.images[0]?.url,
+              };
+            });
+            setPlaylistSearchResults(mappedData);
+          }
+        }).catch(playlistSearchError => {
+          setError((playlistSearchError as Error).message);
+        });
+   
+  };
 
   useEffect(() => {
     if (!playlistSearch) return setPlaylistSearchResults([]);
-
-    const fetchPlaylistSearchResults = async () => {
-      try {
-        const response = await fetch(
-          `http://localhost:3000/music/playlist-search?search=${encodeURIComponent(
-            playlistSearch
-          )}`,
-          {
-            method: "GET",
-            headers: {
-              Authorization: `Bearer ${user.token}`, // Include the token here
-              "Content-Type": "application/json", // Optional: Ensure JSON format
-            },
-            credentials: "include", // If you need to send cookies or other credentials
-          }
-        );
-        // console.log(response);
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch search results");
-        }
-
-        const data: PlaylistSearchResponse = await response.json();
-        // console.log('this is the data',data);
-
-        // console.log("Playlist search results in usePlaylistSearch:", data);
-
-        setPlaylistSearchResults(
-          data.playlists.items.map((playlist: any) => {
-            return {
-              spotifyId: playlist.id,
-              playlist: playlist.name,
-              description: playlist.description,
-              uri: playlist.uri,
-              image: playlist.images[0]?.url,
-            };
-          })
-        );
-
-        // console.log(
-        //   "playlist search results inside usePlaylist",
-        //   playlistSearchResults
-        // );
-      } catch (playlistSearchError) {
-        setError((playlistSearchError as Error).message);
-      }
-    };
-
     fetchPlaylistSearchResults();
-  }, [playlistSearch, user.spotifyToken]);
+  }, [playlistSearch]);
 
   return {
     playlistSearch,
