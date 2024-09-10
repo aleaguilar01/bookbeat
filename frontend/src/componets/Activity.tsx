@@ -1,18 +1,19 @@
-import { FC, useMemo, useRef } from 'react';
-import { Card, Carousel, Empty, List, Tooltip, Typography } from 'antd';
+import { FC, useMemo, useRef } from "react";
+import { Card, Carousel, Empty, List, Tooltip, Typography } from "antd";
 import {
   HeartOutlined,
   ReadOutlined,
   LeftOutlined,
   RightOutlined,
   HeartFilled,
-} from '@ant-design/icons';
+} from "@ant-design/icons";
 
-import { IBook, useBook } from '../context/books-context';
-import { useNavigate } from 'react-router-dom';
-import { useHandleBooks } from '../hooks/useHandleBooks';
-import { Colors } from '../constants';
-const emptyStateUrl = new URL('../../empty-state-v2.jpg', import.meta.url).href;
+import { IBook, useBook } from "../context/books-context";
+import { useNavigate } from "react-router-dom";
+import { useHandleBooks } from "../hooks/useHandleBooks";
+import { Colors } from "../constants";
+import Loading from "./Loading";
+const emptyStateUrl = new URL("../../empty-state-v2.jpg", import.meta.url).href;
 
 const { Text } = Typography;
 interface ActivityProps {}
@@ -29,6 +30,19 @@ const Activity: FC<ActivityProps> = () => {
     }
     return chunks;
   }, [activeBooks]);
+
+  if (isLoading) {
+    return <Loading />;
+  }
+
+  if (chunkedBooks.length === 0) {
+    return (
+      <Empty
+        image={emptyStateUrl}
+        description="A great time to start reading some books"
+      />
+    );
+  }
 
   return (
     <>
@@ -47,13 +61,13 @@ const Activity: FC<ActivityProps> = () => {
                       <img
                         alt={book.title}
                         src={book.imageUrl}
-                        style={{ height: 60, objectFit: 'cover' }}
+                        style={{ height: 60, objectFit: "cover" }}
                       />
                     }
                     actions={[
                       <ReadOutlined
                         style={{
-                          fontSize: '14px',
+                          fontSize: "14px",
                         }}
                         key="read"
                         onClick={() => navigate(`/books/${book.id}`)}
@@ -61,8 +75,8 @@ const Activity: FC<ActivityProps> = () => {
                       <Tooltip
                         title={
                           book.isFavorite
-                            ? 'Remove from favorites'
-                            : 'Add to favorites'
+                            ? "Remove from favorites"
+                            : "Add to favorites"
                         }
                       >
                         {book.isFavorite ? (
@@ -84,13 +98,13 @@ const Activity: FC<ActivityProps> = () => {
                         )}
                       </Tooltip>,
                     ]}
-                    styles={{ body: { padding: '8px' } }}
+                    styles={{ body: { padding: "8px" } }}
                   >
                     <Card.Meta
                       title={
                         <Text
                           ellipsis
-                          style={{ fontSize: '12px', fontWeight: 'bold' }}
+                          style={{ fontSize: "12px", fontWeight: "bold" }}
                         >
                           {book.title}
                         </Text>
@@ -99,7 +113,7 @@ const Activity: FC<ActivityProps> = () => {
                         <Text
                           type="secondary"
                           ellipsis
-                          style={{ fontSize: '10px' }}
+                          style={{ fontSize: "10px" }}
                         >
                           {book.author}
                         </Text>
@@ -116,21 +130,21 @@ const Activity: FC<ActivityProps> = () => {
         <>
           <LeftOutlined
             style={{
-              position: 'absolute',
+              position: "absolute",
               left: 0,
-              top: '50%',
-              fontSize: '24px',
-              cursor: 'pointer',
+              top: "50%",
+              fontSize: "24px",
+              cursor: "pointer",
             }}
             onClick={() => carouselRef.current.prev()}
           />
           <RightOutlined
             style={{
-              position: 'absolute',
+              position: "absolute",
               right: 0,
-              top: '50%',
-              fontSize: '24px',
-              cursor: 'pointer',
+              top: "50%",
+              fontSize: "24px",
+              cursor: "pointer",
             }}
             onClick={() => carouselRef.current.next()}
           />
