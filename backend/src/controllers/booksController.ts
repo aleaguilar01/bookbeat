@@ -244,9 +244,9 @@ export const updateMyBooks = async (req: Request, res: Response) => {
 };
 
 export const getRecommendedBooks = async (req: Request, res: Response) => {
-  const { currentRecommendations } = req.body;
+  const currentRecommendations = req.body;
   try {
-    const data = await redisClient.get(`recommended-${req.user?.userId}}`);
+    const data = await redisClient.get(`recommended-${req.user?.userId}-${currentRecommendations.length}`);
     if (data !== null) {
       return res.json(JSON.parse(data));
     }
@@ -265,17 +265,14 @@ export const getRecommendedBooks = async (req: Request, res: Response) => {
     const flattenedBooks = getFlattenedBooks(userBooks);
     // scoring
     const scoredBooks = getScoredBooks(flattenedBooks);
-    const bookRecommendations = await getBookRecommendations(scoredBooks);
-    // const aiSuggestedBooks = createAiGeneratedBooks(scoredBooks)
-
+    const bookRecommendations = await getBookRecommendations(scoredBooks, currentRecommendations);
     // only recommend books with covers
     const mergedBooks = (await findAndCreateBooks(bookRecommendations)).filter(
       (book) => !!book.imageUrl
     );
-
     await redisClient.setEx(
-      `recommended-${req.user?.userId}`,
-      3600,
+     `recommended-${req.user?.userId}-${currentRecommendations.length}`,
+      120,
       JSON.stringify(mergedBooks)
     );
     return res.send(mergedBooks);

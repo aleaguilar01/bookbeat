@@ -10,11 +10,14 @@ export const useRecommendedBooks = () => {
   const fetchMoreRecommendations = () => {
     setIsLoading(true);
     api
-      .post<any, {data: Array<IBook>}>("book/recommendations", [...recommendedBooks])
+      .post<any, { data: Array<IBook> }>("book/recommendations", [
+        ...recommendedBooks,
+      ])
       .then((res) => {
         if (res.data && res.data.length > 0) {
-          const recommendations = res.data.filter((book) => !myBooks.find((myBook) => myBook.id === book.id));
-          setRecommendedBooks(recommendations);
+          const newRecommendations = res.data
+            .filter((book) => !myBooks.find((myBook) => myBook.id === book.id));
+          setRecommendedBooks((prev) => ([ ...prev, ...newRecommendations ]));
         }
       })
       .finally(() => setIsLoading(false));
