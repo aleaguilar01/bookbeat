@@ -109,11 +109,15 @@ export const createBook = async (req: Request, res: Response) => {
         },
       },
       readingStatus: data.readingStatus,
+      ...(Object(data).hasOwnProperty("isFavorite")
+        ? { isFavorite: data.isFavorite }
+        : {}),
+      ...(data.myRating ? { rating: data.myRating } : {}),
     },
   });
 
   // deleting cached recommended to get new recommendations
-  await redisClient.DEL(`recommended-${req.user?.userId}}`)
+  await redisClient.DEL(`recommended-${req.user?.userId}}`);
 
   res.send(userBook);
 };
@@ -133,11 +137,11 @@ export const getMyBooks = async (req: Request, res: Response) => {
               include: {
                 user: {
                   select: {
-                    email: true
-                  }
-                }
-              }
-            }
+                    email: true,
+                  },
+                },
+              },
+            },
           },
         },
       },
@@ -242,9 +246,7 @@ export const updateMyBooks = async (req: Request, res: Response) => {
 export const getRecommendedBooks = async (req: Request, res: Response) => {
   const { currentRecommendations } = req.body;
   try {
-    const data = await redisClient.get(
-      `recommended-${req.user?.userId}}`
-    );
+    const data = await redisClient.get(`recommended-${req.user?.userId}}`);
     if (data !== null) {
       return res.json(JSON.parse(data));
     }
@@ -368,14 +370,13 @@ const findAndCreateBooks = async (
 
 export const createBookComment = async (req: Request, res: Response) => {
   const data = req.body;
-  console.log (req.body)
+  console.log(req.body);
   await prisma.bookComment.create({
     data: {
-      comment: data.comment, book: {connect: {isbn: data.bookId}},
-      user : {connect: {id: req.user!.userId}}
-    }
-  })
+      comment: data.comment,
+      book: { connect: { isbn: data.bookId } },
+      user: { connect: { id: req.user!.userId } },
+    },
+  });
   return res.send({});
-}
-
-
+};
