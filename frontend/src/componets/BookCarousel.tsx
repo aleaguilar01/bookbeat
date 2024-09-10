@@ -12,9 +12,12 @@ import { EffectCoverflow, Pagination } from "swiper/modules";
 import BookCarouselEmpty from "./BookCarouselEmpty";
 import { useBook } from "../context/books-context";
 import Loading from "./Loading";
+import { useNavigate } from "react-router-dom";
 
+const BOOK_SIZE = 300;
 const BookCarousel = () => {
-  const { favoriteBooks, isLoading, selectCurrentBook } = useBook();
+  const { favoriteBooks, isLoading } = useBook();
+  const navigate = useNavigate();
 
   if (isLoading) {
     return <Loading />
@@ -25,7 +28,6 @@ const BookCarousel = () => {
   return (
     <>
       <Swiper
-        height={80}
         effect={"coverflow"}
         grabCursor={true}
         centeredSlides={true}
@@ -40,13 +42,20 @@ const BookCarousel = () => {
         pagination={true}
         modules={[EffectCoverflow, Pagination]}
         className="mySwiper"
+        style={{
+          height: BOOK_SIZE+20,
+          width: "100%",
+          paddingTop: 25,
+          paddingBottom: 25,
+        }}
       >
         {favoriteBooks.map((book) => (
           <SwiperSlide
-            onClick={() => selectCurrentBook(book.id)}
+            onClick={() => navigate(`/books/${book.id}`)}
             key={book.id}
+            style={{ height: BOOK_SIZE }}
           >
-            <img src={book.imageUrl} />
+            <img src={book.imageUrl} style={{ height: BOOK_SIZE }} />
           </SwiperSlide>
         ))}
       </Swiper>
