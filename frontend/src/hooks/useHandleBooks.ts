@@ -14,6 +14,8 @@ interface CreateBookArgs {
   numberOfPages?: number;
   firstSentence?: string;
   imageUrl?: string;
+  myRating?: number;
+  isFavorite: boolean;
 }
 
 export const useHandleBooks = () => {
