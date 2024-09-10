@@ -55,14 +55,6 @@ const NavBar = () => {
         <Link to="/books">My Books</Link>
       </Button>
 
-      <Button type="link" style={{ color: "#fff", marginRight: "16px" }}>
-        <Link to="/music-dashboard">
-          <Avatar
-            size={40}
-            src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/84/Spotify_icon.svg/1982px-Spotify_icon.svg.png"
-          />
-        </Link>
-      </Button>
       <Dropdown menu={{items}} trigger={["click"]} placement="bottomRight">
         <Button
           ghost
