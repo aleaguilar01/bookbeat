@@ -1,5 +1,5 @@
 import { anthropic } from "../lib/aiClient";
-import { TextBlock } from "@anthropic-ai/sdk/resources";
+import { MessageParam, TextBlock } from "@anthropic-ai/sdk/resources";
 import { ScoredBook } from "./bookHelper";
 
 export const getBookDescription = async (title: string, author?: string) => {
@@ -13,7 +13,7 @@ export const getBookDescription = async (title: string, author?: string) => {
       max_tokens: 1024,
       system: SYSTEM,
       messages: [{ role: "user", content: PROMPT }],
-    }); 
+    });
     const msg = (response.content[0] as TextBlock).text as string;
     return msg;
   } catch (error) {
@@ -44,10 +44,10 @@ export const getBookGenres = async (
       ],
     });
     const msg = (response.content[0] as TextBlock).text as string;
-    const suggestedGenres = JSON.parse(PREFILL+msg);
+    const suggestedGenres = JSON.parse(PREFILL + msg);
     if (!Array.isArray(suggestedGenres)) {
       // do something else
-      throw new Error(`Message is not an array: ${PREFILL+msg}`);
+      throw new Error(`Message is not an array: ${PREFILL + msg}`);
     }
 
     return activeGenres
@@ -59,7 +59,7 @@ export const getBookGenres = async (
   }
 };
 
-export const getAiRelatedBooks = async (title: string, author?: string)=>{
+export const getAiRelatedBooks = async (title: string, author?: string) => {
   try {
     const SYSTEM = `You are a professional book publisher that can associate different books. When provided a title and the author, you can provide the top 5 books that has de greatest relation with the input. Limit your self to give only one suggestion from the same author. The response has to be in an Array of JSON objects with the keys title and author. Keep you anwser limited just to the JSON object. Example output: [{ title: "Book A", author: "Same Author" }, {title: "New Book", author: "Another Author" ...}]`;
     const PREFILL = '[{ "title": "';
@@ -74,23 +74,23 @@ export const getAiRelatedBooks = async (title: string, author?: string)=>{
       ],
     });
     const msg = (response.content[0] as TextBlock).text as string;
-    console.log(msg)
-    const relatedBooks = JSON.parse(PREFILL+msg);
+    console.log(msg);
+    const relatedBooks = JSON.parse(PREFILL + msg);
     if (!Array.isArray(relatedBooks)) {
       // do something else
       throw new Error(`Message is not an array: ${relatedBooks}`);
     }
 
-    return relatedBooks
+    return relatedBooks;
   } catch (err) {
     console.log(err);
     return [];
   }
-}
+};
 
 export const getBookRecommendations = async (
   myBooks: Array<ScoredBook>,
-  previousRecomendations?: Array<{ title: string; author: string }>
+  prevRecommendations: Array<{ title: string; author: string }> = []
 ): Promise<Array<{ author: string; title: string }>> => {
   try {
     const SYSTEM = `You are a professional book reviewer that provide book recommendations to people. The user will provide a JSON list of their books with a score, the higher the score the more revelant is to the user. Output is an Array with 5 JSON objects {title: string, author: string}. Example output '[{ "title": "A Game of Thrones: A Song of Ice and Fire: Book One", "author": "George R.R. Martin"},{ "title": "Spark City: Book One of the Spark City Cycle", "author": "Robert J Power"} ...]'. Important: Do not suggest any books that the user already has in the input of "My Books" and keep the suggestions tied to the user preferrence preferences.`;
@@ -102,6 +102,18 @@ export const getBookRecommendations = async (
       system: SYSTEM,
       messages: [
         { role: "user", content: INITIAL_PROMPT },
+        ...(prevRecommendations.length > 0
+          ? [
+              {
+                role: "assistant",
+                content: JSON.stringify(prevRecommendations),
+              } as MessageParam,
+              {
+                role: "user",
+                content: "give me 5 more recommendations"
+              } as MessageParam
+            ]
+          : []),
         { role: "assistant", content: PREFILL },
       ],
     });
