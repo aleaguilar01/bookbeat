@@ -7,5 +7,9 @@ export default defineConfig({
   base: "./",
   plugins: [react(), tsconfigPaths()],
   assetsInclude: ['**/*.jpeg'],
+  server: {
+    host: true,
+    port: true, 
+  },
 })
 
